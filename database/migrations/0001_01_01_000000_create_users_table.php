@@ -11,29 +11,66 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Create the users table
+        // 1. YOUR EXACT USERS TABLE (UNTOUCHED)
         Schema::create('users', function (Blueprint $table) {
+
             $table->id();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Login Information
+            |--------------------------------------------------------------------------
+            */
+
+            $table->string('registration_id')->unique();
+
             $table->string('name');
+
             $table->string('email')->unique();
+
+            $table->string('image')->nullable();
+
+            /*
+            |--------------------------------------------------------------------------
+            | Authentication
+            |--------------------------------------------------------------------------
+            */
             $table->timestamp('email_verified_at')->nullable();
+
             $table->string('password');
-            
-            // Role column with default removed
-            $table->string('role'); // CHANGED: Removed ->default('student')
-            
+
+            /*
+            |--------------------------------------------------------------------------
+            | Account Status
+            |--------------------------------------------------------------------------
+            */
+
+            $table->enum('status', [
+                'active',
+                'inactive',
+                'suspended'
+            ])->default('active');
+
+            /*
+            |--------------------------------------------------------------------------
+            | Login Tracking
+            |--------------------------------------------------------------------------
+            */
+
+            $table->timestamp('last_login_at')->nullable();
+
             $table->rememberToken();
+
             $table->timestamps();
         });
 
-        // Password reset tokens table
+        // 2. ADDED MISSING TABLES 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
             $table->string('token');
             $table->timestamp('created_at')->nullable();
         });
 
-        // Sessions table
         Schema::create('sessions', function (Blueprint $table) {
             $table->string('id')->primary();
             $table->foreignId('user_id')->nullable()->index();

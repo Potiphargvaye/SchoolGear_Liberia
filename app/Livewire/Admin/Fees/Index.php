@@ -2,10 +2,13 @@
 
 namespace App\Livewire\Admin\Fees;
 
+use App\Models\AcademicYear;
+use App\Models\Enrollment;
 use App\Models\FeeAssignment;
 use App\Models\FeeCategory;
 use App\Models\FeePayment;
-use App\Models\Student;
+use App\Models\Grade;
+use App\Models\School;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -25,7 +28,16 @@ class Index extends Component
 
     public string $search = '';
 
-    public string $gradeFilter = '';
+    public $gradeFilter = '';
+
+    // Academic year filter — now the AcademicYear id, since Enrollments
+    // carry academic_year_id directly (was a free-text "intake" string
+    // match before the Students/Enrollments rebuild).
+    public $academicYearFilter = '';
+
+    // Super Admin only — narrows the whole page to one school. Empty
+    // string means "all schools".
+    public $schoolFilter = '';
 
     public function updatedCategoryFilter()
     {
@@ -42,15 +54,56 @@ class Index extends Component
         $this->resetPage();
     }
 
+    public function updatedAcademicYearFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSchoolFilter()
+    {
+        // Switching schools invalidates the previously selected category/
+        // academic year (they belong to the old school's scope).
+        $this->categoryFilter = 'all';
+        $this->academicYearFilter = '';
+        $this->resetPage();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tenant helpers
+    |--------------------------------------------------------------------------
+    */
+
+    protected function currentSchoolId(): ?int
+    {
+        return auth()->user()->school_id;
+    }
+
+    protected function isPlatformAdmin(): bool
+    {
+        return $this->currentSchoolId() === null;
+    }
+
+    public function mount()
+    {
+        if (! $this->isPlatformAdmin()) {
+            $this->academicYearFilter = AcademicYear::where('school_id', $this->currentSchoolId())
+                ->where('is_active', true)
+                ->value('id') ?? '';
+        }
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Assign Fee — student is always pre-selected from the row, never a
-    | dropdown of every student.
+    | dropdown of every student. Selected via their Enrollment (never the
+    | Students table directly), so school/grade/year context always
+    | travels with it.
     |--------------------------------------------------------------------------
     */
 
     public bool $showAssignModal = false;
-    public $assignStudentId;
+    public $assignEnrollmentId;
     public $assignStudentName;
     public $assignFeeCategoryId = '';
     public $assignAcademicYear = '';
@@ -58,19 +111,19 @@ class Index extends Component
     public $assignAmount = '';
     public $assignDueDate = '';
     public $assignRemarks = '';
-    // Academic year flitter property 
-    public $academicYearFilter = '';
 
-    public function openAssignModal(string $studentId)
+    public function openAssignModal(int $enrollmentId)
     {
-        if (! auth()->user()->can('manage fees')) {
+        if (! auth()->user()->can('manage fees') || $this->isPlatformAdmin()) {
             abort(403);
         }
 
-        $student = Student::where('student_id', $studentId)->firstOrFail();
+        $enrollment = Enrollment::where('school_id', $this->currentSchoolId())
+            ->with('student')
+            ->findOrFail($enrollmentId);
 
-        $this->assignStudentId = $student->student_id;
-        $this->assignStudentName = $student->name;
+        $this->assignEnrollmentId = $enrollment->id;
+        $this->assignStudentName = $enrollment->student->name;
         // Defaults to whichever category tab is active, if a real one is selected.
         $this->assignFeeCategoryId = $this->categoryFilter !== 'all' ? $this->categoryFilter : '';
         $this->assignAcademicYear = '';
@@ -97,7 +150,7 @@ class Index extends Component
 
     public function saveAssignment()
     {
-        if (! auth()->user()->can('manage fees')) {
+        if (! auth()->user()->can('manage fees') || $this->isPlatformAdmin()) {
             abort(403);
         }
 
@@ -110,8 +163,12 @@ class Index extends Component
             'assignRemarks' => 'nullable|string',
         ]);
 
+        $enrollment = Enrollment::where('school_id', $this->currentSchoolId())
+            ->findOrFail($this->assignEnrollmentId);
+
         FeeAssignment::create([
-            'student_id' => $this->assignStudentId,
+            'school_id' => $enrollment->school_id,
+            'enrollment_id' => $enrollment->id,
             'fee_category_id' => $this->assignFeeCategoryId,
             'academic_year' => $this->assignAcademicYear,
             'installment_number' => $this->assignInstallmentNumber ?: null,
@@ -135,7 +192,7 @@ class Index extends Component
     */
 
     public bool $showPaymentModal = false;
-    public $paymentStudentId;
+    public $paymentEnrollmentId;
     public $paymentStudentName;
     public $paymentOutstandingAssignments = [];
     public $paymentAssignmentId = '';
@@ -148,17 +205,19 @@ class Index extends Component
     // Set after a successful save so the modal can show a "Receipt ready" state.
     public $lastReceiptId = null;
 
-    public function openPaymentModal(string $studentId)
+    public function openPaymentModal(int $enrollmentId)
     {
-        if (! auth()->user()->can('manage fees')) {
+        if (! auth()->user()->can('manage fees') || $this->isPlatformAdmin()) {
             abort(403);
         }
 
-        $student = Student::where('student_id', $studentId)->firstOrFail();
+        $enrollment = Enrollment::where('school_id', $this->currentSchoolId())
+            ->with('student')
+            ->findOrFail($enrollmentId);
 
-        $this->paymentStudentId = $student->student_id;
-        $this->paymentStudentName = $student->name;
-        $this->paymentOutstandingAssignments = FeeAssignment::where('student_id', $student->student_id)
+        $this->paymentEnrollmentId = $enrollment->id;
+        $this->paymentStudentName = $enrollment->student->name;
+        $this->paymentOutstandingAssignments = FeeAssignment::where('enrollment_id', $enrollment->id)
             ->where('status', '!=', 'paid')
             ->with('feeCategory')
             ->orderByDesc('due_date')
@@ -191,11 +250,12 @@ class Index extends Component
 
     public function savePayment()
     {
-        if (! auth()->user()->can('manage fees')) {
+        if (! auth()->user()->can('manage fees') || $this->isPlatformAdmin()) {
             abort(403);
         }
 
-        $assignment = FeeAssignment::findOrFail($this->paymentAssignmentId);
+        $assignment = FeeAssignment::where('school_id', $this->currentSchoolId())
+            ->findOrFail($this->paymentAssignmentId);
         $balance = (float) $assignment->balance();
 
         $this->validate([
@@ -233,23 +293,29 @@ class Index extends Component
     | assignments live here too, since that's where assignment-level rows
     | actually exist (a student can have many assignments, so these
     | actions don't make sense on the main per-student row).
+    |
+    | Available to Super Admin too, but strictly read-only — the Edit/
+    | Delete buttons inside this modal are gated by $canEdit/$canDelete,
+    | which are always false for a platform-level view.
     |--------------------------------------------------------------------------
     */
 
     public bool $showHistoryModal = false;
-    public $historyStudentId;
+    public $historyEnrollmentId;
     public $historyStudentName;
 
-    public function openHistoryModal(string $studentId)
+    public function openHistoryModal(int $enrollmentId)
     {
         if (! auth()->user()->can('view fee details')) {
             abort(403);
         }
 
-        $student = Student::where('student_id', $studentId)->firstOrFail();
+        $enrollment = $this->isPlatformAdmin()
+            ? Enrollment::with('student')->findOrFail($enrollmentId)
+            : Enrollment::where('school_id', $this->currentSchoolId())->with('student')->findOrFail($enrollmentId);
 
-        $this->historyStudentId = $student->student_id;
-        $this->historyStudentName = $student->name;
+        $this->historyEnrollmentId = $enrollment->id;
+        $this->historyStudentName = $enrollment->student->name;
         $this->showHistoryModal = true;
     }
 
@@ -260,11 +326,11 @@ class Index extends Component
 
     public function getHistoryAssignmentsProperty()
     {
-        if (! $this->showHistoryModal || ! $this->historyStudentId) {
+        if (! $this->showHistoryModal || ! $this->historyEnrollmentId) {
             return collect();
         }
 
-        return FeeAssignment::where('student_id', $this->historyStudentId)
+        return FeeAssignment::where('enrollment_id', $this->historyEnrollmentId)
             ->with(['feeCategory', 'payments' => fn($q) => $q->orderByDesc('payment_date')])
             ->orderByDesc('due_date')
             ->get();
@@ -289,11 +355,11 @@ class Index extends Component
 
     public function openEditAssignmentModal(int $assignmentId)
     {
-        if (! auth()->user()->can('edit fees')) {
+        if (! auth()->user()->can('edit fees') || $this->isPlatformAdmin()) {
             abort(403);
         }
 
-        $assignment = FeeAssignment::findOrFail($assignmentId);
+        $assignment = FeeAssignment::where('school_id', $this->currentSchoolId())->findOrFail($assignmentId);
 
         $this->editAssignmentId = $assignment->id;
         $this->editAssignmentLocked = $assignment->isLockedForEditing();
@@ -314,11 +380,11 @@ class Index extends Component
 
     public function updateAssignment()
     {
-        if (! auth()->user()->can('edit fees')) {
+        if (! auth()->user()->can('edit fees') || $this->isPlatformAdmin()) {
             abort(403);
         }
 
-        $assignment = FeeAssignment::findOrFail($this->editAssignmentId);
+        $assignment = FeeAssignment::where('school_id', $this->currentSchoolId())->findOrFail($this->editAssignmentId);
 
         if ($assignment->isLockedForEditing()) {
             // Only due_date/remarks are editable once a payment exists.
@@ -355,7 +421,7 @@ class Index extends Component
 
         $this->showEditAssignmentModal = false;
 
-        $this->dispatch('notify', message: 'Fee assignment updated.', type: 'success');
+        $this->dispatch('notify', message: 'Success fee assignment updated.', type: 'success');
     }
 
     /*
@@ -369,14 +435,14 @@ class Index extends Component
 
     public function confirmDeleteAssignment(int $assignmentId)
     {
-        if (! auth()->user()->can('delete fees')) {
+        if (! auth()->user()->can('delete fees') || $this->isPlatformAdmin()) {
             abort(403);
         }
 
-        $assignment = FeeAssignment::findOrFail($assignmentId);
+        $assignment = FeeAssignment::where('school_id', $this->currentSchoolId())->findOrFail($assignmentId);
 
         if (! $assignment->canBeDeleted()) {
-            $this->dispatch('notify', message: 'Cannot delete — this assignment already has payments recorded against it.', type: 'error');
+            $this->dispatch('notify', message: 'Cannot delete this assignment already has payments recorded against it.', type: 'error');
             return;
         }
 
@@ -386,14 +452,14 @@ class Index extends Component
 
     public function deleteAssignment()
     {
-        if (! auth()->user()->can('delete fees')) {
+        if (! auth()->user()->can('delete fees') || $this->isPlatformAdmin()) {
             abort(403);
         }
 
-        $assignment = FeeAssignment::findOrFail($this->deleteAssignmentId);
+        $assignment = FeeAssignment::where('school_id', $this->currentSchoolId())->findOrFail($this->deleteAssignmentId);
 
         if (! $assignment->canBeDeleted()) {
-            $this->dispatch('notify', message: 'Cannot delete — payments exist against this assignment.', type: 'error');
+            $this->dispatch('notify', message: 'Cannot delete payments exist against this assignment.', type: 'error');
             $this->showDeleteAssignmentModal = false;
             return;
         }
@@ -402,7 +468,7 @@ class Index extends Component
 
         $this->showDeleteAssignmentModal = false;
 
-        $this->dispatch('notify', message: 'Fee assignment deleted.', type: 'success');
+        $this->dispatch('notify', message: 'Success Fee assignment deleted.', type: 'success');
     }
 
     public function closeDeleteAssignmentModal()
@@ -411,83 +477,123 @@ class Index extends Component
         $this->deleteAssignmentId = null;
     }
 
+
+
+    /*
+|--------------------------------------------------------------------------
+| Stat Cards — purely additive, reads existing filter state, no new
+| properties, no change to the Enrollment/FeeAssignment queries below.
+|--------------------------------------------------------------------------
+*/
+    protected function feeStats(?int $scopeSchoolId): array
+    {
+        $enrollmentIds = Enrollment::query()
+            ->where('status', 'active')
+            ->when($scopeSchoolId, fn($q) => $q->where('school_id', $scopeSchoolId))
+            ->when($this->academicYearFilter, fn($q) => $q->where('academic_year_id', $this->academicYearFilter))
+            ->pluck('id');
+
+        $totalStudents = $enrollmentIds->count();
+
+        $assignmentIds = FeeAssignment::whereIn('enrollment_id', $enrollmentIds)->pluck('id');
+
+        $totalFeesAssigned = FeeAssignment::whereIn('id', $assignmentIds)->sum('amount');
+        $totalFeesCollected = FeePayment::whereIn('fee_assignment_id', $assignmentIds)->sum('amount_paid');
+        $totalBalance = $totalFeesAssigned - $totalFeesCollected;
+
+        return [
+            'totalStudents' => $totalStudents,
+            'totalFeesAssigned' => $totalFeesAssigned,
+            'totalFeesCollected' => $totalFeesCollected,
+            'totalBalance' => $totalBalance,
+            'totalPaid' => $totalFeesCollected,
+        ];
+    }
+
     /*
     |--------------------------------------------------------------------------
-    | Render — one row per Student, scoped to the active category tab.
+    | Render — one row per Enrollment (never fetched from the Students
+    | table directly), scoped to the active category tab. For Super
+    | Admin, "no school selected" means every school at once, with the
+    | School column shown; picking a school narrows the same way it does
+    | for a normal school user.
     |--------------------------------------------------------------------------
     */
 
-    public function mount()
-    {
-        $this->academicYearFilter = \App\Models\AcademicYear::where('is_active', true)
-            ->orderBy('sort_order')
-            ->value('name');
-    }
-
-
     public function render()
     {
+        $scopeSchoolId = $this->isPlatformAdmin() ? ($this->schoolFilter ?: null) : $this->currentSchoolId();
 
-        $academicYears = \App\Models\AcademicYear::query()
-            ->whereIn(
-                'name',
-                Student::query()
-                    ->whereNotNull('intake')
-                    ->distinct()
-                    ->pluck('intake')
-            )
-            ->withCount('students')
-            ->ordered()
-            ->get();
+        $stats = $this->feeStats($scopeSchoolId);   // NEW — one line, reuses existing $scopeSchoolId
 
-        $categories = FeeCategory::active()->orderBy('sort_order')->get();
+        // Category/Academic Year lists only make sense once a single
+        // school is in scope — cross-school category IDs don't line up
+        // meaningfully in one dropdown.
+        $categories = $scopeSchoolId
+            ? FeeCategory::where('school_id', $scopeSchoolId)->active()->orderBy('sort_order')->get()
+            : collect();
 
-        $grades = Student::query()->distinct()->pluck('class_applying_for')->filter()->values();
+        $academicYears = $scopeSchoolId
+            ? AcademicYear::where('school_id', $scopeSchoolId)->ordered()->get()
+            : collect();
 
-        $studentsQuery = Student::query()
+        $grades = Grade::orderBy('level')->get();
 
+        $schools = $this->isPlatformAdmin() ? School::orderBy('school_name')->get() : collect();
+
+        $enrollmentsQuery = Enrollment::query()
             ->where('status', 'active')
-
-            ->when($this->academicYearFilter, function ($query) {
-                $query->where('intake', $this->academicYearFilter);
+            ->when($scopeSchoolId, function ($query) use ($scopeSchoolId) {
+                $query->where('school_id', $scopeSchoolId);
             })
-
             ->when($this->search, function ($query) {
-                $query->where(function ($query) {
+                $query->whereHas('student', function ($query) {
                     $query->where('name', 'like', "%{$this->search}%")
-                        ->orWhere('student_id', 'like', "%{$this->search}%");
+                        ->orWhereHas('user', function ($query) {
+                            $query->where('registration_id', 'like', "%{$this->search}%");
+                        });
                 });
             })
-
             ->when($this->gradeFilter, function ($query) {
-                $query->where('class_applying_for', $this->gradeFilter);
+                $query->where('grade_id', $this->gradeFilter);
+            })
+            ->when($this->academicYearFilter, function ($query) {
+                $query->where('academic_year_id', $this->academicYearFilter);
             });
 
         if ($this->categoryFilter !== 'all') {
-            $studentsQuery->whereHas('feeAssignments', function ($query) {
+            $enrollmentsQuery->whereHas('feeAssignments', function ($query) {
                 $query->where('fee_category_id', $this->categoryFilter);
             });
         }
 
-        $students = $studentsQuery
-            ->with(['feeAssignments' => function ($query) {
-                if ($this->categoryFilter !== 'all') {
-                    $query->where('fee_category_id', $this->categoryFilter);
-                }
-                $query->with('payments');
-            }])
-            ->orderBy('name')
+        $enrollments = $enrollmentsQuery
+            ->with([
+                'student.user',
+                'grade',
+                'academicYear',
+                'school',
+                'feeAssignments' => function ($query) {
+                    if ($this->categoryFilter !== 'all') {
+                        $query->where('fee_category_id', $this->categoryFilter);
+                    }
+                    $query->with('payments');
+                },
+            ])
+            ->orderBy('id')
             ->paginate(10);
 
-        return view('livewire.admin.fees.index', [
-            'students' => $students,
+        return view('livewire.admin.fees.index', array_merge($stats, [   // wrap existing array with array_merge
+            'enrollments' => $enrollments,
             'categories' => $categories,
             'grades' => $grades,
-            'canManage' => auth()->user()->can('manage fees'),
-            'canEdit' => auth()->user()->can('edit fees'),
-            'canDelete' => auth()->user()->can('delete fees'),
-            'canView' => auth()->user()->can('view fee details'),
             'academicYears' => $academicYears,
-        ]);
+            'schools' => $schools,
+            'isPlatformAdmin' => $this->isPlatformAdmin(),
+            'canManage' => auth()->user()->can('manage fees') && ! $this->isPlatformAdmin(),
+            'canEdit' => auth()->user()->can('edit fees') && ! $this->isPlatformAdmin(),
+            'canDelete' => auth()->user()->can('delete fees') && ! $this->isPlatformAdmin(),
+            'canView' => auth()->user()->can('view fee details'),
+        ]));
     }
 }

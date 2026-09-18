@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class AcademicYear extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
+        'school_id',
         'name',
         'is_active',
         'sort_order',
@@ -19,28 +18,13 @@ class AcademicYear extends Model
         'is_active' => 'boolean',
     ];
 
-    /**
-     * Only active academic years.
-     */
-    public function scopeActive($query)
+    public function school(): BelongsTo
     {
-        return $query->where('is_active', true);
+        return $this->belongsTo(School::class);
     }
 
-    /**
-     * Order by sort order.
-     */
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order');
-    }
-
-    public function students()
-    {
-        return $this->hasMany(
-            \App\Models\Student::class,
-            'intake',
-            'name'
-        );
     }
 }

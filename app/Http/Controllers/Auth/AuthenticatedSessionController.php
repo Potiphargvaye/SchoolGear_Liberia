@@ -20,21 +20,38 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
+     * Handle an incoming authentication request.  
+     */
+    /**
      * Handle an incoming authentication request.
      */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
 
-   $request->session()->flash('login_success', 'Login successful. Welcome back!');
+        $request->session()->regenerate();
 
+        auth()->user()->update([
+            'last_login_at' => now(),
+        ]);
 
-        // Redirect to role-specific dashboard
-        return redirect()->intended(
-            route(auth()->user()->role . '.dashboard', [], false)
+        $request->session()->flash(
+            'login_success',
+            'Login successful. Welcome back!'
         );
+
+        $user = auth()->user();
+
+        // Students use Student Dashboard
+        if ($user->hasRole('Student')) {
+
+            return redirect()->route('student.dashboard');
+        }
+
+        // Every other role uses Admin Dashboard
+        return redirect()->route('admin.dashboard');
     }
-  
+
     /**
      * Destroy an authenticated session.
      */
@@ -46,6 +63,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/login');
     }
 }

@@ -552,11 +552,13 @@
         <button class="print-button" onclick="window.print()">🖨 Print Report Card</button>
 
         <!-- School header -->
-        <!-- School header -->
         @php
+            $student = $enrollment->student;
             if (!isset($grades)) {
-                $grades = \App\Models\StudentGrade::where('student_id', $student->id)->get();
-                // Default report period if not provided
+                $grades = \App\Models\StudentGrade::where('school_id', $enrollment->school_id)
+                    ->where('enrollment_id', $enrollment->id)
+                    ->get();
+                //default academy year if not provided
                 $period = $period ?? 'yearly';
             }
         @endphp
@@ -567,19 +569,35 @@
 
                 <!-- LEFT: SCHOOL LOGO -->
                 <div class="header-left">
-                    <img src="{{ asset('kiddos-school-master/images/School_logo_reciept.jpeg') }}" alt="School Logo"
-                        class="school-logo">
+                    <img src="{{ $branding['logo'] ? asset('storage/' . $branding['logo']) : asset('kiddos-school-master/images/School_logo_reciept.jpeg') }}"
+                        alt="School Logo" class="school-logo">
                 </div>
 
                 <!-- CENTER: SCHOOL TEXT -->
                 <div class="header-center">
-                    <h2>ED MOL MEMORIAL MATADI BAPTIST HIGH SCHOOL</h2>
-                    <p class="school-address">New Matadi Estate Drive, Opposite Don Bosco Youth Center</p>
-                    <p>P.O. Box: 4330 - Monrovia, Liberia</p>
+                    <h2>{{ strtoupper($branding['name']) }}</h2>
+                    <p>{{ $branding['address'] }}</p>
+                    @if ($branding['po_box'])
+                        <p>{{ $branding['po_box'] }}</p>
+                    @endif
                     <p>
-                        <a href="mailto:emmmbhs@gmail.com">emmmbhs@gmail.com</a>
-                        - +231555472972 / +231776597201
+                        @if ($branding['email'])
+                            <a href="mailto:{{ $branding['email'] }}">{{ $branding['email'] }}</a>
+                        @endif
+                        @if ($branding['email'] && $branding['phone'])
+                            -
+                        @endif
+                        {{ $branding['phone'] }}
                     </p>
+                    @if ($branding['website'] || $branding['school_number'])
+                        <p>
+                            {{ $branding['website'] }}
+                            @if ($branding['website'] && $branding['school_number'])
+                                -
+                            @endif
+                            {{ $branding['school_number'] }}
+                        </p>
+                    @endif
                 </div>
                 <!-- RIGHT: STUDENT IMAGE -->
                 <div class="header-right">
@@ -596,18 +614,19 @@
                 KINDERGARTEN GRADE SHEET
             </div>
         @endif
+
         <!-- Student information -->
         <div class="student-info">
             <span>STUDENT'S NAME: {{ $student->name }}</span>
-            <span style="float: right;">GRADE: {{ $student->class_applying_for }}</span>
+            <span style="float: right;">GRADE:
+                {{ $enrollment->grade->level }}{{ $enrollment->grade->section ? ' - ' . $enrollment->grade->section : '' }}</span>
         </div>
 
         <div class="student-info">
-            <span style="float: right;">ID: {{ $student->student_id }}</span>
-            <span>ACADEMIC YEAR: {{ $grades->first()->academic_year ?? 'N/A' }}</span>
+            <span style="float: right;">ID: {{ $student->user->registration_id }}</span>
+            <span>ACADEMIC YEAR: {{ $enrollment->academicYear->name ?? 'N/A' }}</span>
 
         </div>
-
         <!-- function to convert grade into letter  -->
         @php
             function gradeLetter($score)
@@ -833,26 +852,26 @@
                     <td>Average</td>
 
                     @if (in_array($period, ['p1', 'semester1', 'yearly']))
-                        @php $score = $periodAverages['p1'][$student->id] ?? 0; @endphp
+                        @php $score = $periodAverages['p1'][$enrollment->id] ?? 0; @endphp
                         <td><span class="{{ gradeColor($score) }}"><strong>{{ gradeLetter($score) }}</strong></span>
                         </td>
                     @endif
 
                     @if (in_array($period, ['p2', 'semester1', 'yearly']))
-                        @php $score = $periodAverages['p2'][$student->id] ?? 0; @endphp
+                        @php $score = $periodAverages['p2'][$enrollment->id] ?? 0; @endphp
                         <td><span class="{{ gradeColor($score) }}"><strong>{{ gradeLetter($score) }}</strong></span>
                         </td>
                     @endif
 
                     @if (in_array($period, ['p3', 'semester1', 'yearly']))
-                        @php $score = $periodAverages['p3'][$student->id] ?? 0; @endphp
+                        @php $score = $periodAverages['p3'][$enrollment->id] ?? 0; @endphp
                         <td><span class="{{ gradeColor($score) }}"><strong>{{ gradeLetter($score) }}</strong></span>
                         </td>
                     @endif
 
                     @if (in_array($period, ['semester1', 'yearly']))
-                        @php $exam1Score = $periodAverages['exam1'][$student->id] ?? 0; @endphp
-                        @php $sem1Score = $periodAverages['semester1'][$student->id] ?? 0; @endphp
+                        @php $exam1Score = $periodAverages['exam1'][$enrollment->id] ?? 0; @endphp
+                        @php $sem1Score = $periodAverages['semester1'][$enrollment->id] ?? 0; @endphp
                         <td><span
                                 class="{{ gradeColor($exam1Score) }}"><strong>{{ gradeLetter($exam1Score) }}</strong></span>
                         </td>
@@ -862,26 +881,26 @@
                     @endif
 
                     @if (in_array($period, ['p4', 'semester2', 'yearly']))
-                        @php $score = $periodAverages['p4'][$student->id] ?? 0; @endphp
+                        @php $score = $periodAverages['p4'][$enrollment->id] ?? 0; @endphp
                         <td><span class="{{ gradeColor($score) }}"><strong>{{ gradeLetter($score) }}</strong></span>
                         </td>
                     @endif
 
                     @if (in_array($period, ['p5', 'semester2', 'yearly']))
-                        @php $score = $periodAverages['p5'][$student->id] ?? 0; @endphp
+                        @php $score = $periodAverages['p5'][$enrollment->id] ?? 0; @endphp
                         <td><span class="{{ gradeColor($score) }}"><strong>{{ gradeLetter($score) }}</strong></span>
                         </td>
                     @endif
 
                     @if (in_array($period, ['p6', 'semester2', 'yearly']))
-                        @php $score = $periodAverages['p6'][$student->id] ?? 0; @endphp
+                        @php $score = $periodAverages['p6'][$enrollment->id] ?? 0; @endphp
                         <td><span class="{{ gradeColor($score) }}"><strong>{{ gradeLetter($score) }}</strong></span>
                         </td>
                     @endif
 
                     @if (in_array($period, ['semester2', 'yearly']))
-                        @php $exam2Score = $periodAverages['exam2'][$student->id] ?? 0; @endphp
-                        @php $sem2Score = $periodAverages['semester2'][$student->id] ?? 0; @endphp
+                        @php $exam2Score = $periodAverages['exam2'][$enrollment->id] ?? 0; @endphp
+                        @php $sem2Score = $periodAverages['semester2'][$enrollment->id] ?? 0; @endphp
                         <td><span
                                 class="{{ gradeColor($exam2Score) }}"><strong>{{ gradeLetter($exam2Score) }}</strong></span>
                         </td>
@@ -891,7 +910,7 @@
                     @endif
 
                     @if ($period === 'yearly')
-                        @php $yearlyScore = $periodAverages['yearly'][$student->id] ?? 0; @endphp
+                        @php $yearlyScore = $periodAverages['yearly'][$enrollment->id] ?? 0; @endphp
                         <td><span
                                 class="{{ gradeColor($yearlyScore) }}"><strong>{{ gradeLetter($yearlyScore) }}</strong></span>
                         </td>
@@ -902,45 +921,45 @@
                     <td>Rank</td>
 
                     @if (in_array($period, ['p1', 'semester1', 'yearly']))
-                        <td>{{ $periodRanks['p1'][$student->id] ?? '-' }} / {{ $totalStudents }}</td>
+                        <td>{{ $periodRanks['p1'][$enrollment->id] ?? '-' }} / {{ $totalStudents }}</td>
                     @endif
 
                     @if (in_array($period, ['p2', 'semester1', 'yearly']))
-                        <td>{{ $periodRanks['p2'][$student->id] ?? '-' }} / {{ $totalStudents }}</td>
+                        <td>{{ $periodRanks['p2'][$enrollment->id] ?? '-' }} / {{ $totalStudents }}</td>
                     @endif
 
                     @if (in_array($period, ['p3', 'semester1', 'yearly']))
-                        <td>{{ $periodRanks['p3'][$student->id] ?? '-' }} / {{ $totalStudents }}</td>
+                        <td>{{ $periodRanks['p3'][$enrollment->id] ?? '-' }} / {{ $totalStudents }}</td>
                     @endif
 
                     @if (in_array($period, ['semester1', 'yearly']))
                         {{-- ✅ FIXED: exam1 rank --}}
-                        <td>{{ $periodRanks['exam1'][$student->id] ?? '-' }} / {{ $totalStudents }}</td>
+                        <td>{{ $periodRanks['exam1'][$enrollment->id] ?? '-' }} / {{ $totalStudents }}</td>
 
-                        <td>{{ $periodRanks['semester1'][$student->id] ?? '-' }} / {{ $totalStudents }}</td>
+                        <td>{{ $periodRanks['semester1'][$enrollment->id] ?? '-' }} / {{ $totalStudents }}</td>
                     @endif
 
                     @if (in_array($period, ['p4', 'semester2', 'yearly']))
-                        <td>{{ $periodRanks['p4'][$student->id] ?? '-' }} / {{ $totalStudents }}</td>
+                        <td>{{ $periodRanks['p4'][$enrollment->id] ?? '-' }} / {{ $totalStudents }}</td>
                     @endif
 
                     @if (in_array($period, ['p5', 'semester2', 'yearly']))
-                        <td>{{ $periodRanks['p5'][$student->id] ?? '-' }} / {{ $totalStudents }}</td>
+                        <td>{{ $periodRanks['p5'][$enrollment->id] ?? '-' }} / {{ $totalStudents }}</td>
                     @endif
 
                     @if (in_array($period, ['p6', 'semester2', 'yearly']))
-                        <td>{{ $periodRanks['p6'][$student->id] ?? '-' }} / {{ $totalStudents }}</td>
+                        <td>{{ $periodRanks['p6'][$enrollment->id] ?? '-' }} / {{ $totalStudents }}</td>
                     @endif
 
                     @if (in_array($period, ['semester2', 'yearly']))
                         {{-- ✅ FIXED: exam2 rank --}}
-                        <td>{{ $periodRanks['exam2'][$student->id] ?? '-' }} / {{ $totalStudents }}</td>
+                        <td>{{ $periodRanks['exam2'][$enrollment->id] ?? '-' }} / {{ $totalStudents }}</td>
 
-                        <td>{{ $periodRanks['semester2'][$student->id] ?? '-' }} / {{ $totalStudents }}</td>
+                        <td>{{ $periodRanks['semester2'][$enrollment->id] ?? '-' }} / {{ $totalStudents }}</td>
                     @endif
 
                     @if ($period === 'yearly')
-                        <td>{{ $periodRanks['yearly'][$student->id] ?? '-' }} / {{ $totalStudents }}</td>
+                        <td>{{ $periodRanks['yearly'][$enrollment->id] ?? '-' }} / {{ $totalStudents }}</td>
                     @endif
                 </tr>
 
@@ -970,10 +989,8 @@
                     Principal
                 </div>
             </div>
-
             <div class="footer-note">
-                Any alteration of this document renders it invalid. <br>
-                Invalid without school stamp.
+                {{ $branding['footer']['note'] }}
             </div>
         @endif
 
@@ -1001,7 +1018,7 @@
 
             <div class="qr-code-box">
                 <div class="qr-frame">
-                    {!! QrCode::size(90)->backgroundColor(255, 255, 255)->color(0, 0, 128)->generate(route('public.verify.report_card', ['id' => $student->student_id])) !!}
+                    {!! QrCode::size(90)->backgroundColor(255, 255, 255)->color(0, 0, 128)->generate(route('public.verify.report_card', ['id' => $student->user->registration_id])) !!}
                 </div>
 
                 <div class="qr-caption">

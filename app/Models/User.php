@@ -2,81 +2,140 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Notifications\SchoolResetPasswordNotification;
+
+use App\Models\Student;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 
 class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasRoles;
 
+    /**
+     * Guard name for Spatie Permission.
+     */
+    protected $guard_name = 'web';
+
+
+    /**
+     * Mass assignable attributes.
+     */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
+
+        // Tenancy
+        'school_id',
+        // Login Information
         'registration_id',
-        'role',
-        'grade_id',
-        'subjects', // Added for subject assignment
+
+        'name',
+
+        'email',
+
         'image',
+
+        // Authentication
+        'password',
+
+        // Account Status
+        'status',
+
+        // Login Tracking
+        'last_login_at',
+        'created_by',
+
     ];
 
+
+    /**
+     * Hidden attributes.
+     */
+    protected $hidden = [
+
+        'password',
+
+        'remember_token',
+
+    ];
+
+
+    /**
+     * Attribute casting.
+     */
     protected $casts = [
+
         'email_verified_at' => 'datetime',
+
+        'last_login_at' => 'datetime',
+
         'password' => 'hashed',
-        'subjects' => 'array', // Cast subjects to array
+
     ];
 
-    public function hasRole($role)
-    {
-        return $this->role === $role; // Your existing role logic remains
-    }
 
-    // Student grade relationship (unchanged)
-    public function grade()
-    {
-        return $this->belongsTo(Grade::class, 'grade_id');
-    }
-
-    // Updated: Teacher grades relationship (now using id as foreign key)
-    public function teacherGrades()
-    {
-        return $this->hasMany(Grade::class, 'teacher_id'); // Changed to use id
-    }
-
-    // Helper method to assign subjects
-    public function assignSubjects(array $subjects) 
-    {
-        $this->update(['subjects' => $subjects]);
-    }
-
-    // Helper method to check if user teaches/takes a subject
-    public function hasSubject(string $subject): bool
-    {
-        return in_array($subject, $this->subjects ?? []);
-    }
- 
-    // Updated: for teacher_grade_subject pivot table (now using id)
-    public function taughtGrades()
-{
-    return $this->belongsToMany(Grade::class, 'teacher_grade_subject', 'teacher_id', 'grade_id')
-                ->withPivot(['id', 'subjects']) // Include pivot ID
-                ->withTimestamps();
-}
-    
-    // Optional: If you need to access the pivot relationships with subjects
-    public function taughtSubjects()
-    {
-        return $this->hasMany(TeacherGradeSubject::class, 'teacher_id');
-    }
-
-
-    // Reset password notification 
+    /**
+     * Send password reset notification.
+     */
     public function sendPasswordResetNotification($token)
-{
-    $this->notify(new SchoolResetPasswordNotification($token));
-}
+    {
+        $this->notify(
+            new SchoolResetPasswordNotification($token)
+        );
+    }
+
+
+    /**
+     * User who created this account.
+     */
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Users created by this account.
+     */
+    public function createdUsers()
+    {
+        return $this->hasMany(User::class, 'created_by');
+    }
+
+
+    // Add this relationship method inside your existing App\Models\User class.
+// Do not replace the file — just add this method alongside your other
+// relationships/methods.
+
+    /**
+     * The Student profile linked to this account, if this user is a student.
+     * Staff/admin users will simply have this return null.
+     */
+    public function student(): HasOne
+    {
+        return $this->hasOne(Student::class);
+    }
+
+    /**
+     * The School this user belongs to.
+     * NULL for platform-level accounts (e.g. Super Admin) that predate
+     * multi-tenancy or operate outside any single school.
+     */
+    public function school(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(School::class);
+    }
+
+
+    public function teacherGrades(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Grade::class, 'grade_teacher')->withTimestamps();;
+    }
+
+    public function teacherSubjects(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(AcademicSubject::class, 'subject_teacher')->withTimestamps();;
+    }
 }

@@ -11,8 +11,16 @@ return new class extends Migration
         Schema::create('fee_assignments', function (Blueprint $table) {
             $table->id();
 
-            $table->string('student_id');
-            $table->foreign('student_id')->references('student_id')->on('students')->onDelete('cascade');
+            // Tenant scope — every fee assignment belongs to exactly one
+            // school. Stored directly (not just derived through enrollment)
+            // so every query in this module can filter by school_id alone,
+            // same pattern as every other multi-tenant table in the app.
+            $table->foreignId('school_id')->constrained('schools')->cascadeOnDelete();
+
+            // Links directly to the student's enrollment
+            $table->foreignId('enrollment_id')
+                ->constrained('enrollments')
+                ->cascadeOnDelete();
 
             $table->foreignId('fee_category_id')->constrained('fee_categories')->restrictOnDelete();
 
@@ -34,11 +42,6 @@ return new class extends Migration
             $table->enum('status', ['pending', 'partial', 'paid', 'overdue'])->default('pending');
 
             $table->foreignId('assigned_by')->nullable()->constrained('users')->nullOnDelete();
-
-            // Traceability + idempotency for the one-time legacy data
-            // migration from student_fees — lets the migration command be
-            // safely re-run without creating duplicates.
-            $table->unsignedBigInteger('legacy_student_fee_id')->nullable()->unique();
 
             $table->timestamps();
         });

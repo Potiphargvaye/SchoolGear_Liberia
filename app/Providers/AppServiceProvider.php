@@ -26,31 +26,40 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
- * Bootstrap any application services.
- */
-public function boot(): void
+     * Bootstrap any application services. 
+     */
+    public function boot(): void
     {
         // Force HTTPS in production
         if ($this->app->environment('production')) {
             URL::forceScheme('https');
         }
 
-    // Register policies
-    $this->registerPolicies();
+        // Register policies
+        $this->registerPolicies();
 
-    // Define role-based authorization gates
-    Gate::define('is-student', function (User $user) {
-        return $user->role === 'student';
-    });
+        /*
+    |--------------------------------------------------------------------------
+    | Dashboard Gates
+    |--------------------------------------------------------------------------
+    | Students use the dedicated Student Dashboard.
+    | Every other authenticated role uses the shared Admin Dashboard.
+    | This means any new staff role created in the future (e.g. Librarian,
+    | Principal, Vice Principal, ICT Officer, etc.) will automatically
+    | use the Admin Dashboard without modifying this file.
+    |--------------------------------------------------------------------------
+    */
 
-    Gate::define('is-teacher', function (User $user) {
-        return $user->role === 'teacher';
-    });
+        // Student Portal
+        Gate::define('is-student', function (User $user) {
+            return $user->hasRole('Student');
+        });
 
-    Gate::define('is-admin', function (User $user) {
-        return $user->role === 'admin';
-    });
-}
+        // Shared Admin Dashboard (all non-student roles)
+        Gate::define('is-admin', function (User $user) {
+            return ! $user->hasRole('Student');
+        });
+    }
 
     /**
      * Register the application's policies.

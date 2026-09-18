@@ -11,7 +11,7 @@ Route::middleware(['auth'])
     ->group(function () {
 
         // Fees Management — student-centered table, all actions inside
-        // the Livewire component. No store/update/destroy routes needed
+        // the Livewire component. No. store/update/destroy routes needed
         // here anymore; that logic lives in App\Livewire\Admin\Fees\Index.
         Route::get('/fees', [FeeController::class, 'index'])
             ->middleware('permission:manage fees')

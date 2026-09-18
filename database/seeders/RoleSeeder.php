@@ -18,8 +18,13 @@ class RoleSeeder extends Seeder
             'VPSA',
             'VPA',
             'Teacher',
-            'Security',
-            'Board Member'
+            'HR',
+            'Board Member',
+            'Student',
+            'Administrator',
+            'Owner',
+
+
         ];
 
         foreach ($roles as $role) {

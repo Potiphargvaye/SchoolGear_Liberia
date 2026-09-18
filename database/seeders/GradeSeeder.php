@@ -7,10 +7,12 @@ use Illuminate\Database\Seeder;
 
 class GradeSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
         $grades = [
-            'K-G',
+            'K-3',
+            'K-4',
+            'K-5',
             'Grade 1',
             'Grade 2',
             'Grade 3',
@@ -25,12 +27,12 @@ class GradeSeeder extends Seeder
             'Grade 12',
         ];
 
-        foreach ($grades as $grade) {
-            Grade::create([
-                'level' => $grade,
+        foreach ($grades as $level) {
+            Grade::firstOrCreate([
+                'level' => $level,
+                'section' => null,
             ]);
         }
-
         $this->command->info('Grades K-G to Grade 12 seeded successfully!');
     }
 }

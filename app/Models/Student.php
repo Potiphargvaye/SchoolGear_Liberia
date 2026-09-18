@@ -3,76 +3,55 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Student extends Model
 {
-    use HasFactory;
-
     protected $fillable = [
-        'student_id',
+        'school_id',
+        'admission_id',
+        'user_id',
         'image',
         'name',
         'age',
         'gender',
         'parent_phone',
-        'transcript',
-        'recommendation_letter',
-        'class_applying_for',
-        'date_of_admission',
-        'status', // ✅ added
-        'status',
-        'shift',
-        'intake',
-        'grade_id',
-        'subjects',
-        'last_school_attended',
-        'student_type'
-
     ];
 
-    protected $casts = [
-        'date_of_admission' => 'date',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
-        'subjects' => 'array',
-        'grade_id' => 'integer',
-    ];
-
-    public function grade()
+    public function school(): BelongsTo
     {
-        return $this->belongsTo(Grade::class, 'grade_id');
+        return $this->belongsTo(School::class);
     }
 
-    public function assignSubjects(array $subjects)
+    public function admission(): BelongsTo
     {
-        $this->update(['subjects' => $subjects]);
+        return $this->belongsTo(Admission::class);
     }
-
-
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($student) {
-            $latestStudent = static::latest('id')->first();
-            $nextId = $latestStudent ? $latestStudent->id + 1 : 1;
-            $student->student_id = 'EDMOL' . str_pad($nextId, 4, '0', STR_PAD_LEFT) . '/' . date('Y');
-
-            // ✅ ensure default status
-            $student->status = $student->status ?? 'candidate';
-        });
-    }
-
 
     /**
-     * Every Fee Assignment (and, through it, every Payment) belonging to
-     * this student. Linked via the business-facing `student_id` string
-     * (e.g. EDMOL0001/2026), matching how fee_assignments' foreign key
-     * already references students.student_id rather than the numeric id.
+     * The login account this Student profile belongs to. Student ID
+     * shown in the UI is $student->user->registration_id — same pattern
+     * as LIPA's Student model.
      */
-    public function feeAssignments()
+    public function user(): BelongsTo
     {
-        return $this->hasMany(FeeAssignment::class, 'student_id', 'student_id');
+        return $this->belongsTo(User::class);
+    }
+
+    public function enrollment(): HasOne
+    {
+        return $this->hasOne(Enrollment::class);
+    }
+
+    public function promotions(): HasMany
+    {
+        return $this->hasMany(Promotion::class)->latest('promoted_at');
+    }
+
+    public function canBeDeleted(): bool
+    {
+        return $this->promotions()->doesntExist();
     }
 }

@@ -5,243 +5,271 @@
 
     <div class="container-fluid px-2 sm:px-4 md:px-6 lg:px-8">
 
-        <div class="card shadow-sm">
+        <div class="card-header bg-transparent flex flex-wrap items-center justify-between gap-3">
+            <button class="bg-[#25D366] text-white px-3 py-2 hover:bg-[#1ebe5d] rounded text-xs font-bold cursor-default">
+                Grade Entry - {{ $grade->level }}{{ $grade->section ? ' - ' . $grade->section : '' }}
+                ({{ $academicYear->name }})
+            </button>
 
-            <!-- Header: Grade Entry as Green Button -->
-            <div class="card-header bg-transparent">
-                <button
-                    class="bg-[#25D366] text-white px-3 py-2 hover:bg-[#1ebe5d] rounded text-xs font-bold cursor-default">
-                    Grade Entry - {{ $gradeLevel }} ({{ $academicYear }})
+            <div class="flex flex-wrap items-center gap-3">
+
+                <!-- Grade filter -->
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-semibold text-gray-600">Grade:</label>
+                    <select id="gradeFilter"
+                        class="border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+                        onchange="window.location.href = '{{ route('grades.load') }}?grade_id=' + this.value + '&academic_year_id={{ $academicYear->id }}';">
+                        @foreach ($allGrades as $g)
+                            <option value="{{ $g->id }}" {{ $g->id === $grade->id ? 'selected' : '' }}>
+                                {{ $g->level }}{{ $g->section ? ' - ' . $g->section : '' }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Academic Year filter -->
+                <div class="flex items-center gap-2">
+                    <label class="text-xs font-semibold text-gray-600">Academic Year:</label>
+                    <select id="academicYearFilter"
+                        class="border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+                        onchange="window.location.href = '{{ route('grades.load') }}?grade_id={{ $grade->id }}&academic_year_id=' + this.value;">
+                        @foreach ($allAcademicYears as $year)
+                            <option value="{{ $year->id }}" {{ $year->id === $academicYear->id ? 'selected' : '' }}>
+                                {{ $year->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+            </div>
+        </div>
+        <form method="POST" action="{{ route('grades.store') }}" id="gradesForm">
+            @csrf
+            <input type="hidden" name="grades_json" id="grades_json">
+            <input type="hidden" name="academic_year_id" value="{{ $academicYear->id }}">
+            <input type="hidden" name="grade_id" value="{{ $grade->id }}">
+
+            <div class="card-body p-0">
+
+
+
+                <!-- Sticky Control Bar -->
+                <div
+                    class="sticky top-0 z-50 bg-white border-b shadow-sm px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+
+                    <!-- LEFT SIDE: Semester Status -->
+                    <div class="text-sm font-semibold flex flex-wrap gap-3">
+                        <div>Semester 1:
+                            @if ($sem1Locked)
+                                <span class="text-red-600">🔒 LOCKED</span>
+                            @else
+                                <span class="text-green-600">OPEN</span>
+                            @endif
+                        </div>
+                        <div>Semester 2:
+                            @if ($sem2Locked)
+                                <span class="text-red-600">🔒 LOCKED</span>
+                            @else
+                                <span class="text-green-600">OPEN</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- RIGHT SIDE: Search + Buttons -->
+                    <div class="flex flex-wrap items-center gap-2">
+
+                        <!-- Search Input -->
+                        <input type="text" id="studentSearch" placeholder="Search student..."
+                            class="border rounded px-3 py-1 text-sm w-48 focus:outline-none focus:ring-1 focus:ring-gray-400">
+
+                        <!-- Lock/Unlock Button -->
+                        @can('lock & unlock grade submission')
+                            <button type="button"
+                                class="bg-red-600 text-white px-3 py-1 rounded shadow hover:bg-red-700 text-sm"
+                                onclick="document.getElementById('gradeLockModal').classList.remove('hidden')">
+                                🔒 Lock / Unlock Semester
+                            </button>
+                        @endcan
+
+                        <!-- Save Changes Button -->
+                        <button type="button" onclick="submitGrades()"
+                            class="bg-[#25D366] text-white px-3 py-2 hover:bg-[#1ebe5d] rounded text-xs">
+                            Save Changes
+                        </button>
+
+                    </div>
+                </div>
+
+                <!-- CHANGE #1: responsive scrolling -->
+                <div class="overflow-auto max-h-[70vh]">
+
+                    <div id="noStudentMessage"
+                        class="hidden bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded mb-3 text-center font-semibold">
+                        ⚠️ No student found for your search.
+                        <a href="#" id="resetSearchTop" class="text-blue-600 underline ml-2 font-bold">
+                            🔄 Reset
+                        </a>
+                    </div>
+                    <!-- CHANGE #2: thicker black borders for entire table -->
+                    <table class="min-w-full bg-white border-2 border-black text-center">
+
+                        <thead class="bg-gray-800 text-white sticky top-0 z-40">
+                            <tr>
+
+
+                                <!-- # Number Column -->
+                                <th rowspan="2"
+                                    class="p-1 font-medium text-left pl-1  bg-black text-white z-10 w-10 border-2 border-black"
+                                    style="position: sticky; left: 0px; min-width: 40px;">
+                                    row:#
+                                </th>
+
+                                <!-- Student Column -->
+                                <th rowspan="2"
+                                    class="p-3 font-medium text-left bg-gray-800 z-10 min-w-[180px] border-2 border-black"
+                                    style="position: sticky; left: 40px;">
+                                    Student
+                                </th>
+
+                                @foreach ($subjects as $subject)
+                                    <!-- CHANGE #4: thicker borders -->
+                                    <th colspan="11" class="p-3 font-bold bg-gray-700 border-2 border-black">
+                                        Subject: {{ $subject->name }}
+                                    </th>
+                                @endforeach
+                            </tr>
+
+                            <tr>
+                                @foreach ($subjects as $subject)
+                                    <!-- CHANGE #5: thicker borders -->
+                                    <th class="p-2 border-2 border-black">P1</th>
+                                    <th class="p-2 border-2 border-black">P2</th>
+                                    <th class="p-2 border-2 border-black">P3</th>
+                                    <th class="p-2 border-2 border-black">1st Exam</th>
+
+                                    <!-- CHANGE #6: NAVY BLUE for 1st Avg -->
+                                    <th class="p-2 border-2 border-black bg-blue-900 text-white">
+                                        1st Avg
+                                    </th>
+
+                                    <th class="p-2 border-2 border-black">P4</th>
+                                    <th class="p-2 border-2 border-black">P5</th>
+                                    <th class="p-2 border-2 border-black">P6</th>
+                                    <th class="p-2 border-2 border-black">2nd Exam</th>
+
+                                    <!-- CHANGE #7: NAVY BLUE for 2nd Avg -->
+                                    <th class="p-2 border-2 border-black bg-blue-900 text-white">
+                                        2nd Avg
+                                    </th>
+
+                                    <!-- CHANGE #8: GREEN for Year Avg -->
+                                    <th class="p-2 border-2 border-black bg-green-600 text-white font-semibold">
+                                        Year Avg
+                                    </th>
+                                @endforeach
+                            </tr>
+                        </thead>
+
+                        <tbody class="divide-y divide-gray-200">
+
+
+                            @foreach ($enrollments as $enrollment)
+                                <tr class="studentRow {{ $loop->even ? 'bg-blue-50' : 'bg-white' }}">
+
+                                    <!-- Row Number -->
+                                    <td class="p-2 text-left pl-3 font-semibold bg-black text-white z-10 border-2 border-black text-sm"
+                                        style="position: sticky; left: 0px; min-width: 40px;">
+                                        {{ $loop->index + 1 }}
+                                    </td>
+
+                                    <!-- CHANGE #9: sticky student column student name -->
+                                    <td class="studentName p-3 font-medium text-left bg-white z-10 border-2 border-black"
+                                        style="position: sticky; left: 40px; min-width: 180px;">
+                                        {{ $enrollment->student->name }}
+                                    </td>
+
+                                    @foreach ($subjects as $subject)
+                                        @php
+                                            $key = $enrollment->id . '-' . $subject->id;
+                                            $studentGrade = $grades[$key] ?? null;
+                                        @endphp
+
+                                        <!-- PERIODS 1–3 and EXAM 1 -->
+                                        @foreach (['period1', 'period2', 'period3', 'exam1'] as $period)
+                                            <td class="p-1 border-2 border-black">
+                                                <input type="number"
+                                                    name="grades[{{ $enrollment->id }}][{{ $subject->id }}][{{ $period }}]"
+                                                    value="{{ $studentGrade->$period ?? '' }}"
+                                                    class="form-control form-control-sm text-center w-16 score-input
+           {{ isset($studentGrade->$period) ? ($studentGrade->$period < 70 ? 'text-red-600 font-semibold' : 'text-black') : 'text-black' }}
+           @if ($sem1Locked || (isset($studentGrade->$period) && !auth()->user()->can('edit student grades'))) bg-red-100 cursor-not-allowed @endif"
+                                                    @if ($sem1Locked || (isset($studentGrade->$period) && !auth()->user()->can('edit student grades'))) readonly
+               title="This grade is locked by admin: you cannot edit it" @endif>
+                                            </td>
+                                        @endforeach
+
+                                        <!-- 1st Semester Avg -->
+                                        <td class="p-1 border-2 border-black bg-blue-100">
+                                            <input type="text" readonly
+                                                class="form-control form-control-sm text-center w-16 sem1">
+                                        </td>
+
+                                        <!-- PERIODS 4–6 and EXAM 2 -->
+                                        @foreach (['period4', 'period5', 'period6', 'exam2'] as $period)
+                                            <td class="p-1 border-2 border-black">
+                                                <input type="number"
+                                                    name="grades[{{ $enrollment->id }}][{{ $subject->id }}][{{ $period }}]"
+                                                    value="{{ $studentGrade->$period ?? '' }}"
+                                                    class="form-control form-control-sm text-center w-16 score-input
+           {{ isset($studentGrade->$period) ? ($studentGrade->$period < 70 ? 'text-red-600 font-semibold' : 'text-black') : 'text-black' }}
+           @if ($sem2Locked || (isset($studentGrade->$period) && !auth()->user()->can('edit student grades'))) bg-red-100 cursor-not-allowed @endif"
+                                                    @if ($sem2Locked || (isset($studentGrade->$period) && !auth()->user()->can('edit student grades'))) readonly
+               title="This grade is locked by admin: you cannot edit it" @endif>
+                                            </td>
+                                        @endforeach
+
+                                        <!-- 2nd Semester Avg -->
+                                        <td class="p-1 border-2 border-black bg-blue-100">
+                                            <input type="text" readonly
+                                                class="form-control form-control-sm text-center w-16 sem2">
+                                        </td>
+
+                                        <!-- Year Avg -->
+                                        <td class="p-1 border-2 border-black bg-green-200 font-semibold">
+                                            <input type="text" readonly
+                                                class="form-control form-control-sm text-center w-16 yearly">
+                                        </td>
+                                    @endforeach
+                                </tr>
+                            @endforeach
+                            <!-- 🔔 Fallback row -->
+                            <tr id="noStudentRow" class="hidden">
+                                <td colspan="{{ 2 + $subjects->count() * 11 }}"
+                                    class="p-5 text-center bg-yellow-100 font-semibold">
+                                    ⚠️ No student found for your search.
+                                    <a href="#" id="resetSearch" class="text-blue-600 underline ml-3 font-bold">
+                                        🔄 Reset
+                                    </a>
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+            <!-- Footer Save Button -->
+            <div class="card-footer text-end">
+                <!-- CHANGE #12: green save button -->
+                <button type="button" onclick="submitGrades()"
+                    class="bg-[#25D366] text-white px-3 py-2 hover:bg-[#1ebe5d] rounded text-xs">
+                    Save Changes
                 </button>
             </div>
 
-            <form method="POST" action="{{ route('grades.store') }}" id="gradesForm">
-                @csrf
-                <input type="hidden" name="grades_json" id="grades_json">
-                <input type="hidden" name="academic_year" value="{{ $academicYear }}">
-                <input type="hidden" name="grade_level" value="{{ $gradeLevel }}">
-
-                <div class="card-body p-0">
-
-
-
-                    <!-- Sticky Control Bar -->
-                    <div
-                        class="sticky top-0 z-50 bg-white border-b shadow-sm px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-
-                        <!-- LEFT SIDE: Semester Status -->
-                        <div class="text-sm font-semibold flex flex-wrap gap-3">
-                            <div>Semester 1:
-                                @if ($sem1Locked)
-                                    <span class="text-red-600">🔒 LOCKED</span>
-                                @else
-                                    <span class="text-green-600">OPEN</span>
-                                @endif
-                            </div>
-                            <div>Semester 2:
-                                @if ($sem2Locked)
-                                    <span class="text-red-600">🔒 LOCKED</span>
-                                @else
-                                    <span class="text-green-600">OPEN</span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <!-- RIGHT SIDE: Search + Buttons -->
-                        <div class="flex flex-wrap items-center gap-2">
-
-                            <!-- Search Input -->
-                            <input type="text" id="studentSearch" placeholder="Search student..."
-                                class="border rounded px-3 py-1 text-sm w-48 focus:outline-none focus:ring-1 focus:ring-gray-400">
-
-                            <!-- Lock/Unlock Button -->
-                            @can('lock & unlock grade submission')
-                                <button type="button"
-                                    class="bg-red-600 text-white px-3 py-1 rounded shadow hover:bg-red-700 text-sm"
-                                    onclick="document.getElementById('gradeLockModal').classList.remove('hidden')">
-                                    🔒 Lock / Unlock Semester
-                                </button>
-                            @endcan
-
-                            <!-- Save Changes Button -->
-                            <button type="button" onclick="submitGrades()"
-                                class="bg-[#25D366] text-white px-3 py-2 hover:bg-[#1ebe5d] rounded text-xs">
-                                Save Changes
-                            </button>
-
-                        </div>
-                    </div>
-
-                    <!-- CHANGE #1: responsive scrolling -->
-                    <div class="overflow-auto max-h-[70vh]">
-
-                        <div id="noStudentMessage"
-                            class="hidden bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded mb-3 text-center font-semibold">
-                            ⚠️ No student found for your search.
-                            <a href="#" id="resetSearchTop" class="text-blue-600 underline ml-2 font-bold">
-                                🔄 Reset
-                            </a>
-                        </div>
-                        <!-- CHANGE #2: thicker black borders for entire table -->
-                        <table class="min-w-full bg-white border-2 border-black text-center">
-
-                            <thead class="bg-gray-800 text-white sticky top-0 z-40">
-                                <tr>
-
-
-                                    <!-- # Number Column -->
-                                    <th rowspan="2"
-                                        class="p-1 font-medium text-left pl-1  bg-black text-white z-10 w-10 border-2 border-black"
-                                        style="position: sticky; left: 0px; min-width: 40px;">
-                                        row:#
-                                    </th>
-
-                                    <!-- Student Column -->
-                                    <th rowspan="2"
-                                        class="p-3 font-medium text-left bg-gray-800 z-10 min-w-[180px] border-2 border-black"
-                                        style="position: sticky; left: 40px;">
-                                        Student
-                                    </th>
-
-                                    @foreach ($subjects as $subject)
-                                        <!-- CHANGE #4: thicker borders -->
-                                        <th colspan="11" class="p-3 font-bold bg-gray-700 border-2 border-black">
-                                            Subject: {{ $subject->name }}
-                                        </th>
-                                    @endforeach
-                                </tr>
-
-                                <tr>
-                                    @foreach ($subjects as $subject)
-                                        <!-- CHANGE #5: thicker borders -->
-                                        <th class="p-2 border-2 border-black">P1</th>
-                                        <th class="p-2 border-2 border-black">P2</th>
-                                        <th class="p-2 border-2 border-black">P3</th>
-                                        <th class="p-2 border-2 border-black">1st Exam</th>
-
-                                        <!-- CHANGE #6: NAVY BLUE for 1st Avg -->
-                                        <th class="p-2 border-2 border-black bg-blue-900 text-white">
-                                            1st Avg
-                                        </th>
-
-                                        <th class="p-2 border-2 border-black">P4</th>
-                                        <th class="p-2 border-2 border-black">P5</th>
-                                        <th class="p-2 border-2 border-black">P6</th>
-                                        <th class="p-2 border-2 border-black">2nd Exam</th>
-
-                                        <!-- CHANGE #7: NAVY BLUE for 2nd Avg -->
-                                        <th class="p-2 border-2 border-black bg-blue-900 text-white">
-                                            2nd Avg
-                                        </th>
-
-                                        <!-- CHANGE #8: GREEN for Year Avg -->
-                                        <th class="p-2 border-2 border-black bg-green-600 text-white font-semibold">
-                                            Year Avg
-                                        </th>
-                                    @endforeach
-                                </tr>
-                            </thead>
-
-                            <tbody class="divide-y divide-gray-200">
-
-
-                                @foreach ($students as $student)
-                                    <tr class="studentRow {{ $loop->even ? 'bg-blue-50' : 'bg-white' }}">
-
-                                        <!-- Row Number -->
-                                        <td class="p-2 text-left pl-3 font-semibold bg-black text-white z-10 border-2 border-black text-sm"
-                                            style="position: sticky; left: 0px; min-width: 40px;">
-                                            {{ $loop->index + 1 }}
-                                        </td>
-
-                                        <!-- CHANGE #9: sticky student column student name -->
-                                        <td class="studentName p-3 font-medium text-left bg-white z-10 border-2 border-black"
-                                            style="position: sticky; left: 40px; min-width: 180px;">
-                                            {{ $student->name }}
-                                        </td>
-
-                                        @foreach ($subjects as $subject)
-                                            @php
-                                                $key = $student->id . '-' . $subject->id;
-                                                $grade = $grades[$key] ?? null;
-                                            @endphp
-
-                                            <!-- PERIODS 1–3 and EXAM 1 -->
-                                            @foreach (['period1', 'period2', 'period3', 'exam1'] as $period)
-                                                <td class="p-1 border-2 border-black">
-                                                    <input type="number"
-                                                        name="grades[{{ $student->id }}][{{ $subject->id }}][{{ $period }}]"
-                                                        value="{{ $grade->$period ?? '' }}"
-                                                        class="form-control form-control-sm text-center w-16 score-input
-           {{ isset($grade->$period) ? ($grade->$period < 70 ? 'text-red-600 font-semibold' : 'text-black') : 'text-black' }}
-           @if ($sem1Locked || (isset($grade->$period) && !auth()->user()->can('edit student grades'))) bg-red-100 cursor-not-allowed @endif"
-                                                        @if ($sem1Locked || (isset($grade->$period) && !auth()->user()->can('edit student grades'))) readonly
-               title="This grade is locked by admin: you cannot edit it" @endif>
-                                                </td>
-                                            @endforeach
-
-                                            <!-- 1st Semester Avg -->
-                                            <td class="p-1 border-2 border-black bg-blue-100">
-                                                <input type="text" readonly
-                                                    class="form-control form-control-sm text-center w-16 sem1">
-                                            </td>
-
-                                            <!-- PERIODS 4–6 and EXAM 2 -->
-                                            @foreach (['period4', 'period5', 'period6', 'exam2'] as $period)
-                                                <td class="p-1 border-2 border-black">
-                                                    <input type="number"
-                                                        name="grades[{{ $student->id }}][{{ $subject->id }}][{{ $period }}]"
-                                                        value="{{ $grade->$period ?? '' }}"
-                                                        class="form-control form-control-sm text-center w-16 score-input
-           {{ isset($grade->$period) ? ($grade->$period < 70 ? 'text-red-600 font-semibold' : 'text-black') : 'text-black' }}
-           @if ($sem2Locked || (isset($grade->$period) && !auth()->user()->can('edit student grades'))) bg-red-100 cursor-not-allowed @endif"
-                                                        @if ($sem2Locked || (isset($grade->$period) && !auth()->user()->can('edit student grades'))) readonly
-               title="This grade is locked by admin: you cannot edit it" @endif>
-                                                </td>
-                                            @endforeach
-
-                                            <!-- 2nd Semester Avg -->
-                                            <td class="p-1 border-2 border-black bg-blue-100">
-                                                <input type="text" readonly
-                                                    class="form-control form-control-sm text-center w-16 sem2">
-                                            </td>
-
-                                            <!-- Year Avg -->
-                                            <td class="p-1 border-2 border-black bg-green-200 font-semibold">
-                                                <input type="text" readonly
-                                                    class="form-control form-control-sm text-center w-16 yearly">
-                                            </td>
-                                        @endforeach
-                                    </tr>
-                                @endforeach
-                                <!-- 🔔 Fallback row -->
-                                <tr id="noStudentRow" class="hidden">
-                                    <td colspan="{{ 2 + $subjects->count() * 11 }}"
-                                        class="p-5 text-center bg-yellow-100 font-semibold">
-                                        ⚠️ No student found for your search.
-                                        <a href="#" id="resetSearch" class="text-blue-600 underline ml-3 font-bold">
-                                            🔄 Reset
-                                        </a>
-                                    </td>
-                                </tr>
-
-                            </tbody>
-                        </table>
-                    </div>
-
-                </div>
-
-                <!-- Footer Save Button -->
-                <div class="card-footer text-end">
-                    <!-- CHANGE #12: green save button -->
-                    <button type="button" onclick="submitGrades()"
-                        class="bg-[#25D366] text-white px-3 py-2 hover:bg-[#1ebe5d] rounded text-xs">
-                        Save Changes
-                    </button>
-                </div>
-
-            </form>
-        </div>
+        </form>
+    </div>
     </div>
 
     <!-- Grade Lock Modal -->
@@ -256,8 +284,8 @@
             <form method="POST" action="{{ route('grades.lock') }}">
                 @csrf
 
-                <input type="hidden" name="grade_level" value="{{ $gradeLevel }}">
-                <input type="hidden" name="academic_year" value="{{ $academicYear }}">
+                <input type="hidden" name="grade_id" value="{{ $grade->id }}">
+                <input type="hidden" name="academic_year_id" value="{{ $academicYear->id }}">
 
                 <div class="mb-4">
                     <label class="block font-semibold mb-2">Select Semester</label>
@@ -458,16 +486,16 @@
             document.querySelectorAll('input[name]').forEach(function(input) {
                 let match = input.name.match(/^grades\[(\d+)\]\[(\d+)\]\[(\w+)\]$/);
                 if (match) {
-                    let studentId = match[1];
+                    let enrollmentId = match[1];
                     let subjectId = match[2];
                     let field = match[3];
 
-                    if (!gradesData[studentId]) gradesData[studentId] = {};
-                    if (!gradesData[studentId][subjectId]) gradesData[studentId][subjectId] = {};
+                    if (!gradesData[enrollmentId]) gradesData[enrollmentId] = {};
+                    if (!gradesData[enrollmentId][subjectId]) gradesData[enrollmentId][subjectId] = {};
 
                     // Store null for empty values, integer for filled ones
                     let val = input.value.trim();
-                    gradesData[studentId][subjectId][field] = val === '' ? null : val;
+                    gradesData[enrollmentId][subjectId][field] = val === '' ? null : val;
                 }
             });
 

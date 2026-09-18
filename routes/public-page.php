@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-  use App\Http\Controllers\Public\PublicStudentController;
+use App\Http\Controllers\Public\PublicStudentController;
+use App\Http\Controllers\Public\SchoolRegistrationController;
 
 Route::get('/', function () {
     return view('public.index'); // <- note the dot notation for subfolders
@@ -40,6 +41,8 @@ Route::get('/registeration-form', function () {
 });
 
 
+Route::get('/school-registration', [SchoolRegistrationController::class, 'create'])
+    ->name('public.register');
 
 
 // Verification engine endpoint linking directly to your controller method above

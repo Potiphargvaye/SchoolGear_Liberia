@@ -9,9 +9,7 @@ return new class extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            // Add grade_id column after role
             $table->foreignId('grade_id')
-                ->after('role')
                 ->nullable()
                 ->constrained('grades') // Links to grades table
                 ->onDelete('set null'); // If grade deleted, set to null

@@ -6,39 +6,38 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-   public function up(): void
-{
-    Schema::create('student_grades', function (Blueprint $table) {
-        $table->id();
+    public function up(): void
+    {
+        Schema::create('student_grades', function (Blueprint $table) {
+            $table->id();
 
-        $table->foreignId('student_id')->constrained()->cascadeOnDelete();
-        $table->foreignId('academic_subject_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('school_id')->constrained('schools')->cascadeOnDelete();
 
-        $table->string('academic_year'); // example: 2025/2026
-        $table->string('grade_level');   // example: Grade 5
+            // Replaces the old student_id + grade_level + academic_year
+            // string trio — enrollment already carries student, grade,
+            // academic year, and school context in one place.
+            $table->foreignId('enrollment_id')->constrained('enrollments')->cascadeOnDelete();
 
-        // First semester
-        $table->integer('period1')->nullable();
-        $table->integer('period2')->nullable();
-        $table->integer('period3')->nullable();
-        $table->integer('exam1')->nullable();
+            $table->foreignId('academic_subject_id')->constrained('academic_subjects')->cascadeOnDelete();
 
-        // Second semester
-        $table->integer('period4')->nullable();
-        $table->integer('period5')->nullable();
-        $table->integer('period6')->nullable();
-        $table->integer('exam2')->nullable();
+            // First semester
+            $table->integer('period1')->nullable();
+            $table->integer('period2')->nullable();
+            $table->integer('period3')->nullable();
+            $table->integer('exam1')->nullable();
 
-        $table->timestamps();
-    });
-}
+            // Second semester
+            $table->integer('period4')->nullable();
+            $table->integer('period5')->nullable();
+            $table->integer('period6')->nullable();
+            $table->integer('exam2')->nullable();
 
-    /**
-     * Reverse the migrations.
-     */
+            $table->timestamps();
+
+            $table->unique(['enrollment_id', 'academic_subject_id'], 'student_grades_enrollment_subject_unique');
+        });
+    }
+
     public function down(): void
     {
         Schema::dropIfExists('student_grades');

@@ -1,14 +1,37 @@
 <!-- Sidenav -->
 <div class="fixed left-0 top-0 w-64 h-screen z-50 sidebar-menu transition-transform bg-[#001f4d] flex flex-col">
 
-    <!-- Logo (UNCHANGED) -->
-    <a href="#" class="flex items-center h-[76px] px-4 shrink-0 relative hover:bg-[#002966] rounded-md text-white">
-        <h2 class="font-bold text-2xl">
-            Edmol <span class="bg-[#f84525] text-white px-2 rounded-md">School</span>
-        </h2>
+    <!-- Logo — current school's short name/logo + logged-in user's role -->
+    @php
+        $sidebarSchool = auth()->user()->school;
+        $sidebarRole = auth()->user()->getRoleNames()->first();
+    @endphp
+    <a href="#"
+        class="flex items-center gap-3 min-h-[76px] px-4 py-3 shrink-0 relative hover:bg-[#002966] rounded-md text-white">
+        <div
+            class="h-10 w-10 shrink-0 rounded-md bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden">
+            @if ($sidebarSchool && $sidebarSchool->logo)
+                <img src="{{ asset('storage/' . $sidebarSchool->logo) }}" alt="{{ $sidebarSchool->school_name }}"
+                    class="h-full w-full object-cover">
+            @else
+                <span class="font-bold text-sm">
+                    {{ $sidebarSchool->display_short_name ?? 'SG' }}
+                </span>
+            @endif
+        </div>
+        <div class="min-w-0">
+            <h2 class="font-bold text-base leading-tight truncate"
+                title="{{ $sidebarSchool->school_name ?? 'SchoolGear Liberia' }}">
+                {{ $sidebarSchool->display_short_name ?? 'SchoolGear Liberia' }}
+            </h2>
+            @if ($sidebarRole)
+                <p class="text-[11px] text-white/60 truncate">
+                    {{ $sidebarRole }}
+                </p>
+            @endif
+        </div>
         <span class="absolute bottom-0 left-4 right-4 h-px bg-white/10"></span>
     </a>
-
     <!-- SCROLLABLE MENU AREA -->
     <div class="flex-1 overflow-y-auto nav-scroll px-3 pt-5 pb-6">
 
@@ -32,10 +55,30 @@
                 </li>
             @endcan
 
+
+            @can('view schools')
+                <li class="mb-0.5 group">
+                    <a href="{{ route('admin.schools.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.schools.index') ? 'nav-active' : '' }}">
+                        <i class="ri-school-line nav-icon"></i>
+                        <span class="text-sm">Schools</span>
+                    </a>
+                </li>
+            @endcan
+
+            @can('manage academic years')
+                <li class="mb-0.5 group">
+                    <a href="{{ route('admin.academic-years.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.academic-years.*') ? 'nav-active' : '' }}">
+                        <i class="ri-calendar-line nav-icon"></i>
+                        <span class="text-sm">Academic Years</span>
+                    </a>
+                </li>
+            @endcan
             @can('manage users')
                 <li class="mb-0.5 group {{ $usersActive ? 'active selected' : '' }}">
                     <!-- Main Users Link -->
-                    <a href="{{ route('admin.users.index') }}"
+                    <a href="{{ route('admin.access-control.users.index') }}"
                         class="nav-link sidebar-dropdown-toggle {{ $usersActive ? 'nav-active' : '' }}">
                         <i class='bx bx-user nav-icon'></i>
                         <span class="text-sm">Users</span>
@@ -47,20 +90,14 @@
                     <ul class="mt-1 ml-[27px] pl-3 border-l border-white/15 hidden group-[.selected]:block space-y-1">
 
                         <li>
-                            <a href="{{ route('admin.users.index') }}"
+                            <a href="{{ route('admin.access-control.users.index') }}"
                                 class="nav-sublink {{ request()->routeIs('admin.users.index') ? 'nav-sublink-active' : '' }}">
                                 <span class="nav-dot"></span>
                                 All
                             </a>
                         </li>
 
-                        <li>
-                            <a href="{{ route('admin.users.permissions.edit', auth()->id()) }}"
-                                class="nav-sublink {{ request()->routeIs('admin.users.permissions.edit') ? 'nav-sublink-active' : '' }}">
-                                <span class="nav-dot"></span>
-                                User Permission
-                            </a>
-                        </li>
+
 
                     </ul>
                 </li>
@@ -95,6 +132,135 @@
             </li>
 
 
+            <li class="nav-section text-teal-500 font-bold">ACCESS CONTROL</li>
+
+            @php
+                $accessControlActive =
+                    request()->routeIs('admin.access-control.roles.*') ||
+                    request()->routeIs('admin.access-control.permissions.*') ||
+                    request()->routeIs('admin.access-control.role-permissions.*');
+            @endphp
+
+            <li class="mb-0.5 group {{ $accessControlActive ? 'active selected' : '' }}">
+
+                <!-- Main Access Control Link -->
+                <a href="{{ route('admin.access-control.roles.index') }}"
+                    class="nav-link sidebar-dropdown-toggle {{ $accessControlActive ? 'nav-active' : '' }}">
+
+                    <i class="ri-shield-keyhole-line nav-icon"></i>
+
+                    <span class="text-sm">Access Control</span>
+
+                    <i
+                        class="ri-arrow-right-s-line ml-auto transition-transform duration-200 group-[.selected]:rotate-90"></i>
+
+                </a>
+
+                <!-- Sub-links -->
+                <ul class="mt-1 ml-[27px] pl-3 border-l border-white/15 hidden group-[.selected]:block space-y-1">
+
+                    @can('view roles')
+                        <li>
+                            <a href="{{ route('admin.access-control.roles.index') }}"
+                                class="nav-sublink {{ request()->routeIs('admin.access-control.roles.*') ? 'nav-sublink-active' : '' }}">
+                                <span class="nav-dot"></span>
+                                Roles
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('view permissions')
+                        <li>
+                            <a href="{{ route('admin.access-control.permissions.index') }}"
+                                class="nav-sublink {{ request()->routeIs('admin.access-control.permissions.*') ? 'nav-sublink-active' : '' }}">
+                                <span class="nav-dot"></span>
+                                Permissions
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('view permissions')
+                        <li>
+                            <a href="{{ route('admin.access-control.role-permissions.index') }}"
+                                class="nav-sublink {{ request()->routeIs('admin.access-control.role-permissions.*') ? 'nav-sublink-active' : '' }}">
+                                <span class="nav-dot"></span>
+                                Role Permissions
+                            </a>
+                        </li>
+                    @endcan
+
+                </ul>
+
+            </li>
+
+
+            <li class="nav-section text-teal-500 font-bold">STUDENT MANAGEMENT</li>
+
+            @php
+                $studentMgmtActive =
+                    request()->routeIs('admin.admissions.*') ||
+                    request()->routeIs('admin.students.*') ||
+                    request()->routeIs('admin.enrollments.*') ||
+                    request()->routeIs('admin.academic-years.*');
+            @endphp
+
+            <li class="mb-0.5 group {{ $studentMgmtActive ? 'active selected' : '' }}">
+
+                <a href="{{ route('admin.students.index') }}"
+                    class="nav-link sidebar-dropdown-toggle {{ $studentMgmtActive ? 'nav-active' : '' }}">
+
+                    <i class="ri-user-star-line nav-icon"></i>
+                    <span class="text-sm">Students</span>
+                    <i
+                        class="ri-arrow-right-s-line ml-auto transition-transform duration-200 group-[.selected]:rotate-90"></i>
+
+                </a>
+
+                <ul class="mt-1 ml-[27px] pl-3 border-l border-white/15 hidden group-[.selected]:block space-y-1">
+
+                    @can('manage admissions')
+                        <li>
+                            <a href="{{ route('admin.admissions.index') }}"
+                                class="nav-sublink {{ request()->routeIs('admin.admissions.*') ? 'nav-sublink-active' : '' }}">
+                                <span class="nav-dot"></span>
+                                Admissions
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('view student details')
+                        <li>
+                            <a href="{{ route('admin.students.index') }}"
+                                class="nav-sublink {{ request()->routeIs('admin.students.*') ? 'nav-sublink-active' : '' }}">
+                                <span class="nav-dot"></span>
+                                Students
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('manage enrollments')
+                        <li>
+                            <a href="{{ route('admin.enrollments.index') }}"
+                                class="nav-sublink {{ request()->routeIs('admin.enrollments.*') ? 'nav-sublink-active' : '' }}">
+                                <span class="nav-dot"></span>
+                                Enrollments
+                            </a>
+                        </li>
+                    @endcan
+
+                    @can('manage academic years')
+                        <li>
+                            <a href="{{ route('admin.academic-years.index') }}"
+                                class="nav-sublink {{ request()->routeIs('admin.academic-years.*') ? 'nav-sublink-active' : '' }}">
+                                <span class="nav-dot"></span>
+                                Academic Years
+                            </a>
+                        </li>
+                    @endcan
+
+                </ul>
+
+            </li>
             <li class="nav-section text-gray-400 font-bold">Finance</li>
 
             @can('manage fees')
@@ -107,6 +273,8 @@
                 </li>
             @endcan
 
+
+
             <li class="nav-section text-orange-500 hover:text-orange-700 font-bold">Report-Card</li>
 
             @can('enter student grades')
@@ -115,6 +283,16 @@
                         class="nav-link {{ request()->routeIs('grades.entry') ? 'nav-active' : '' }}">
                         <i class="ri-book-line nav-icon"></i>
                         <span class="text-sm">Grade Entry</span>
+                    </a>
+                </li>
+            @endcan
+
+            @can('view grade audit trail')
+                <li class="mb-0.5 group">
+                    <a href="{{ route('grades.audit-trail') }}"
+                        class="nav-link {{ request()->routeIs('grades.audit-trail') ? 'nav-active' : '' }}">
+                        <i class="ri-history-line nav-icon"></i>
+                        <span class="text-sm">Grade Audit Trail</span>
                     </a>
                 </li>
             @endcan
@@ -170,6 +348,30 @@
                 </ul>
             </li>
 
+
+
+
+            @canany(['manage grades', 'assign grade teachers'])
+                <li class="mb-0.5 group">
+                    <a href="{{ route('grades.manage') }}"
+                        class="nav-link {{ request()->routeIs('grades.manage') ? 'nav-active' : '' }}">
+                        <i class="ri-graduation-cap-line nav-icon"></i>
+                        <span class="text-sm">Grade Management</span>
+                    </a>
+                </li>
+            @endcanany
+
+            @can('manage academic subjects')
+                <li class="mb-0.5 group">
+                    <a href="{{ route('subjects.index') }}"
+                        class="nav-link {{ request()->routeIs('subjects.index') ? 'nav-active' : '' }}">
+                        <i class="ri-book-2-line nav-icon"></i>
+                        <span class="text-sm">Subject Management</span>
+                    </a>
+                </li>
+            @endcan
+
+
             <li class="nav-section text-gray-400 font-bold">BLOG</li>
 
             <li class="mb-0.5 group">
@@ -195,6 +397,15 @@
                     <span class="text-sm">Notifications</span>
                 </a>
             </li>
+
+
+            <li class="mb-0.5 group">
+                <a href="{{ route('admin.settings.document-branding') }}" class="nav-link">
+                    <i class='bx bx-paint nav-icon'></i>
+                    <span class="text-sm">Document Branding</span>
+                </a>
+            </li>
+
 
             <div x-data="{ showLogoutModal: false }">
 

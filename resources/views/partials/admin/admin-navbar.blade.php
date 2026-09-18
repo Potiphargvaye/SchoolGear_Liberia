@@ -6,16 +6,24 @@
         <i class="ri-menu-line text-lg"></i>
     </button>
 
-
-    <!-- EDMOL Logo -->
+    <!-- School Logo -->
+    @php
+        $navbarSchool = auth()->user()->school;
+    @endphp
     <div class="flex items-center gap-2.5">
-        <img src="{{ asset('logo/edmol-orginal-logo.png') }}" alt="EDMOL Logo"
-            class="h-8 w-8 object-contain rounded-md bg-white/10 p-0.5">
+        @if ($navbarSchool && $navbarSchool->logo)
+            <img src="{{ asset('storage/' . $navbarSchool->logo) }}" alt="{{ $navbarSchool->school_name }}"
+                class="h-8 w-8 object-contain rounded-md bg-white/10 p-0.5">
+        @else
+            <img src="{{ asset('logo/edmol-orginal-logo.png') }}" alt="SchoolGear Liberia"
+                class="h-8 w-8 object-contain rounded-md bg-white/10 p-0.5">
+        @endif
 
-        <span class="hidden sm:inline text-white font-bold text-sm tracking-wider">
-            EDMOL SMS
+        <span class="hidden sm:inline text-white/70 italic font-light text-xs tracking-wide">
+            Powered by SchoolGear Liberia SaaS
         </span>
     </div>
+
     <ul class="ml-auto flex items-center gap-1">
 
         <!-- Search Dropdown -->
@@ -50,31 +58,96 @@
                 </svg>
                 <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#f84525] ring-2 ring-[#0b2e59]"></span>
             </button>
-            <div class="nav-dropdown dropdown-menu z-30 hidden max-w-xs w-full">
-                <div class="flex items-center px-4 pt-3.5 border-b border-gray-100 notification-tab">
+
+            <div class="nav-dropdown dropdown-menu z-30 hidden w-[340px]">
+                <div class="flex items-center justify-between px-4 pt-3.5">
+                    <span class="text-[14px] font-bold text-[#1E2438]">Notifications</span>
+                    <button type="button"
+                        class="text-[12px] font-semibold text-[#5B3DE0] bg-transparent border-none cursor-pointer">
+                        Mark all as read
+                    </button>
+                </div>
+                <div class="flex items-center px-4 pt-2.5 border-b border-gray-100 notification-tab">
                     <button type="button" data-tab="notification" data-tab-page="notifications"
                         class="nav-tab mr-5 active">Notifications</button>
                     <button type="button" data-tab="notification" data-tab-page="messages"
                         class="nav-tab">Messages</button>
                 </div>
-                <div class="my-1.5">
+                <div class="my-1">
                     <ul class="max-h-64 overflow-y-auto nav-scroll" data-tab-for="notification"
                         data-page="notifications">
                         <li>
                             <a href="#" class="nav-notif-item group">
-                                <img src="https://placehold.co/32x32" alt=""
-                                    class="w-9 h-9 rounded-full block object-cover align-middle ring-1 ring-gray-100">
-                                <div class="ml-2.5 min-w-0">
+                                <div class="w-9 h-9 rounded-[10px] flex items-center justify-center flex-shrink-0"
+                                    style="background:#2E7D5B;">
+                                    <i class="ri-checkbox-circle-line text-white text-base"></i>
+                                </div>
+                                <div class="ml-2.5 min-w-0 flex-1">
                                     <div
                                         class="text-[13px] text-gray-700 font-semibold truncate group-hover:text-[#0b2e59]">
-                                        New order</div>
+                                        New order
+                                    </div>
                                     <div class="text-[11px] text-gray-400">from a user</div>
                                 </div>
+                                <div class="w-1.5 h-1.5 rounded-full bg-[#5B3DE0] flex-shrink-0"></div>
                             </a>
                         </li>
                     </ul>
+                    <ul class="max-h-64 overflow-y-auto nav-scroll hidden" data-tab-for="notification"
+                        data-page="messages">
+                        <li class="px-4 py-6 text-center text-[13px] text-gray-400">No messages yet.</li>
+                    </ul>
+                </div>
+                <div class="px-4 py-2.5 text-center border-t border-gray-100">
+                    <button type="button"
+                        class="text-[12px] font-semibold text-[#5B3DE0] bg-transparent border-none cursor-pointer">
+                        View all notifications
+                    </button>
                 </div>
             </div>
+        </li>
+
+        <!-- Academic Year Filter — submits to the admin dashboard route so
+             every dashboard section re-queries against the selected year.
+             Years are always the logged-in admin's own school's years. -->
+        <li class="hidden lg:flex items-center">
+            @php
+                $navAcademicYears =
+                    auth()->check() && auth()->user()->school_id
+                        ? \App\Models\AcademicYear::where('school_id', auth()->user()->school_id)
+                            ->ordered()
+                            ->get()
+                        : collect();
+                $navSelectedYearId =
+                    session('dashboard_academic_year_id') ??
+                    ($navAcademicYears->firstWhere('is_active', true)?->id ?? $navAcademicYears->first()?->id);
+            @endphp
+
+            @if ($navAcademicYears->isNotEmpty())
+                <form method="POST" action="{{ route('admin.dashboard.set-year') }}"
+                    class="sg-academic-year-filter flex items-center gap-1.5 rounded-lg px-3 py-1.5 border border-[rgba(167,139,255,0.3)] bg-[rgba(91,61,224,0.25)] cursor-pointer">
+                    @csrf
+                    <i class="ri-calendar-2-line text-[#A78BFF] text-sm"></i>
+                    <select name="academic_year_id" onchange="this.form.submit()"
+                        class="bg-transparent text-white text-[13px] font-semibold outline-none cursor-pointer appearance-none pr-1 [&>option]:text-gray-800 [&>option]:text-[13px]">
+                        @foreach ($navAcademicYears as $navYear)
+                            <option value="{{ $navYear->id }}" @selected((string) $navSelectedYearId === (string) $navYear->id)>
+                                {{ $navYear->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <i class="ri-arrow-down-s-line text-white/50 text-sm pointer-events-none"></i>
+                </form>
+            @endif
+        </li>
+
+        <!-- Light / Dark theme toggle -->
+        <li>
+            <button type="button" id="admin-theme-toggle" class="nav-icon-btn relative" title="Toggle Light/Dark Mode"
+                aria-label="Toggle Light/Dark Mode">
+                <i class="ri-moon-line text-lg" data-theme-icon="moon"></i>
+                <i class="ri-sun-line text-lg" data-theme-icon="sun" style="display: none;"></i>
+            </button>
         </li>
 
         <!-- Fullscreen button -->
@@ -97,13 +170,54 @@
             }
         </script>
 
+        <!-- Admin theme (Light/Dark) toggle — persists in localStorage and drives
+             the CSS variables used by the dashboard and theme-aware partials.
+             Also mirrors the state onto <html class="dark"> so any Tailwind
+             dark: utility classes elsewhere in the app stay in sync — purely
+             additive, does not change how this toggle already works. -->
+        <script>
+            (function() {
+                var body = document.body;
+                var html = document.documentElement;
+                var toggle = document.getElementById('admin-theme-toggle');
+                var KEY = 'sg-admin-theme';
+
+                function applyTheme(theme) {
+                    var dark = theme === 'dark';
+                    body.classList.toggle('sg-theme-dark', dark);
+                    body.classList.toggle('sg-theme-light', !dark);
+                    html.classList.toggle('dark', dark);
+                    if (toggle) {
+                        toggle.querySelectorAll('[data-theme-icon]').forEach(function(icon) {
+                            icon.style.display = (icon.getAttribute('data-theme-icon') === (dark ? 'sun' :
+                                'moon')) ? '' : 'none';
+                        });
+                    }
+                }
+
+                applyTheme(localStorage.getItem(KEY) || 'light');
+
+                if (toggle) {
+                    toggle.addEventListener('click', function() {
+                        var next = body.classList.contains('sg-theme-dark') ? 'light' : 'dark';
+                        localStorage.setItem(KEY, next);
+                        applyTheme(next);
+                        document.dispatchEvent(new CustomEvent('sg-theme-changed', {
+                            detail: {
+                                theme: next
+                            }
+                        }));
+                    });
+                }
+            })();
+        </script>
+
         <!-- Admin image & name section -->
         <li class="dropdown ml-2 pl-3 border-l border-white/10">
             <button type="button"
                 class="dropdown-toggle flex items-center gap-2.5 py-1 pr-1.5 rounded-lg transition-colors duration-200 hover:bg-white/10">
                 <div class="flex-shrink-0 w-9 h-9 relative">
                     @auth
-
                         @if (auth()->user()->image)
                             <div class="p-0.5 bg-white rounded-full ring-2 ring-white/20 focus:outline-none focus:ring">
                                 <img class="w-8 h-8 rounded-full object-cover"
@@ -130,15 +244,10 @@
                     @else
                         <div
                             class="p-0.5 bg-white rounded-full ring-2 ring-white/20 flex items-center justify-center bg-gray-200">
-                            <span class="text-sm font-bold text-gray-700">
-                                ?
-                            </span>
+                            <span class="text-sm font-bold text-gray-700">?</span>
                         </div>
-
                     @endauth
-
                 </div>
-
 
                 <div class="hidden md:block text-left">
                     <h2 class="text-sm font-semibold text-white leading-tight">{{ Auth::user()->name }}</h2>
@@ -164,8 +273,7 @@
                 <li class="mt-1 pt-1 border-t border-gray-100">
                     <form method="POST" action="">
                         <a role="menuitem" class="nav-dropitem nav-dropitem-danger cursor-pointer"
-                            onclick="event.preventDefault();
-                            this.closest('form').submit();">
+                            onclick="event.preventDefault(); this.closest('form').submit();">
                             <i class="ri-logout-box-r-line nav-dropicon"></i>
                             Log Out
                         </a>
@@ -251,7 +359,7 @@
     .navbar-menu .nav-notif-item {
         display: flex;
         align-items: center;
-        padding: 0.55rem 1rem;
+        padding: 0.6rem 1rem;
         transition: background-color 0.2s ease;
     }
 
@@ -305,3 +413,23 @@
         border-radius: 9999px;
     }
 </style>
+
+<script>
+    // Notifications/Messages tab switching inside the notification dropdown —
+    // shows/hides the matching list for the active tab.
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.notification-tab .nav-tab').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                var page = tab.dataset.tabPage;
+                document.querySelectorAll('.notification-tab .nav-tab').forEach(function(t) {
+                    t.classList.remove('active');
+                });
+                tab.classList.add('active');
+                document.querySelectorAll('[data-tab-for="notification"]').forEach(function(
+                    list) {
+                    list.classList.toggle('hidden', list.dataset.page !== page);
+                });
+            });
+        });
+    });
+</script>

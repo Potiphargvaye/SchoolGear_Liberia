@@ -6,24 +6,24 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('grade_locks', function (Blueprint $table) {
-    $table->id();
-    $table->string('grade_level');
-    $table->string('academic_year');
-    $table->string('semester'); // sem1 or sem2
-    $table->boolean('is_locked')->default(false);
-    $table->timestamps();
-});
+            $table->id();
+
+            $table->foreignId('school_id')->constrained('schools')->cascadeOnDelete();
+            $table->foreignId('grade_id')->constrained('grades')->restrictOnDelete();
+            $table->foreignId('academic_year_id')->constrained('academic_years')->cascadeOnDelete();
+
+            $table->string('semester'); // sem1 or sem2
+            $table->boolean('is_locked')->default(false);
+
+            $table->timestamps();
+
+            $table->unique(['school_id', 'grade_id', 'academic_year_id', 'semester'], 'grade_locks_school_grade_year_sem_unique');
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('grade_locks');

@@ -9,7 +9,7 @@ class FeeCategorySeeder extends Seeder
 {
     /**
      * These are just the starting set — new categories can be added later
-     * from Admin > Fee Categories without touching any code.
+     * from Admin > Fee Categories without. touching any code.
      */
     public function run(): void
     {

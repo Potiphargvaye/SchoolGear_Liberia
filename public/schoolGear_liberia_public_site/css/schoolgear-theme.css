@@ -1,0 +1,692 @@
+/* ==========================================================================
+   SchoolGear Brand Theme Override
+   Load this AFTER style.css (and after bootstrap/owl/slick/etc.) on every
+   HTML page. Do not edit style.css directly — this file re-skins the
+   Etrain template's default orange/blue palette with SchoolGear brand
+   colors so future template updates stay easy to diff.
+
+   SchoolGear palette:
+   Primary       #5B3DE0
+   Primary Dark  #3A2A99
+   Violet        #6E4BF0
+   Violet Light  #A78BFF
+   Sky           #38BDF8
+   Sky Light     #5FD0FA
+   Accent        #FFE29A
+   Success       #2E7D5B
+   Background    #F4F6FE
+   ========================================================================== */
+
+:root {
+  --sg-primary: #5B3DE0;
+  --sg-primary-dark: #3A2A99;
+  --sg-violet: #6E4BF0;
+  --sg-violet-light: #A78BFF;
+  --sg-sky: #38BDF8;
+  --sg-sky-light: #5FD0FA;
+  --sg-accent: #FFE29A;
+  --sg-success: #2E7D5B;
+  --sg-bg: #F4F6FE;
+}
+
+/* ---------- Gradient buttons & nav toggle (was #ee390f -> #f9b700) ------- */
+.btn_1,
+.btn_2:hover,
+.main_menu .navbar-toggler:after,
+.banner_part .banner_text .btn_1,
+.feature_part .single_feature:hover span {
+  background-image: linear-gradient(to left, var(--sg-violet) 0%, var(--sg-sky) 51%, var(--sg-violet) 100%) !important;
+}
+
+.member_counter {
+  background-image: -moz-linear-gradient(0deg, var(--sg-primary-dark) 0%, var(--sg-primary) 100%) !important;
+  background-image: -webkit-linear-gradient(0deg, var(--sg-primary-dark) 0%, var(--sg-primary) 100%) !important;
+  background-image: -ms-linear-gradient(0deg, var(--sg-primary-dark) 0%, var(--sg-primary) 100%) !important;
+  background-image: linear-gradient(0deg, var(--sg-primary-dark) 0%, var(--sg-primary) 100%) !important;
+}
+
+.btn_1:hover {
+  box-shadow: 0px 10px 30px 0px rgba(91, 61, 224, 0.25) !important;
+}
+
+.btn_1 {
+  box-shadow: 0px 12px 20px 0px rgba(91, 61, 224, 0.15) !important;
+}
+
+/* ---------- Headings (was #0c2e60 deep navy) ---------- */
+h1, h2, h3, h4, h5, h6,
+.section_tittle h2,
+.banner_part .banner_text h5,
+.main_menu .main-menu-item ul li .nav-link,
+.right-contents .sidebar_top .color,
+.footer-area .contact_info p span,
+.special_cource .single_special_cource .special_cource_text .author_info .author_img h5 a,
+.desc h5 a {
+  color: var(--sg-primary-dark) !important;
+}
+
+/* ---------- Underline accents / small dividers ---------- */
+.section_tittle h2:after,
+.learning_part .learning_member_text h5:after,
+.blog_part .single-home-blog .card .dot:after,
+.unordered-list li:before {
+  background-color: var(--sg-primary) !important;
+}
+
+.unordered-list li:before {
+  border-color: var(--sg-primary) !important;
+}
+
+/* ---------- Outline / secondary button ---------- */
+.btn_2 {
+  border-color: var(--sg-primary-dark) !important;
+  color: var(--sg-primary-dark) !important;
+}
+
+/* ---------- Solid accent buttons (was #ff663b) ---------- */
+.btn_4,
+.button,
+.footer-area .single-footer-widget .click-btn,
+.footer-area .btn,
+.genric-btn.primary {
+  background-color: var(--sg-primary) !important;
+  background: var(--sg-primary) !important;
+}
+
+.btn_4:hover {
+  background: rgba(91, 61, 224, 0.85) !important;
+}
+
+.genric-btn.primary:hover {
+  color: var(--sg-primary) !important;
+  border-color: var(--sg-primary) !important;
+}
+
+.genric-btn.primary-border {
+  color: var(--sg-primary) !important;
+  border-color: var(--sg-primary) !important;
+}
+
+.genric-btn.primary-border:hover {
+  background: var(--sg-primary) !important;
+}
+
+.button-link,
+.button-link:hover {
+  color: var(--sg-primary-dark) !important;
+}
+
+.button-header:hover {
+  background: var(--sg-primary-dark) !important;
+}
+
+/* ---------- Hover links / interactive accents (was #ff663b / #ee390f) --- */
+.blog_area a:hover,
+.blog_area a :hover,
+.single-blog a:hover,
+.dropdown .dropdown-menu .dropdown-item:hover,
+.dropdown:hover .dropdown-menu,
+.blog_details a:hover,
+.tag_cloud_widget ul li a:hover,
+.testimonial_part .owl-dots button.owl-dot.active,
+.footer-area .single-footer-widget ul li a:hover,
+.footer-area .copyright_part_text a,
+.copyright_part a,
+.special_cource .single_special_cource .special_cource_text h3:hover,
+.blog_part .single-home-blog .card h5:hover,
+b, sup, sub, u, del,
+.ordered-list li,
+.ordered-list-alpha li,
+.ordered-list-roman li,
+.default-select .nice-select .list .option.selected,
+.default-select .nice-select .list .option:hover,
+.form-select .nice-select .list .option.selected,
+.form-select .nice-select .list .option:hover {
+  color: var(--sg-primary) !important;
+}
+
+.main_menu .main-menu-item ul li .nav-link:hover {
+  color: var(--sg-sky) !important;
+}
+
+.categories_post:hover .categories_details {
+  background: rgba(91, 61, 224, 0.85) !important;
+}
+
+.blog_details a {
+  color: var(--sg-violet) !important;
+}
+
+.special_cource .single_special_cource .special_cource_text h4 {
+  color: var(--sg-primary) !important;
+}
+
+.blog_item_img .blog_item_date {
+  background-color: var(--sg-violet) !important;
+}
+
+.about_part .about_text h4 {
+  color: var(--sg-violet) !important;
+}
+
+.course_details_area .review-top h6 {
+  color: var(--sg-primary) !important;
+}
+
+.copyright_part .footer-social a {
+  border-color: var(--sg-violet) !important;
+}
+
+.copyright_part .footer-social a:hover {
+  background-color: var(--sg-violet) !important;
+}
+
+/* ---------- Feature icons ---------- */
+.feature_part .single_feature_part span i {
+  color: var(--sg-primary-dark) !important;
+}
+
+.feature_part .single_feature:hover .single_feature_part {
+  border-color: var(--sg-primary) !important;
+}
+
+/* ---------- Form focus states (was #ff663b border) ---------- */
+.single-input-primary:focus {
+  border-color: var(--sg-primary) !important;
+}
+
+.generic-blockquote {
+  border-left-color: var(--sg-primary) !important;
+}
+
+/* ---------- Toggle switches ---------- */
+.default-switch input + label {
+  background: var(--sg-primary) !important;
+}
+
+.primary-switch input:checked + label:before {
+  background: var(--sg-primary) !important;
+}
+
+/* ---------- Banner highlighted word ---------- */
+.banner_part .banner_text h1 span {
+  color: var(--sg-primary) !important;
+}
+
+/* ---------- Member counter labels: force white on dark gradient bg ------ */
+/* The blanket h1-h6 rule above (!important) was overriding the template's
+   own white color for these labels, making them unreadable on the purple
+   gradient. This restores it. */
+.member_counter .single_member_counter h4 {
+  color: #fff !important;
+}
+
+/* ---------- Hero banner: real <img> instead of CSS pseudo-element
+   background, for alt-text accessibility and SEO. Kills the old
+   .banner_part:after graphic and positions the new <img> in the same
+   box across all breakpoints, using object-fit instead of stretching. */
+.banner_part:after {
+  content: none !important;
+}
+
+.banner_part .banner_hero_img {
+  position: absolute;
+  top: 163px;
+  right: 9%;
+  width: 41%;
+  height: 69%;
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: 0px 20px 40px 0px rgba(58, 42, 153, 0.18);
+}
+
+@media (max-width: 576px) {
+  .banner_part .banner_hero_img {
+    top: 150px;
+    right: 0;
+    left: 0;
+    margin: 0 auto;
+    width: 80%;
+    height: 60%;
+  }
+}
+
+/* ---------- Hero image on mobile/tablet: stack in normal flow instead
+   of absolute overlay, so it never collides with the text below it. --- */
+@media (max-width: 991px) {
+  .banner_part {
+    height: auto !important;
+    overflow: visible !important;
+    padding-top: 110px;
+    padding-bottom: 40px;
+  }
+
+  .banner_part .banner_text {
+    height: auto !important;
+    display: block !important;
+  }
+
+  .banner_part .banner_text .banner_text_iner {
+    display: block !important;
+    vertical-align: initial !important;
+    text-align: center;
+  }
+
+  .banner_part .banner_hero_img {
+    position: relative !important;
+    top: auto !important;
+    right: auto !important;
+    left: auto !important;
+    display: block;
+    width: 85% !important;
+    max-width: 400px;
+    height: 260px !important;
+    margin: 0 auto 20px !important;
+  }
+}
+/* ---------- "Technology That Makes School Management Easier" photo:
+   add breathing room, cap max size, and frame it like a real photo
+   instead of a full-bleed illustration. --------- */
+.learning_part .learning_img {
+  left: -60px;
+  
+  bottom: 40px; /* was -69px (inherited from style.css) — pulls image up */
+}
+
+
+.learning_part .learning_img img {
+  max-width: 650px; /* was 480px — bigger photo */
+  width: 100%;
+  padding: 30px 30px 40px 40px;
+  border-radius: 16px;
+  box-shadow: 0px 20px 40px 0px rgba(58, 42, 153, 0.15);
+}
+
+@media (max-width: 991px) {
+  .learning_part .learning_img {
+    left: 0;
+  }
+
+  .learning_part .learning_img img {
+    max-width: 100%;
+    padding: 0 15px;
+  }
+}
+
+/* ---------- "Turn Everyday School Work..." section (.advance_feature):
+   this variant has its own top/right/bottom offsets in style.css tuned
+   for an edge-bleeding illustration, which now overlaps the heading and
+   stretches the box too wide. Reset to normal flow in its column. ---- */
+.advance_feature .learning_img {
+  position: relative !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  aspect-ratio: 1 / 0.85;
+  background-position: center !important;
+  background-size: cover !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.advance_feature .learning_img img {
+  max-width: 480px;
+  width: 90%;
+  padding: 20px;
+}
+
+@media (max-width: 991px) {
+  .advance_feature .learning_img {
+    aspect-ratio: 1 / 0.75;
+  }
+
+  .advance_feature .learning_img img {
+    max-width: 100%;
+    padding: 0 15px;
+  }
+}
+
+/* Force section header columns to take enough width on desktop screens */
+@media (min-width: 1200px) {
+  .testimonial_part .row.justify-content-center > .col-xl-5,
+  .blog_part .row.justify-content-center > .col-xl-5 {
+    flex: 0 0 80%;
+    max-width: 80%;
+  }
+
+  /* Prevent title lines from wrapping into multiple rows */
+  .testimonial_part .section_tittle h2,
+  .blog_part .section_tittle h2 {
+    white-space: nowrap;
+  }
+}
+
+
+
+
+/* ==========================================================================
+   About Page: Mission/Vision, Platform Intro, Journey, Who We Serve
+   Scoped specifically to prevent theme template visual collisions.
+   ========================================================================== */
+
+/* Section Padding Normalization */
+.platform_intro_part,
+.journey_part,
+.audience_part {
+  padding-top: 50px;
+  padding-bottom: 50px;
+  position: relative;
+  clear: both;
+}
+
+/* Mission & Vision Section Gap Tightening */
+.mission_vision_part {
+  padding-top: 0;
+  padding-bottom: 50px;
+  position: relative;
+  clear: both;
+}
+
+/* Pulls Mission/Vision closer to match standard section spacing on desktop */
+@media (min-width: 992px) {
+  .mission_vision_part {
+    margin-top: -65px;
+  }
+}
+
+/* Base Icon Styling */
+.sg-icon {
+  font-size: 30px;
+  color: var(--sg-primary);
+  display: inline-block;
+  margin-bottom: 12px;
+}
+
+.single_journey .sg-icon,
+.single_audience .sg-icon {
+  font-size: 26px;
+}
+
+/* Mission & Vision Typography */
+.mission_vision_text h2 {
+  font-size: 26px;
+  line-height: 1.35;
+}
+
+/* Journey & Audience Grid Cards */
+.single_journey,
+.single_audience {
+  padding: 0 15px;
+  margin-bottom: 35px;
+}
+
+.single_journey h5,
+.single_audience h5 {
+  margin: 12px 0 8px;
+}
+
+
+/* ==========================================================================
+   Platform Intro Section Fix (What SchoolGear Is)
+   Eliminates horizontal underline text-crossing and normalizes layout.
+   ========================================================================== */
+
+.platform_intro_part .section_tittle {
+  margin-bottom: 0;
+  position: relative;
+  z-index: 1;
+}
+
+/* Suppress background template underline bars cutting through text */
+.platform_intro_part .section_tittle::after,
+.platform_intro_part .section_tittle h2::after {
+  display: none !important;
+}
+
+.platform_intro_part .section_tittle h2 {
+  margin-top: 10px;
+  margin-bottom: 24px;
+  line-height: 1.3;
+  position: relative;
+  display: block;
+}
+
+.platform_intro_part .section_tittle p {
+  font-size: 15px;
+  line-height: 1.8;
+  color: #666666;
+  text-transform: none;
+  letter-spacing: normal;
+  max-width: 780px;
+  margin: 0 auto;
+  position: relative;
+  display: block;
+  clear: both;
+}
+
+
+/* ==========================================================================
+   Journey & Audience Section Decorative Bar Spacing
+   ========================================================================== */
+
+.journey_part .section_tittle,
+.audience_part .section_tittle {
+  margin-bottom: 45px;
+}
+
+.journey_part .section_tittle h2,
+.audience_part .section_tittle h2 {
+  margin-bottom: 25px;
+}
+
+
+/* ==========================================================================
+   Responsive Breakpoints (Desktop, Tablet, Mobile)
+   ========================================================================== */
+
+/* Tablet Adjustments (768px - 991px) */
+@media (max-width: 991px) {
+  .mission_vision_part {
+    margin-top: 0;
+    padding-top: 10px;
+    padding-bottom: 40px;
+  }
+
+  .platform_intro_part,
+  .journey_part,
+  .audience_part {
+    padding-top: 40px;
+    padding-bottom: 40px;
+  }
+
+  .platform_intro_part .section_tittle h2 {
+    font-size: 28px;
+    margin-bottom: 18px;
+  }
+
+  .journey_part .section_tittle,
+  .audience_part .section_tittle {
+    margin-bottom: 35px;
+  }
+}
+
+/* Mobile Adjustments (under 767px) */
+@media (max-width: 767px) {
+  .mission_vision_part {
+    padding-top: 5px;
+    padding-bottom: 30px;
+  }
+
+  .platform_intro_part,
+  .journey_part,
+  .audience_part {
+    padding-top: 30px;
+    padding-bottom: 30px;
+  }
+
+  .platform_intro_part h2,
+  .journey_part h2,
+  .audience_part h2 {
+    font-size: 22px;
+    line-height: 1.35;
+  }
+
+  .platform_intro_part .section_tittle p {
+    font-size: 14px;
+    line-height: 1.6;
+    padding: 0 10px;
+  }
+
+  .single_journey,
+  .single_audience {
+    margin-bottom: 28px;
+  }
+
+  .journey_part .section_tittle,
+  .audience_part .section_tittle {
+    margin-bottom: 30px;
+  }
+}
+
+/* Small Mobile Screens (under 575px) */
+@media (max-width: 575px) {
+  .mission_vision_text h2 {
+    font-size: 22px;
+  }
+}
+
+
+
+/* ---------- Header CTA buttons: Sign In (outline) + Get Started
+   (solid). Desktop: sit inline next to nav links. Mobile: both now
+   show inside the collapsed dropdown (previously Get Started was
+   hidden below 992px via d-none d-lg-block, which we removed). ---- */
+.header_signin_btn {
+  padding: 10px 28px !important;
+}
+
+@media (min-width: 992px) {
+  .header_cta_item {
+    margin-left: 12px;
+  }
+}
+
+@media (max-width: 991px) {
+  .header_cta_item {
+    width: 100%;
+    padding: 6px 15px;
+  }
+
+  .header_cta_item a {
+    display: block;
+    text-align: center;
+    margin: 0 !important;
+  }
+}
+
+/* ---------- Sign In button: loading state on click ---------- */
+.header_signin_btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.signin_btn_spinner {
+  display: none;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(91, 61, 224, 0.3);
+  border-top-color: var(--sg-primary);
+  border-radius: 50%;
+  animation: sgSpin 0.6s linear infinite;
+}
+
+.header_signin_btn.is-loading {
+  opacity: 0.75;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.header_signin_btn.is-loading .signin_btn_spinner {
+  display: inline-block;
+}
+
+@keyframes sgSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+
+/* ==========================================================================
+   Public Site Navbar Brand Logo Styling
+   ========================================================================== */
+
+/* Prevent the brand container from shrinking or collapsing */
+.main_menu .navbar-brand {
+    display: flex !important;
+    align-items: center;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    margin-right: 1.5rem;
+}
+
+/* Constrain logo height & maintain horizontal aspect ratio */
+.main_menu .navbar-brand img.sg-header-logo {
+    max-height: 52px !important;
+    width: auto !important;
+    max-width: 280px !important;
+    object-fit: contain;
+    /* Blends image white background cleanly into white navbar headers */
+    
+}
+
+/* Responsive adjustments for Mobile & Tablet screens */
+@media (max-width: 991px) {
+    .main_menu .navbar-brand img.sg-header-logo {
+        max-height: 42px !important;
+        max-width: 220px !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .main_menu .navbar-brand img.sg-header-logo {
+        max-height: 36px !important;
+        max-width: 180px !important;
+    }
+}
+
+
+
+/* ---------- Footer social icons: real per-platform brand colors
+   instead of the template's flat grey default. ---------- */
+.footer-area .footer_2 .social_icon a {
+  font-size: 16px;
+  transition: opacity 0.2s ease, transform 0.15s ease;
+}
+
+.footer-area .footer_2 .social_icon a:hover {
+  opacity: 0.8;
+  transform: translateY(-2px);
+}
+
+.footer-area .footer_2 .social_icon a .ti-facebook {
+  color: #1877F2;
+}
+
+.footer-area .footer_2 .social_icon a .ti-twitter-alt {
+  color: #1DA1F2;
+}
+
+.footer-area .footer_2 .social_icon a .ti-instagram {
+  color: #E4405F;
+}
+
+.footer-area .footer_2 .social_icon a .ti-linkedin {
+  color: #0A66C2;
+}

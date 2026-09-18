@@ -1,4 +1,4 @@
-# EDMOL – Matadi Baptist High School Management System Monrovia, Liberia 
+# EDMOL – Matadi Baptist High School Management System Monrovia, Liberia
 
 ## Project Overview
 
@@ -18,19 +18,19 @@ The system includes a fully interactive **Student Management Dashboard** that al
 
 Students are categorized by the following statuses:
 
-* Candidate
-* Admitted
-* Registered
-* Active
-* Dropout
-* Completed
+- Candidate
+- Admitted
+- Registered
+- Active
+- Dropout
+- Completed
 
 Each status tab is:
 
-* **Interactive:** Updates the student table dynamically without reloading the page.
-* **Responsive:** Works seamlessly across desktop and mobile devices.
-* **Enhanced with icons:** Each status includes visual icons for quick identification.
-* **Student count badges:** Displays the total number of students per category.
+- **Interactive:** Updates the student table dynamically without reloading the page.
+- **Responsive:** Works seamlessly across desktop and mobile devices.
+- **Enhanced with icons:** Each status includes visual icons for quick identification.
+- **Student count badges:** Displays the total number of students per category.
 
 ---
 
@@ -40,9 +40,9 @@ Administrators can quickly filter student records using reactive filters.
 
 Available filters include:
 
-* Student name or Student ID
-* Intake
-* Shift
+- Student name or Student ID
+- Intake
+- Shift
 
 Filtering works instantly using **Livewire reactive components**, allowing the table to update automatically whenever a filter or status tab is selected.
 
@@ -54,9 +54,9 @@ The system allows administrators to export student data into Excel format for re
 
 Features include:
 
-* Export filtered student lists
-* Export based on status, search results, intake, or shift
-* Flexible export structure allowing additional columns or formatting
+- Export filtered student lists
+- Export based on status, search results, intake, or shift
+- Flexible export structure allowing additional columns or formatting
 
 Export implementation is handled by:
 
@@ -74,11 +74,11 @@ The platform includes a structured grading module used for recording and calcula
 
 Features include:
 
-* Teacher grade entry interface
-* Semester-based academic assessments
-* Automatic subject average calculations
-* Automatic overall academic average calculation
-* Student ranking based on performance
+- Teacher grade entry interface
+- Semester-based academic assessments
+- Automatic subject average calculations
+- Automatic overall academic average calculation
+- Student ranking based on performance
 
 ### Overall Academic Average Calculation
 
@@ -128,25 +128,25 @@ This allows administrators to manage user permissions based on their responsibil
 
 Capabilities include:
 
-* Creating multiple administrator accounts
-* Assigning specific permissions to each administrator
-* Restricting system modules based on roles
-* Tailoring system access to match daily administrative tasks
+- Creating multiple administrator accounts
+- Assigning specific permissions to each administrator
+- Restricting system modules based on roles
+- Tailoring system access to match daily administrative tasks
 
 This permission system ensures that each user only has access to the features required for their role.
 
 Example roles include:
 
-* Administrator
-* Teacher
-* Student
+- Administrator
+- Teacher
+- Student
 
 Permissions can be assigned dynamically to control access to different system modules such as:
 
-* Student management
-* Grade entry
-* Report generation
-* System administration
+- Student management
+- Grade entry
+- Report generation
+- System administration
 
 ---
 
@@ -156,11 +156,11 @@ The system uses **Livewire** to create a reactive user interface without requiri
 
 Benefits include:
 
-* Real-time updates to tables and dashboards
-* Instant search and filtering
-* Reduced page reloads
-* Simplified frontend and backend integration
-* Cleaner and more maintainable codebase
+- Real-time updates to tables and dashboards
+- Instant search and filtering
+- Reduced page reloads
+- Simplified frontend and backend integration
+- Cleaner and more maintainable codebase
 
 Livewire components handle most of the dynamic interactions within the admin dashboard.
 
@@ -185,10 +185,10 @@ Livewire components handle most of the dynamic interactions within the admin das
 
 The system follows a modern Laravel architecture including:
 
-* MVC (Model–View–Controller) design pattern
-* Livewire component-based UI interactions
-* Role-based access control
-* Structured relational database schema for academic data
+- MVC (Model–View–Controller) design pattern
+- Livewire component-based UI interactions
+- Role-based access control
+- Structured relational database schema for academic data
 
 ---
 
@@ -196,11 +196,11 @@ The system follows a modern Laravel architecture including:
 
 Planned improvements include:
 
-* WhatsApp parent notification system using Twilio
-* Student dashboard portal
-* Teacher academic dashboard
-* Printable report card generation
-* Online payment integration
+- WhatsApp parent notification system using Twilio
+- Student dashboard portal
+- Teacher academic dashboard
+- Printable report card generation
+- Online payment integration
 
 ---
 

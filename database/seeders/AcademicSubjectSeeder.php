@@ -7,7 +7,25 @@ use App\Models\AcademicSubject;
 
 class AcademicSubjectSeeder extends Seeder
 {
+    /**
+     * Default seeder entry — no longer runs automatically for "the"
+     * platform, since subjects are now school-scoped. Kept only to avoid
+     * breaking `php artisan db:seed` if this class is referenced in
+     * DatabaseSeeder; it intentionally does nothing without a school.
+     * Use `php artisan schoolgear:seed-subjects {school_id}` instead.
+     */
     public function run(): void
+    {
+        $this->command?->warn(
+            'AcademicSubjectSeeder now requires a school. Run: php artisan schoolgear:seed-subjects {school_id}'
+        );
+    }
+
+    /**
+     * The actual seeding logic, scoped to one school. Called by the
+     * schoolgear:seed-subjects artisan command.
+     */
+    public function runForSchool(int $schoolId): void
     {
         /*
         |--------------------------------------------------------------------------
@@ -89,7 +107,7 @@ class AcademicSubjectSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
-        | Insert New Subjects Only
+        | Insert New Subjects Only, Scoped To This School
         |--------------------------------------------------------------------------
         */
 
@@ -97,15 +115,12 @@ class AcademicSubjectSeeder extends Seeder
 
             foreach ($subjectList as $subjectName) {
 
-                AcademicSubject::firstOrCreate(
-                    [
-                        'name'  => $subjectName,
-                        'level' => $level,
-                    ]
-                );
-
+                AcademicSubject::firstOrCreate([
+                    'school_id' => $schoolId,
+                    'name' => $subjectName,
+                    'level' => $level,
+                ]);
             }
-
         }
     }
 }

@@ -3,71 +3,106 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Receipt {{ $payment->receipt_number }}</title>
+    <title>Receipt {{ $payment->receipt_number }} — {{ $branding['name'] }}</title>
     <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
             margin: 15px;
-            font-size: 13px;
-            color: #000;
-            position: relative;
+            font-size: 12px;
+            color: #1e293b;
         }
 
-        .header,
-        .section,
-        .footer {
-            position: relative;
-            z-index: 2;
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 0;
         }
 
-        .header {
+        .header-table td {
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+        }
+
+        .logo-cell {
+            width: 70px;
+        }
+
+        .logo-cell img {
+            height: 60px;
+            width: 60px;
+            object-fit: contain;
+        }
+
+        .header-text-cell {
             text-align: center;
-            margin-bottom: 12px;
+            padding-left: 10px;
         }
 
         .school-name {
-            font-size: 22px;
+            font-size: 19px;
             font-weight: bold;
             color: #0a1f44;
+            line-height: 1.3;
         }
 
         .school-address {
-            font-size: 12px;
+            font-size: 10.5px;
             margin-top: 2px;
+            color: #475569;
         }
 
         .receipt-title {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
-            margin-top: 8px;
+            margin-top: 6px;
             color: #0a1f44;
+            letter-spacing: 0.5px;
+        }
+
+        .receipt-caption {
+            font-size: 10.5px;
+            color: #64748B;
+            margin-top: 2px;
         }
 
         .receipt-date {
-            font-size: 12px;
+            font-size: 11px;
             margin-top: 3px;
+            color: #475569;
         }
 
         .divider {
-            border-bottom: 2px solid #0a1f44;
+            border-bottom: 3px solid #B91C1C;
             margin-top: 8px;
+            margin-bottom: 14px;
         }
 
         .section {
-            border: 1px solid #ccc;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
+            border: 1px solid #E2E8F0;
+            padding: 10px 12px;
+            margin-bottom: 12px;
+            border-radius: 6px;
             page-break-inside: avoid;
         }
 
         .section-title {
             font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 6px;
+            font-size: 13px;
+            margin-bottom: 8px;
             color: #0a1f44;
-            border-bottom: 1px solid #ddd;
-            padding-bottom: 3px;
+            border-bottom: 1px solid #E2E8F0;
+            padding-bottom: 5px;
+        }
+
+        .receipt-number-badge {
+            background: #0a1f44;
+            color: #fff;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 6px;
         }
 
         .detail-grid {
@@ -82,15 +117,16 @@
 
         .detail-label {
             font-weight: bold;
+            color: #334155;
         }
 
         .amount-paid {
-            color: #065f46;
+            color: #15803d;
             font-weight: bold;
         }
 
         .amount-balance {
-            color: #b91c1c;
+            color: #B91C1C;
             font-weight: bold;
         }
 
@@ -103,18 +139,49 @@
         .signature-box {
             width: 45%;
             text-align: center;
+            font-size: 11px;
+            color: #475569;
         }
 
         .signature-line {
-            border-top: 1px solid #000;
+            border-top: 1px solid #334155;
             margin-top: 25px;
+        }
+
+        .footer-contact {
+            margin-top: 30px;
+            padding-top: 12px;
+            border-top: 1px solid #E2E8F0;
+        }
+
+        .footer-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .footer-table td {
+            border: none;
+            padding: 0 10px;
+            vertical-align: top;
+            font-size: 10.5px;
+            color: #475569;
+            width: 33.33%;
+        }
+
+        .footer-label {
+            font-weight: bold;
+            color: #0a1f44;
+            font-size: 11px;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 3px;
         }
 
         .footer {
             margin-top: 12px;
-            font-size: 11px;
+            font-size: 10.5px;
             text-align: center;
-            color: #444;
+            color: #64748B;
         }
 
         .print-toolbar {
@@ -130,6 +197,10 @@
             border-radius: 6px;
             font-size: 13px;
             cursor: pointer;
+        }
+
+        .print-toolbar button:hover {
+            background: #0a1f44;
         }
 
         @media print {
@@ -156,28 +227,19 @@
         </div>
     @endif
 
-    <div class="header">
-        <div class="school-name">EDMOL MEMORIAL MATADI BAPTIST HIGH SCHOOL</div>
-        <div class="school-address">New Matadi Estate Drive, Opposite Don Bosco Youth Center</div>
-        <div class="school-address">P.O. Box: 4330 Monrovia, Liberia</div>
-        <div class="school-address">Email: emmmbhs@gmail.com</div>
-        <div class="school-address">0777-151-394 | 0771-761-098 | 0555-472-972</div>
-        <div class="receipt-title">OFFICIAL STUDENT FEE RECEIPT</div>
-        <div class="receipt-date">Date: {{ $payment->payment_date->format('M d, Y') }}</div>
-        <div class="divider"></div>
-    </div>
+    @include('partials.documents.header', ['documentDate' => $payment->payment_date->format('M d, Y')])
 
     <div class="section">
-        <div class="section-title">Receipt Details</div>
+        <div class="section-title">
+            Receipt <span class="receipt-number-badge">{{ $payment->receipt_number }}</span>
+        </div>
         <div class="detail-grid">
-            <div class="detail-group"><span class="detail-label">Receipt Number:</span> {{ $payment->receipt_number }}
-            </div>
             <div class="detail-group"><span class="detail-label">Payment Date:</span>
                 {{ $payment->payment_date->format('M d, Y') }}</div>
             <div class="detail-group"><span class="detail-label">Student:</span>
-                {{ $payment->feeAssignment->student->name }}</div>
+                {{ $payment->feeAssignment->enrollment->student->name }}</div>
             <div class="detail-group"><span class="detail-label">Student ID:</span>
-                {{ $payment->feeAssignment->student->student_id }}</div>
+                {{ $payment->feeAssignment->enrollment->student->user->registration_id }}</div>
             <div class="detail-group"><span class="detail-label">Academic Year:</span>
                 {{ $payment->feeAssignment->academic_year }}</div>
             <div class="detail-group"><span class="detail-label">Fee Category:</span>
@@ -212,10 +274,7 @@
         </div>
     </div>
 
-    <div class="footer">
-        <div>Printed on {{ now()->format('M d, Y') }} at {{ now()->format('h:i A') }}</div>
-        <div>This document is system-generated and valid without a stamp.</div>
-    </div>
+    @include('partials.documents.footer')
 
 </body>
 

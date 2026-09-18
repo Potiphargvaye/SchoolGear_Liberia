@@ -8,19 +8,13 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Students\StudentDashboardController;
 use App\Http\Controllers\TeacherDashboardController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\UserController;
+
 use App\Http\Controllers\Admin\GradeAssignmentController;
 use App\Http\Controllers\TeacherMaterialController; // Correct import for the teacher controller 
-use App\Http\Controllers\Admin\StudentController;
+
 use App\Http\Controllers\Admin\UserPermissionController;
-use App\Http\Controllers\StudentGradeController;
+
 use App\Http\Controllers\Students\StudentPortalGradeController;
-// routes for report card printing
-use App\Http\Controllers\ReportCardController;
-
-
-use App\Http\Controllers\Admin\FeeController; // Add this import
 
 
 
@@ -74,6 +68,22 @@ Route::get('/', function () {
 // Landing page route (updated)
 require __DIR__ . '/public-page.php'; // for my public page routes 
 require __DIR__ . '/admin/fees.php';
+require __DIR__ . '/admin/dashboard.php';
+require __DIR__ . '/admin/roles.php';
+require __DIR__ . '/admin/permissions.php';
+require __DIR__ . '/admin/role-permissions.php';
+require __DIR__ . '/admin/users.php';
+require __DIR__ . '/admin/schools.php'; // ADD THIS LINE
+require __DIR__ . '/admin/academic-years.php';
+require __DIR__ . '/admin/admissions.php';
+require __DIR__ . '/admin/students.php';
+require __DIR__ . '/admin/enrollments.php';
+require __DIR__ . '/admin/settings.php';
+require __DIR__ . '/admin/grades.php';
+require __DIR__ . '/admin/subjects.php';
+require __DIR__ . '/admin/report-cards.php';
+require __DIR__ . '/admin/attendance.php';
+
 
 // Admin-only registration routes (added this new section)
 // In routes/web.php this will redirect admin to the register page
@@ -93,32 +103,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/student/dashboard', [StudentDashboardController::class, 'index'])
         ->middleware('can:is-student')
         ->name('student.dashboard');
-
-    Route::get('/teacher/dashboard', [TeacherDashboardController::class, 'index'])
-        ->middleware('can:is-teacher')
-        ->name('teacher.dashboard');
-
-    Route::get('/dashboard', function () {
-        return redirect()->route(auth()->user()->role . '.dashboard');
-    })->name('dashboard');
 });
 
 
 // Admin routes (keep exactly as is)
 Route::prefix('admin')->middleware(['auth', 'can:is-admin'])->group(function () {
-    // Dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->middleware('permission:view dashboard')
-        ->name('admin.dashboard');
+    // The admin dashboard now lives in routes/admin/dashboard.php
+    // (required at the top of this file) — it is registered there as
+    // `admin.dashboard`. Do NOT add another /admin/dashboard GET route
+    // here: an identical URI registered later in this file would shadow
+    // the one defined in routes/admin/dashboard.php.
 
-    // Users Management for edit delete and destroy
-    Route::prefix('users')->group(function () {
-        Route::get('/', [UserController::class, 'index'])->name('admin.users.index');
-        Route::get('/{user}/edit', [UserController::class, 'edit'])->name('admin.users.edit');
-        Route::put('/{user}', [UserController::class, 'update'])->name('admin.users.update');
-        Route::delete('/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
-        Route::get('/admin/users/{user}', [UserController::class, 'show'])->name('admin.users.show');
-    });
 
     // Grade Assignments
     Route::prefix('grade-assignments')->group(function () {
@@ -146,14 +141,6 @@ Route::prefix('admin')->middleware(['auth', 'can:is-admin'])->group(function () 
         Route::put('/grades/{grade}/subjects', [GradeAssignmentController::class, 'updateSubjects'])
             ->name('admin.update-grade-subjects');
     });
-
-    //  ROUTE BASE FOR THE PERMISSION AND ACCESS )
-    Route::middleware(['auth', 'permission:manage users'])
-        ->prefix('admin')->name('admin.')
-        ->group(function () {
-            Route::get('/users/{user}/permissions', [UserPermissionController::class, 'edit'])->name('users.permissions.edit');
-            Route::post('/users/{user}/permissions', [UserPermissionController::class, 'update'])->name('users.permissions.update');
-        });
 });
 
 // Modified auth routes (replace the require line with these exact routes)
@@ -198,49 +185,12 @@ Route::prefix('admin')->middleware(['auth', 'can:is-admin'])->group(function () 
 
 
 
-Route::prefix('teacher')->middleware(['auth', 'role:teacher'])->group(function () {
-    // This will create routes with names like: teacher.materials.store
-    Route::resource('materials', TeacherMaterialController::class)
-        ->names('teacher.materials');
-
-    Route::post('materials/{material}/toggle-publish', [TeacherMaterialController::class, 'togglePublish'])
-        ->name('teacher.materials.toggle-publish');
-
-    // Remove the duplicate '/teacher/' from the path
-    Route::get('materials/create', [TeacherMaterialController::class, 'create'])->name('teacher.materials.create');
-});
 
 
 
 // routes/web.php 
 
 
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
-    // Student Management Routes
-    // ✅ Students page — route-level permission protection
-    Route::get('/students', [StudentController::class, 'index'])
-        ->name('students.index')
-        ->middleware('permission:view students'); // <- safe permission check
-    Route::get('/students/create', [StudentController::class, 'create'])->name('students.create');
-    Route::post('/students', [StudentController::class, 'store'])->name('students.store');
-
-    Route::get('/students/{student}', [StudentController::class, 'show'])
-        ->middleware('permission:view student details')
-        ->name('students.show');
-
-    Route::get('/students/{student}/edit', [StudentController::class, 'edit'])
-        ->middleware('permission:edit students')
-        ->name('students.edit');
-
-    Route::put('/students/{student}', [StudentController::class, 'update'])->name('students.update');
-
-    Route::delete('/students/{student}', [StudentController::class, 'destroy'])
-        ->middleware('permission:delete students')
-        ->name('students.destroy');
-
-    // Alternative: You can use resource route instead (generates all above routes)
-    // Route::resource('students', StudentController::class);
-});
 
 
 
@@ -263,34 +213,3 @@ Route::post('/subjects', [GradeAssignmentController::class, 'storeSubject'])->na
 Route::put('/subjects/{subject}', [GradeAssignmentController::class, 'updateSubject'])->name('subjects.update');
 // Add this route for fetching single subject
 Route::get('/subjects/{subject}', [GradeAssignmentController::class, 'getSubject'])->name('subjects.show');
-
-
-// routes for grade and grade entry
-Route::middleware(['auth'])->group(function () {
-
-    Route::get('/grades/entry', [StudentGradeController::class, 'create'])
-        ->name('grades.entry');
-
-    Route::get('/grades/load', [StudentGradeController::class, 'load'])
-        ->name('grades.load');
-
-    Route::post('/grades/store', [StudentGradeController::class, 'store'])
-        ->name('grades.store');
-
-    // routes for locking semester
-    Route::post('/admin/grades/lock', [StudentGradeController::class, 'lockSemester'])
-        ->name('grades.lock');
-    Route::get('/admin/report-cards/{level?}', [ReportCardController::class, 'index'])
-        ->name('report.cards.index');
-
-    // ✅ NEW (main one)
-    Route::get(
-        '/report-card/{level}/{student}',
-        [ReportCardController::class, 'printSenior']
-    )->name('report.card.dynamic');
-
-    Route::get('/report-cards/print-multiple', [ReportCardController::class, 'printMultiple']);
-
-    Route::delete('/report-card/student-grades/{student}', [ReportCardController::class, 'deleteStudentGrades'])
-        ->name('student.grades.delete');
-});

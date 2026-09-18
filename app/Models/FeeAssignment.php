@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class FeeAssignment extends Model
 {
     protected $fillable = [
-        'student_id',
+        'school_id',
+        'enrollment_id',
         'fee_category_id',
         'academic_year',
         'installment_number',
@@ -18,7 +19,6 @@ class FeeAssignment extends Model
         'remarks',
         'status',
         'assigned_by',
-        'legacy_student_fee_id',
     ];
 
     protected $casts = [
@@ -32,9 +32,19 @@ class FeeAssignment extends Model
     |--------------------------------------------------------------------------
     */
 
-    public function student(): BelongsTo
+    public function school(): BelongsTo
     {
-        return $this->belongsTo(Student::class, 'student_id', 'student_id');
+        return $this->belongsTo(School::class);
+    }
+
+    /**
+     * Fees are always fetched through the student's Enrollment now, never
+     * directly from the Students table — this is the single link back to
+     * the student, and carries grade/academic-year/school context with it.
+     */
+    public function enrollment(): BelongsTo
+    {
+        return $this->belongsTo(Enrollment::class);
     }
 
     public function feeCategory(): BelongsTo
