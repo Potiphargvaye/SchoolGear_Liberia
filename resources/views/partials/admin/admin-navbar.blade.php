@@ -15,7 +15,7 @@
             <img src="{{ asset('storage/' . $navbarSchool->logo) }}" alt="{{ $navbarSchool->school_name }}"
                 class="h-8 w-8 object-contain rounded-md bg-white/10 p-0.5">
         @else
-            <img src="{{ asset('logo/edmol-orginal-logo.png') }}" alt="SchoolGear Liberia"
+            <img src="{{ asset('logo/download (1).png') }}" alt="SchoolGear Liberia"
                 class="h-8 w-8 object-contain rounded-md bg-white/10 p-0.5">
         @endif
 
