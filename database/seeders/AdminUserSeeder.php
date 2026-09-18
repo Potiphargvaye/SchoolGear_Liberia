@@ -14,18 +14,18 @@ class AdminUserSeeder extends Seeder
         $admin = User::updateOrCreate(
 
             [
-                'email' => 'emmmbhs@gmail.com'
+                'email' => 'potiphargvaye@gmail.com'
             ],
 
             [
 
-                'registration_id' => 'LIPA/2026/0000',
+                'registration_id' => 'SGL/2026/0000',
 
-                'name' => 'Super Administrator',
+                'name' => 'Potiphar Vaye',
 
                 'email_verified_at' => now(),
 
-                'password' => Hash::make('edmol123'),
+                'password' => Hash::make('Potiphar'),
 
                 'image' => null,
 
