@@ -47,7 +47,7 @@ class PermissionSeeder extends Seeder
 
             // Assignments, Quizzes & Academic
             'create assignments',
-            'grade assignments',
+            'manage grades',
             'manage grade assignments',
             'create quizzes',
             'manage quizzes',
@@ -77,19 +77,16 @@ class PermissionSeeder extends Seeder
             // Settings, Roles & Permissions
             'manage settings',
 
-
             /*
-    |--------------------------------------------------------------------------
-    | Roles
-    |---------------------------------  -----------------------------------------
-    */
-
+            |--------------------------------------------------------------------------
+            | Roles
+            |--------------------------------------------------------------------------
+            */
             'view roles',
             'create roles',
             'edit roles',
             'delete roles',
             'manage roles',
-
 
             'view schools',
             'create schools',
@@ -97,22 +94,57 @@ class PermissionSeeder extends Seeder
             'delete schools',
 
             /*
-    |--------------------------------------------------------------------------
-    | Permissions
-    |--------------------------------------------------------------------------
-    */
-
+            |--------------------------------------------------------------------------
+            | Permissions
+            |--------------------------------------------------------------------------
+            */
             'view permissions',
             'create permissions',
             'edit permissions',
             'delete permissions',
             'manage permissions',
 
+            /*
+            |--------------------------------------------------------------------------
+            | Admissions, Academic Years, Enrollments
+            |--------------------------------------------------------------------------
+            */
+            'manage admissions',
+            'manage academic years',
+            'manage enrollments',
+            'view admission details',
 
+            /*
+            |--------------------------------------------------------------------------
+            | Document Settings
+            |--------------------------------------------------------------------------
+            */
+            'manage document settings',
 
+            /*
+            |--------------------------------------------------------------------------
+            | Grade/Subject Teacher Scoping
+            |--------------------------------------------------------------------------
+            */
+            'assign grade teachers',
+            'manage academic subjects',
+            'view grade audit trail',
 
+            /*
+            |--------------------------------------------------------------------------
+            | Report Cards
+            |--------------------------------------------------------------------------
+            */
+            'view report cards',
 
-
+            /*
+            |--------------------------------------------------------------------------
+            | Attendance Module
+            |--------------------------------------------------------------------------
+            */
+            'mark attendance',
+            'lock attendance',
+            'manage periods',
         ];
 
         foreach ($permissions as $permission) {
