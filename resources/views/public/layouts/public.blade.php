@@ -7,7 +7,7 @@
     <title>@yield('title', 'SchoolGear Liberia')</title>
     <meta name="description" content="@yield('description', 'SchoolGear Liberia is a school management platform helping schools simplify administration, manage academic information, and connect their school community through technology.')">
 
-    <link rel="icon" href="{{ asset('schoolGear_liberia_public_site/img/favicon.png') }}">
+    <link rel="icon" href="{{ asset('schoolGear_liberia_public_site/img/favicon-96x96.png') }}">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ asset('schoolGear_liberia_public_site/css/bootstrap.min.css') }}">
