@@ -690,3 +690,85 @@ b, sup, sub, u, del,
 .footer-area .footer_2 .social_icon a .ti-linkedin {
   color: #0A66C2;
 }
+
+
+/* ==========================================================================
+   WASSCE Announcement Banner — Dynamic Auto-Adjust
+   ========================================================================== */
+
+:root {
+  --banner-height: 42px; /* Fallback until JS calculates exact rendered height */
+}
+
+.sg-announce-banner {
+  background: linear-gradient(90deg, var(--sg-primary-dark), var(--sg-primary));
+  color: #fff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1001; /* Above .main_menu */
+}
+
+.sg-announce-row {
+  gap: 6px 10px;
+}
+
+.sg-announce-text {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.sg-announce-text strong,
+.sg-announce-link {
+  color: var(--sg-accent);
+  font-weight: 700;
+}
+
+.sg-announce-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--sg-accent);
+  color: var(--sg-primary-dark) !important;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 4px 14px;
+  border-radius: 20px;
+  margin-left: 8px;
+  transition: background 0.2s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+
+.sg-announce-btn:hover {
+  background: #ffe9b8;
+  color: var(--sg-primary-dark) !important;
+  text-decoration: none;
+  transform: translateY(-1px);
+}
+
+/* Anchor both header states automatically using the live calculated banner height */
+.main_menu,
+.menu_fixed {
+  left: 0;
+  right: 0;
+  width: auto !important;
+  top: var(--banner-height) !important; /* Dynamically adjusts on all mobile screens */
+}
+
+body {
+  padding-top: var(--banner-height) !important; /* Dynamically offsets body content */
+}
+
+@media (max-width: 576px) {
+  .sg-announce-text {
+    font-size: 12.5px;
+  }
+  .sg-announce-btn {
+    margin-left: 0;
+    margin-top: 4px;
+    padding: 3px 12px;
+    font-size: 12px;
+  }
+}
