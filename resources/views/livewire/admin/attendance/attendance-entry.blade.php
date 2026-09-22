@@ -84,7 +84,7 @@
                 @elseif ($lastSaved)
                     <span
                         class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-100 text-green-700 text-xs font-semibold">
-                        <i class="fa-solid fa-circle-check"></i> Recorded — last saved by {{ $lastSaved['name'] }} at
+                        <i class="fa-solid fa-circle-check"></i> Recorded last saved by {{ $lastSaved['name'] }} at
                         {{ $lastSaved['time'] }}
                     </span>
                 @else

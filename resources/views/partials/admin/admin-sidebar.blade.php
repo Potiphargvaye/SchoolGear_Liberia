@@ -372,22 +372,35 @@
             @endcan
 
 
-            <li class="nav-section text-gray-400 font-bold">BLOG</li>
+            <li class="nav-section text-orange-500 hover:text-orange-700 font-bold">Attendance Management</li>
 
             <li class="mb-0.5 group">
-                <a href="" class="nav-link">
+                <a href="{{ route('attendance.entry') }}"
+                    class="nav-link {{ request()->routeIs('attendance.entry') ? 'active' : '' }}">
                     <i class='bx bxl-blogger nav-icon'></i>
-                    <span class="text-sm">Post</span>
+                    <span class="text-sm">Attendance</span>
                 </a>
             </li>
 
-            <li class="mb-0.5 group">
-                <a href="" class="nav-link">
-                    <i class='bx bx-archive nav-icon'></i>
-                    <span class="text-sm">Archive</span>
-                </a>
-            </li>
+            @can('view attendance audit trail')
+                <li class="mb-0.5 group">
+                    <a href="{{ route('attendance.audit-trail') }}"
+                        class="nav-link {{ request()->routeIs('attendance.audit-trail') ? 'active' : '' }}">
+                        <i class='bx bx-archive nav-icon'></i>
+                        <span class="text-sm">Attendance Audit Trail</span>
+                    </a>
+                </li>
+            @endcan
 
+            @can('manage periods')
+                <li class="mb-0.5 group">
+                    <a href="{{ route('attendance.periods') }}"
+                        class="nav-link {{ request()->routeIs('attendance.periods') ? 'active' : '' }}">
+                        <i class='bx bx-time-five nav-icon'></i>
+                        <span class="text-sm">Manage Periods</span>
+                    </a>
+                </li>
+            @endcan
 
             <li class="nav-section text-teal-500 font-bold">PERSONAL</li>
 

@@ -133,6 +133,7 @@ class StudentGradeController extends Controller
             'sem2Locked'
         ));
     }
+
     public function store(Request $request)
     {
         $this->authorize('enter student grades');
@@ -239,6 +240,7 @@ class StudentGradeController extends Controller
                             $schoolId,
                             $existingGrade->id,
                             (int) $enrollmentId,
+                            $enrollment->grade_id,
                             (int) $subjectId,
                             'deleted',
                             $existingGrade->only(['period1', 'period2', 'period3', 'exam1', 'period4', 'period5', 'period6', 'exam2']),
@@ -309,6 +311,7 @@ class StudentGradeController extends Controller
                         $schoolId,
                         $studentGrade->id,
                         (int) $enrollmentId,
+                        $enrollment->grade_id,
                         (int) $subjectId,
                         $before === null ? 'created' : 'updated',
                         $changes,

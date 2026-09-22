@@ -22,4 +22,9 @@ class AttendanceController extends Controller
     {
         return view('admin.attendance.reports');
     }
+
+    public function auditTrail()
+    {
+        return view('admin.attendance.audit-trail');
+    }
 }

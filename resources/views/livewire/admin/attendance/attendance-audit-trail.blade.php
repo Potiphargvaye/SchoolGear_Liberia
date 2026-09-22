@@ -1,10 +1,11 @@
-<div class="p-4 sm:p-6 bg-white rounded-xl shadow space-y-5">
+<div class="px-2 py-2 space-y-5">
+    @include('livewire.admin.attendance.partials.nav-tabs')
 
     @include('partials.notifications')
 
     <div>
-        <h1 class="text-2xl font-bold text-slate-800">Grade Audit Trail</h1>
-        <p class="text-slate-500 text-sm mt-1">Every create, edit, and deletion of a student grade, with who and when.
+        <h1 class="text-2xl font-bold text-slate-800">Attendance Audit Trail</h1>
+        <p class="text-slate-500 text-sm mt-1">Every create and edit of a student's attendance mark, with who and when.
         </p>
     </div>
 
@@ -35,12 +36,12 @@
         </div>
 
         <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Academic Year</label>
-            <select wire:model.live="academicYearFilter"
+            <label class="block text-xs font-semibold text-slate-600 mb-1">Period</label>
+            <select wire:model.live="periodFilter"
                 class="w-full text-sm py-2 px-2.5 border border-slate-300 rounded-lg">
                 <option value="">All</option>
-                @foreach ($academicYearOptions as $y)
-                    <option value="{{ $y->id }}">{{ $y->name }}</option>
+                @foreach ($periodOptions as $p)
+                    <option value="{{ $p->id }}">{{ $p->name }}</option>
                 @endforeach
             </select>
         </div>
@@ -79,12 +80,13 @@
     {{-- Table --}}
     <div class="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full min-w-[900px] text-sm">
+            <table class="w-full min-w-[950px] text-sm">
                 <thead class="bg-[#155E8A] text-white">
                     <tr>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Date / Time</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Student</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Grade</th>
+                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Period</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Subject</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Action</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Changes</th>
@@ -99,8 +101,9 @@
                             <td class="px-4 py-3 font-medium text-slate-800">
                                 {{ $audit->enrollment->student->name ?? '—' }}</td>
                             <td class="px-4 py-3 text-slate-500">
-                                {{ $audit->grade->level ?? '—' }}{{ $audit->grade->section ?? '' ? ' - ' . $audit->grade->section : '' }}
+                                {{ $audit->enrollment->grade->level ?? '—' }}{{ $audit->enrollment->grade->section ?? '' ? ' - ' . $audit->enrollment->grade->section : '' }}
                             </td>
+                            <td class="px-4 py-3 text-slate-500">{{ $audit->period->name ?? '—' }}</td>
                             <td class="px-4 py-3 text-slate-500">{{ $audit->subject->name ?? '—' }}</td>
                             <td class="px-4 py-3">
                                 @php
@@ -132,7 +135,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-14">
+                            <td colspan="8" class="text-center py-14">
                                 <i class="fas fa-clock-rotate-left text-4xl text-slate-300 mb-3"></i>
                                 <p class="text-slate-500 text-sm">No audit records match these filters.</p>
                             </td>

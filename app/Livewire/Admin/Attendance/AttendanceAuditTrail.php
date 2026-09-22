@@ -1,38 +1,36 @@
 <?php
 
-namespace App\Livewire\Admin\Grades;
+namespace App\Livewire\Admin\Attendance;
 
 use App\Models\AcademicSubject;
-use App\Models\AcademicYear;
+use App\Models\AttendanceAudit;
 use App\Models\Grade;
-use App\Models\GradeAudit;
+use App\Models\Period;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-class GradeAuditTrail extends Component
+class AttendanceAuditTrail extends Component
 {
     use WithPagination;
 
     public $gradeFilter = '';
     public $subjectFilter = '';
-    public $academicYearFilter = '';
+    public $periodFilter = '';
     public $actionFilter = '';
     public $dateFrom = '';
     public $dateTo = '';
 
     public $gradeOptions = [];
     public $subjectOptions = [];
-    public $academicYearOptions = [];
+    public $periodOptions = [];
 
     public function mount()
     {
-        abort_unless(auth()->user()->can('view grade audit trail'), 403);
+        abort_unless(auth()->user()->can('view attendance audit trail'), 403);
 
-        $schoolId = auth()->user()->school_id;
         $user = auth()->user();
+        $schoolId = $user->school_id;
 
-        // If a Teacher somehow holds this permission, keep them scoped
-        // to their own assignments rather than the whole school's trail.
         if ($user->hasRole('Teacher')) {
             $this->gradeOptions = $user->teacherGrades()->orderBy('grades.level')->get();
             $this->subjectOptions = $user->teacherSubjects()->orderBy('name')->get();
@@ -41,7 +39,7 @@ class GradeAuditTrail extends Component
             $this->subjectOptions = AcademicSubject::where('school_id', $schoolId)->orderBy('name')->get();
         }
 
-        $this->academicYearOptions = AcademicYear::where('school_id', $schoolId)->ordered()->get();
+        $this->periodOptions = Period::where('school_id', $schoolId)->orderBy('sort_order')->get();
     }
 
     public function updatingGradeFilter()
@@ -52,7 +50,7 @@ class GradeAuditTrail extends Component
     {
         $this->resetPage();
     }
-    public function updatingAcademicYearFilter()
+    public function updatingPeriodFilter()
     {
         $this->resetPage();
     }
@@ -71,37 +69,36 @@ class GradeAuditTrail extends Component
 
     public function resetFilters()
     {
-        $this->reset(['gradeFilter', 'subjectFilter', 'academicYearFilter', 'actionFilter', 'dateFrom', 'dateTo']);
+        $this->reset(['gradeFilter', 'subjectFilter', 'periodFilter', 'actionFilter', 'dateFrom', 'dateTo']);
         $this->resetPage();
     }
 
     public function render()
     {
-        $schoolId = auth()->user()->school_id;
         $user = auth()->user();
+        $schoolId = $user->school_id;
 
-        $query = GradeAudit::where('school_id', $schoolId)
-            ->with(['enrollment.student', 'enrollment.academicYear', 'grade', 'subject', 'performedBy']);
-        // ↑ 'enrollment.grade' removed, 'grade' (the new direct relation) added
+        $query = AttendanceAudit::where('school_id', $schoolId)
+            ->with(['enrollment.student', 'enrollment.grade', 'subject', 'period', 'performedBy']);
 
         if ($user->hasRole('Teacher')) {
             $allowedGradeIds = $user->teacherGrades()->pluck('grades.id')->toArray();
             $allowedSubjectIds = $user->teacherSubjects()->pluck('academic_subjects.id')->toArray();
 
             $query->whereIn('academic_subject_id', $allowedSubjectIds)
-                ->whereIn('grade_id', $allowedGradeIds);   // ← changed from whereHas('enrollment', ...)
+                ->whereHas('enrollment', fn($q) => $q->whereIn('grade_id', $allowedGradeIds));
         }
 
         if ($this->gradeFilter) {
-            $query->where('grade_id', $this->gradeFilter);   // ← changed from whereHas('enrollment', ...)
-        }
-
-        if ($this->academicYearFilter) {
-            $query->whereHas('enrollment', fn($q) => $q->where('academic_year_id', $this->academicYearFilter));
+            $query->whereHas('enrollment', fn($q) => $q->where('grade_id', $this->gradeFilter));
         }
 
         if ($this->subjectFilter) {
             $query->where('academic_subject_id', $this->subjectFilter);
+        }
+
+        if ($this->periodFilter) {
+            $query->where('period_id', $this->periodFilter);
         }
 
         if ($this->actionFilter) {
@@ -109,15 +106,15 @@ class GradeAuditTrail extends Component
         }
 
         if ($this->dateFrom) {
-            $query->whereDate('performed_at', '>=', $this->dateFrom);
+            $query->whereDate('date', '>=', $this->dateFrom);
         }
 
         if ($this->dateTo) {
-            $query->whereDate('performed_at', '<=', $this->dateTo);
+            $query->whereDate('date', '<=', $this->dateTo);
         }
 
         $audits = $query->orderByDesc('performed_at')->paginate(20);
 
-        return view('livewire.admin.grades.grade-audit-trail', compact('audits'));
+        return view('livewire.admin.attendance.attendance-audit-trail', compact('audits'));
     }
 }

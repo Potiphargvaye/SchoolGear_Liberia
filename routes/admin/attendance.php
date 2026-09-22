@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AttendanceController;
-use Illuminate\Support\Facades\Route; #
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\PeriodManagerController;
 
 Route::middleware(['auth'])->prefix('admin/attendance')->group(function () {
@@ -9,5 +9,6 @@ Route::middleware(['auth'])->prefix('admin/attendance')->group(function () {
     Route::get('/summary', [AttendanceController::class, 'summary'])->middleware('permission:mark attendance')->name('attendance.summary');
     Route::get('/history', [AttendanceController::class, 'history'])->middleware('permission:mark attendance')->name('attendance.history');
     Route::get('/reports', [AttendanceController::class, 'reports'])->middleware('permission:mark attendance')->name('attendance.reports');
+    Route::get('/audit-trail', [AttendanceController::class, 'auditTrail'])->middleware('permission:view attendance audit trail')->name('attendance.audit-trail');
     Route::get('/periods', [PeriodManagerController::class, 'index'])->middleware('permission:manage periods')->name('attendance.periods');
 });

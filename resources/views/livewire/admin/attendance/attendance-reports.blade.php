@@ -188,7 +188,7 @@
                                 <span><strong class="text-green-700">P</strong> = Present</span>
                                 <span><strong class="text-red-600">A</strong> = Absent</span>
                                 <span><strong class="text-amber-600">L</strong> = Late</span>
-                                <span>— = No record</span>
+                                <span>null = No record</span>
                             </div>
 
                             <div class="section" style="margin: 16px 32px;">

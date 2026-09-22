@@ -48,10 +48,17 @@ class GradeAudit extends Model
      * delete in StudentGradeController funnels through here, so the
      * trail can never be forgotten in some code path.
      */
+
+    public function grade(): BelongsTo
+    {
+        return $this->belongsTo(Grade::class);
+    }
+
     public static function record(
         int $schoolId,
         ?int $studentGradeId,
         int $enrollmentId,
+        int $gradeId,
         int $academicSubjectId,
         string $action,
         ?array $changes,
@@ -61,6 +68,7 @@ class GradeAudit extends Model
             'school_id' => $schoolId,
             'student_grade_id' => $studentGradeId,
             'enrollment_id' => $enrollmentId,
+            'grade_id' => $gradeId,
             'academic_subject_id' => $academicSubjectId,
             'action' => $action,
             'changes' => $changes,
