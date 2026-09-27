@@ -772,3 +772,12 @@ body {
     font-size: 12px;
   }
 }
+
+
+
+.textimonial_iner.owl-carousel:not(.owl-loaded) .testimonial_slider {
+  display: none;
+}
+.textimonial_iner.owl-carousel:not(.owl-loaded) .testimonial_slider:first-child {
+  display: block;
+}

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign In · SchoolGear</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ asset('schoolGear_liberia_public_site/css/whatsapp-widget.css') }}">
     <script>
         tailwind.config = {
             theme: {
@@ -189,7 +190,7 @@
                         class="h-20 w-20 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mb-5 overflow-hidden">
 
                         <img src="{{ asset('logo/download (1).png
-                        ') }}" alt="SchoolGear Logo"
+                                                ') }}" alt="SchoolGear Logo"
                             class="h-16 w-16 object-contain">
 
                     </div>
@@ -389,6 +390,19 @@
             </div>
         </div>
     </div>
+
+
+    <!-- WhatsApp Floating Button -->
+    <a href="https://wa.me/+231777987113" target="_blank" class="whatsapp-float"
+        aria-label="Message us on WhatsApp">
+        <svg class="whatsapp-icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.71.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" />
+            <path
+                d="M12.001 2C6.478 2 2 6.477 2 12c0 1.9.526 3.68 1.44 5.2L2 22l4.943-1.397A9.955 9.955 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12.001 2zm0 18.29a8.27 8.27 0 01-4.216-1.155l-.303-.18-3.13.884.836-3.05-.198-.313A8.267 8.267 0 013.71 12c0-4.577 3.714-8.29 8.29-8.29 4.577 0 8.29 3.713 8.29 8.29 0 4.576-3.713 8.29-8.289 8.29z" />
+        </svg>
+        <span class="whatsapp-tooltip">Message us on WhatsApp</span>
+    </a>
 
     <script>
         // ---- Account type toggle (cosmetic — both states submit as name="login") ----

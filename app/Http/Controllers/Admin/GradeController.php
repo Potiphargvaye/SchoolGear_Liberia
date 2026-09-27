@@ -13,7 +13,7 @@ class GradeController extends Controller
      *
      * Lives in its own view namespace (grade-management) rather than
      * admin/grades, since that folder already holds the Grade Entry
-     * module's views (select-grade, grade-entry).
+     * module's views (select-grade, grade-entry). 
      */
     public function manage(): View
     {

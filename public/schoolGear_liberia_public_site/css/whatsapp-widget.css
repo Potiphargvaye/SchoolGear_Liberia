@@ -1,0 +1,160 @@
+
+
+/* ====== WhatsApp Floating Button ====== */
+
+
+
+.whatsapp-float {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  background: radial-gradient(circle at 35% 35%, #2eea74, #25D366 60%, #1aab52);
+  color: #fff;
+  border-radius: 50%;
+  width: 62px;
+  height: 62px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  cursor: pointer;
+  box-shadow:
+    0 4px 15px rgba(37, 211, 102, 0.45),
+    0 2px 6px rgba(0, 0, 0, 0.18);
+  animation: wa-breathe 3s ease-in-out infinite;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.35s ease;
+  will-change: transform, box-shadow;
+}
+
+.whatsapp-icon {
+  width: 30px;
+  height: 30px;
+}
+
+/* Ripple ring behind button */
+.whatsapp-float::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: rgba(37, 211, 102, 0.35);
+  animation: wa-ripple 3s ease-out infinite;
+  z-index: -1;
+}
+
+/* ── Hover: pause breathing, spring bounce, stronger glow ── */
+.whatsapp-float:hover {
+  animation-play-state: paused;
+  transform: scale(1.18) translateY(-4px);
+  box-shadow:
+    0 8px 28px rgba(37, 211, 102, 0.6),
+    0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.whatsapp-float:hover::before {
+  animation-play-state: paused;
+  opacity: 0;
+}
+
+/* ── Active / click press ── */
+.whatsapp-float:active {
+  transform: scale(0.93) translateY(1px);
+  box-shadow:
+    0 2px 10px rgba(37, 211, 102, 0.4),
+    0 1px 4px rgba(0, 0, 0, 0.15);
+  transition-duration: 0.1s;
+}
+
+/* ====== Tooltip ====== */
+.whatsapp-tooltip {
+  position: absolute;
+  bottom: calc(100% + 14px);
+  right: 50%;
+  transform: translateX(50%) translateY(6px);
+  background: #0a2a66;
+  color: #fff;
+  padding: 7px 14px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+  transition:
+    opacity 0.28s ease,
+    transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Small arrow on tooltip */
+.whatsapp-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  right: 50%;
+  transform: translateX(50%);
+  border: 6px solid transparent;
+  border-top-color: #0a2a66;
+}
+
+/* Show tooltip with upward spring on hover */
+.whatsapp-float:hover .whatsapp-tooltip {
+  opacity: 1;
+  transform: translateX(50%) translateY(0);
+}
+
+/* ====== Keyframes ====== */
+
+/* Gentle breathing — scale + soft glow pulse */
+@keyframes wa-breathe {
+  0%, 100% {
+    transform: scale(1) translateY(0);
+    box-shadow:
+      0 4px 15px rgba(37, 211, 102, 0.45),
+      0 2px 6px rgba(0, 0, 0, 0.18);
+  }
+  40% {
+    transform: scale(1.07) translateY(-3px);
+    box-shadow:
+      0 6px 22px rgba(37, 211, 102, 0.65),
+      0 3px 8px rgba(0, 0, 0, 0.2);
+  }
+  70% {
+    transform: scale(0.97) translateY(1px);
+    box-shadow:
+      0 3px 10px rgba(37, 211, 102, 0.35),
+      0 2px 5px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Expanding ripple ring */
+@keyframes wa-ripple {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 576px) {
+  .whatsapp-float {
+    width: 54px;
+    height: 54px;
+    font-size: 24px;
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .whatsapp-tooltip {
+    font-size: 12.5px;
+    padding: 6px 12px;
+  }
+}
+
+
+
