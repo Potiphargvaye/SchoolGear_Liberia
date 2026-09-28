@@ -14,7 +14,7 @@ class FeeCategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
-            ['name' => 'Registration', 'code' => 'registration'],
+            ['name' => 'Registration ', 'code' => 'registration'],
             ['name' => 'Tuition', 'code' => 'tuition'],
             ['name' => 'P.E.', 'code' => 'pe'],
             ['name' => 'Track Suit', 'code' => 'track_suit'],

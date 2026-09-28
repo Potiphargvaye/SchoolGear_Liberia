@@ -77,7 +77,8 @@ class FeeAssignment extends Model
 
     public function balance(): string
     {
-        return bcsub((string) $this->amount, $this->totalPaid(), 2);
+        $balance = round((float) $this->amount - (float) $this->totalPaid(), 2);
+        return number_format($balance, 2, '.', '');
     }
 
     /**
