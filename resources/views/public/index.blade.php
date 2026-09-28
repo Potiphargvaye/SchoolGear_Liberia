@@ -27,7 +27,7 @@
                             </p>
                             <a href="{{ route('public.register') }}" class="btn_1">Get Started Free </a>
 
-                            <a href="{{ url('/about-us') }}" class="btn_2">Explore SchoolGear</a>
+                            <a href="{{ url('/book-demo') }}" class="btn_2">Book a Live Demo </a>
                         </div>
                     </div>
                 </div>
@@ -50,7 +50,7 @@
                             One platform to manage your school, empower your staff, and keep
                             student records organized
                         </p>
-                        <a href="#" class="btn_1">See Features</a>
+                        <a href="{{ url('/about-us') }}" class="btn_1">See Features</a>
                     </div>
                 </div>
                 <div class="col-sm-6 col-xl-3">
@@ -127,7 +127,7 @@
                                 needs of schools in Liberia.
                             </li>
                         </ul>
-                        <a href="#" class="btn_1">Discover SchoolGear</a>
+                        <a href="{{ route('public.register') }}" class="btn_1">Discover SchoolGear</a>
                     </div>
                 </div>
             </div>

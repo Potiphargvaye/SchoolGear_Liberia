@@ -3,9 +3,10 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Public\PublicStudentController;
 use App\Http\Controllers\Public\SchoolRegistrationController;
+use App\Http\Controllers\Public\DemoRequestController;
 
 Route::get('/', function () {
-    return view('public.index'); // <- note the dot notation for subfolders
+    return view('public.index'); // <- note the dot notation for subfolders,
 })->name('home');
 
 Route::get('/about-us', function () {
@@ -40,6 +41,11 @@ Route::get('/registeration-form', function () {
     return view('public.registeration-form');
 });
 
+
+
+
+Route::get('/book-demo', [DemoRequestController::class, 'create'])
+    ->name('public.book-demo');
 
 Route::get('/school-registration', [SchoolRegistrationController::class, 'create'])
     ->name('public.register');

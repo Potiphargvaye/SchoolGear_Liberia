@@ -115,4 +115,7 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    // Where "new demo request" alerts are sent.
+    'demo_notify_address' => env('DEMO_REQUEST_NOTIFY_EMAIL', env('MAIL_FROM_ADDRESS')),
+
 ];

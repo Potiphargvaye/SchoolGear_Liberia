@@ -419,6 +419,15 @@
                 </a>
             </li>
 
+            @if (auth()->user()->school_id === null)
+                <li class="mb-0.5 group">
+                    <a href="{{ route('admin.demo-requests.index') }}"
+                        class="nav-link {{ request()->routeIs('admin.demo-requests.*') ? 'active' : '' }}">
+                        <i class='bx bx-calendar-check nav-icon'></i>
+                        <span class="text-sm">Demo Requests</span>
+                    </a>
+                </li>
+            @endif
 
             <div x-data="{ showLogoutModal: false }">
 

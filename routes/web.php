@@ -21,6 +21,7 @@ use App\Http\Controllers\Students\StudentPortalGradeController;
 
 
 
+
 // Debugging routes (added at the top for easy access)
 Route::get('/user-avatar/{user}', function ($user) {
     $user = App\Models\User::findOrFail($user);
@@ -83,6 +84,8 @@ require __DIR__ . '/admin/grades.php';
 require __DIR__ . '/admin/subjects.php';
 require __DIR__ . '/admin/report-cards.php';
 require __DIR__ . '/admin/attendance.php';
+
+require __DIR__ . '/admin/demo-requests.php';
 
 
 // Admin-only registration routes (added this new section)

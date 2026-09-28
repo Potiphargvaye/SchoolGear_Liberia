@@ -40,7 +40,7 @@
                             organized system, helping schools manage people, records,
                             learning, and daily activities with greater ease.
                         </p>
-                        <a href="#" class="btn_1">Explore SchoolGear</a>
+                        <a href="{{ url('/book-demo') }}" class="btn_1" style="margin-left: 10px;">Book a Consultation</a>
                     </div>
                 </div>
 

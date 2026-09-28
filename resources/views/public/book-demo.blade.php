@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register Your School | SchoolGear Liberia</title>
+    <title>Book a Live Demo | SchoolGear Liberia</title>
+    <meta name="description"
+        content="Book a live SchoolGear demo or a school consultation. Pick a date and time and our team will confirm with you.">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('schoolGear_liberia_public_site/css/whatsapp-widget.css') }}">
@@ -31,67 +33,76 @@
 
 <body class="bg-white min-h-screen flex flex-col">
     <header class="w-full px-4 sm:px-8 py-3 flex items-center justify-between border-b border-slate-200 bg-white">
-        <!-- Brand Logo Container -->
         <a href="{{ route('home') }}" class="flex items-center shrink-0">
             <img src="{{ asset('logo/logo1.jpeg') }}" alt="SchoolGear Liberia"
                 class="h-10 sm:h-12 w-auto object-contain mix-blend-multiply">
         </a>
 
-        <!-- Go Back Link -->
         <a href="{{ url('/') }}"
             class="text-sm font-medium text-slate-500 hover:text-sg-primary transition inline-flex items-center gap-1.5 shrink-0">
             <i class="fas fa-chevron-left text-xs"></i> Go back
         </a>
     </header>
+
     <main class="flex-1 bg-sg-bg">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
 
-                {{-- Left column: context + trust --}}
+                {{-- Left column: what this page is for --}}
                 <div class="lg:pt-8">
                     <h1 class="text-3xl sm:text-4xl font-bold text-sg-primaryDark leading-tight">
-                        Start a 3-month free trial
+                        Book a live SchoolGear demo
                     </h1>
                     <p class="text-slate-500 mt-3 text-base">
-                        Join Liberian schools using SchoolGear to manage admissions, academics, fees, and daily
-                        operations in one place.
+                        See how SchoolGear Liberia handles admissions, academics, fees, and daily operations, or talk
+                        through
+                        what your school needs with our team.
                     </p>
 
                     <ul class="mt-6 space-y-3">
                         <li class="flex items-start gap-2.5 text-sm text-slate-700">
                             <i class="fas fa-check text-sg-primary mt-0.5"></i>
-                            No credit card required
+                            Choose the date and time that suits you
                         </li>
                         <li class="flex items-start gap-2.5 text-sm text-slate-700">
                             <i class="fas fa-check text-sg-primary mt-0.5"></i>
-                            Full setup and training support included
+                            For Primary and Secondary schools
                         </li>
                         <li class="flex items-start gap-2.5 text-sm text-slate-700">
                             <i class="fas fa-check text-sg-primary mt-0.5"></i>
-                            Real 3-month implementation window, not a limited demo
+                            Our team confirms your session by WhatsApp or email
                         </li>
                     </ul>
 
-                    <div class="mt-10 pt-8 border-t border-slate-200">
-                        <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-4">Trusted by Schools
-                        </h3>
+                    <div class="mt-8 bg-white rounded-xl border border-slate-200 p-5">
+                        <p class="text-sm font-semibold text-sg-primaryDark">Ready to start instead?</p>
+                        <p class="text-sm text-slate-600 mt-1 leading-relaxed">
+                            This form is only for booking a demo or consultation. To set up your school on SchoolGear,
+                            register for the 3-month free trial.
+                        </p>
+                        <a href="{{ route('public.register') }}"
+                            class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-sg-primary hover:text-sg-primaryDark transition">
+                            Register your school <i class="fas fa-chevron-right text-xs"></i>
+                        </a>
+                    </div>
+
+                    <div class="mt-8 pt-8 border-t border-slate-200">
+                        <h3 class="text-sm font-semibold text-slate-500 mb-4">Trusted by schools</h3>
                         <div class="bg-white rounded-xl border border-slate-200 p-5">
                             <p class="text-sm text-slate-600 leading-relaxed">
                                 SchoolGear is already in use at
                                 <a href="https://edmolmbhs.com/" target="_blank" rel="noopener noreferrer"
-                                    class="font-semibold text-sg-primary hover:text-sg-primaryDark transition">
-                                    EDMOL Memorial Baptists High School
-                                    <i class="fas fa-chevron-right text-xs"></i></a>,
-                                helping their team manage student records, academics, and daily school operations
-                                digitally.
+                                    class="font-semibold text-sg-primaryDark underline decoration-sg-primary/30 underline-offset-2 hover:text-sg-primary transition">EDMOL
+                                    Memorial Baptists High School</a>, helping their team manage student records,
+                                academics, and daily school operations digitally.
                             </p>
                         </div>
                     </div>
                 </div>
 
-                {{-- Right column: registration card --}}
+                {{-- Right column: booking form --}}
                 <div>
-                    <livewire:public.school-registration />
+                    <livewire:public.book-demo />
                 </div>
 
             </div>
@@ -103,7 +114,6 @@
     </footer>
 
     @livewireScripts
-
 
     <!-- WhatsApp Floating Button -->
     <a href="https://wa.me/+231777987113" target="_blank" class="whatsapp-float" aria-label="Message us on WhatsApp">
