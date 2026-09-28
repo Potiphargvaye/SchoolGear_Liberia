@@ -8,14 +8,25 @@ use Illuminate\Database\Seeder;
 class FeeCategorySeeder extends Seeder
 {
     /**
-     * These are just the starting set — new categories can be added later
-     * from Admin > Fee Categories without. touching any code.
+     * Fee categories are school-scoped now, so this no longer runs
+     * blindly. Use: php artisan schoolgear:seed-fee-categories {school_id}
      */
     public function run(): void
     {
+        $this->command?->warn(
+            'FeeCategorySeeder now requires a school. Run: php artisan schoolgear:seed-fee-categories {school_id}'
+        );
+    }
+
+    /**
+     * Starting set only. Admins can add more later from
+     * Admin > Fee Categories without touching code.
+     */
+    public function runForSchool(int $schoolId): void
+    {
         $categories = [
-            ['name' => 'Registration ', 'code' => 'registration'],
-            ['name' => 'Tuition', 'code' => 'tuition'],
+            ['name' => 'Registration Fees', 'code' => 'registration'],
+            ['name' => 'Tuition Fees', 'code' => 'tuition'],
             ['name' => 'P.E.', 'code' => 'pe'],
             ['name' => 'Track Suit', 'code' => 'track_suit'],
             ['name' => 'ID Card', 'code' => 'id_card'],
@@ -36,7 +47,7 @@ class FeeCategorySeeder extends Seeder
 
         foreach ($categories as $index => $category) {
             FeeCategory::updateOrCreate(
-                ['code' => $category['code']],
+                ['school_id' => $schoolId, 'code' => $category['code']],
                 [
                     'name' => $category['name'],
                     'is_active' => true,
