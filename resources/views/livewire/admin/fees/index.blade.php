@@ -395,6 +395,26 @@
                                     class="text-slate-400 font-normal">(optional)</span></label>
                             <textarea wire:model="assignRemarks" rows="2"
                                 class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-1 focus:ring-[#155E8A]"></textarea>
+
+                            @if ($assignGradeStudentCount > 1)
+                                <div class="rounded-lg border border-amber-200 bg-amber-50 p-3">
+                                    <label class="flex items-start gap-2.5 cursor-pointer">
+                                        <input type="checkbox" wire:model.live="assignToAllInGrade"
+                                            class="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#155E8A] focus:ring-[#155E8A]">
+                                        <span class="text-sm text-slate-700">
+                                            <span class="font-semibold">Assign this fee to all students in this
+                                                grade</span>
+                                            <span class="block text-xs text-slate-500 mt-0.5">
+                                                Applies to all {{ $assignGradeStudentCount }} active students in
+                                                {{ $assignGradeLabel }}
+                                                only. Other grades are not affected. Students who already have this fee
+                                                are
+                                                skipped.
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                            @endif
                         </div>
                     </div>
 
@@ -403,6 +423,7 @@
                         <button type="button" wire:click="closeAssignModal"
                             class="px-4 py-2.5 rounded-lg border border-slate-300 text-slate-600 font-medium text-sm hover:bg-slate-100">Close</button>
                         <button type="submit" wire:loading.attr="disabled" wire:target="saveAssignment"
+                            @if ($assignToAllInGrade) wire:confirm="Assign this fee to ALL {{ $assignGradeStudentCount }} students in {{ $assignGradeLabel }}? Students who already have it will be skipped." @endif
                             class="px-5 py-2.5 rounded-lg bg-[#155E8A] hover:bg-[#0F4A6E] text-white font-semibold text-sm disabled:opacity-60">
                             <span wire:loading.remove wire:target="saveAssignment"><i
                                     class="fas fa-save text-xs mr-1"></i> Assign</span>
@@ -765,7 +786,29 @@
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Remarks</label>
                             <textarea wire:model="editRemarks" rows="2"
                                 class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm focus:ring-1 focus:ring-[#155E8A]"></textarea>
+
+                            @if ($editGradeMatchCount > 1)
+                                <div class="rounded-lg border border-amber-200 bg-amber-50 p-3">
+                                    <label class="flex items-start gap-2.5 cursor-pointer">
+                                        <input type="checkbox" wire:model.live="editApplyToGrade"
+                                            class="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#155E8A] focus:ring-[#155E8A]">
+                                        <span class="text-sm text-slate-700">
+                                            <span class="font-semibold">Assign this change to all students in this
+                                                grade</span>
+                                            <span class="block text-xs text-slate-500 mt-0.5">
+                                                Updates the {{ $editGradeMatchCount }} matching assignments (same fee
+                                                category, academic
+                                                year and installment) in {{ $editGradeLabel }} only. Students who have
+                                                already paid
+                                                only get the due date and remarks changed.
+                                            </span>
+                                        </span>
+                                    </label>
+                                </div>
+                            @endif
                         </div>
+
+
                     </div>
 
                     <div
@@ -773,6 +816,7 @@
                         <button type="button" wire:click="closeEditAssignmentModal"
                             class="px-4 py-2.5 rounded-lg border border-slate-300 text-slate-600 font-medium text-sm hover:bg-slate-100">Close</button>
                         <button type="submit" wire:loading.attr="disabled" wire:target="updateAssignment"
+                            @if ($editApplyToGrade) wire:confirm="Update this fee for {{ $editGradeMatchCount }} students in {{ $editGradeLabel }}? This changes many records at once." @endif
                             class="px-5 py-2.5 rounded-lg bg-[#155E8A] hover:bg-[#0F4A6E] text-white font-semibold text-sm disabled:opacity-60">
                             <span wire:loading.remove wire:target="updateAssignment"><i
                                     class="fas fa-save text-xs mr-1"></i> Update</span>

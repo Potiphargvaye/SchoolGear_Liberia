@@ -253,7 +253,7 @@
     </table>
 
     <div class="summary">
-        <div>Total Assigned: ${{ number_format($grandAmount, 2) }}</div>
+        <div>OverAll Tuition Assigned: ${{ number_format($grandAmount, 2) }}</div>
         <div>Total Paid: ${{ number_format($grandPaid, 2) }}</div>
         <div class="balance">Outstanding Balance: ${{ number_format($grandAmount - $grandPaid, 2) }}</div>
     </div>

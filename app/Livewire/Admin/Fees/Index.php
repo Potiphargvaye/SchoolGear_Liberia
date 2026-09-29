@@ -11,6 +11,7 @@ use App\Models\Grade;
 use App\Models\School;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Illuminate\Support\Facades\DB;
 
 class Index extends Component
 {
@@ -70,8 +71,7 @@ class Index extends Component
 
     /*
     |--------------------------------------------------------------------------
-    | Tenant helpers
-    |--------------------------------------------------------------------------
+    | Tenant helpers ------------------
     */
 
     protected function currentSchoolId(): ?int
@@ -112,6 +112,37 @@ class Index extends Component
     public $assignDueDate = '';
     public $assignRemarks = '';
 
+    // Bulk (assign)
+    public bool $assignToAllInGrade = false;
+    public $assignGradeLabel = '';
+    public int $assignGradeStudentCount = 0;
+    // Bulk (edit)
+    public bool $editApplyToGrade = false;
+    public $editGradeLabel = '';
+    public int $editGradeMatchCount = 0;
+
+    /** Active enrollments in the SAME school + grade + academic year as $source. */
+    protected function gradeEnrollmentsQuery(Enrollment $source)
+    {
+        return Enrollment::where('school_id', $source->school_id)
+            ->where('grade_id', $source->grade_id)
+            ->where('academic_year_id', $source->academic_year_id)
+            ->where('status', 'active');
+    }
+
+    protected function gradeLabel(Enrollment $enrollment): string
+    {
+        return trim(($enrollment->grade->level ?? '') . ' ' . ($enrollment->grade->section ?? '')) ?: 'this grade';
+    }
+
+    /** Null-safe match on installment_number. */
+    protected function whereInstallment($query, ?string $installment)
+    {
+        return $installment === null
+            ? $query->whereNull('installment_number')
+            : $query->where('installment_number', $installment);
+    }
+
     public function openAssignModal(int $enrollmentId)
     {
         if (! auth()->user()->can('manage fees') || $this->isPlatformAdmin()) {
@@ -119,8 +150,11 @@ class Index extends Component
         }
 
         $enrollment = Enrollment::where('school_id', $this->currentSchoolId())
-            ->with('student')
+            ->with(['student', 'grade'])
             ->findOrFail($enrollmentId);
+        $this->assignToAllInGrade = false;
+        $this->assignGradeLabel = $this->gradeLabel($enrollment);
+        $this->assignGradeStudentCount = $this->gradeEnrollmentsQuery($enrollment)->count();
 
         $this->assignEnrollmentId = $enrollment->id;
         $this->assignStudentName = $enrollment->student->name;
@@ -166,6 +200,11 @@ class Index extends Component
         $enrollment = Enrollment::where('school_id', $this->currentSchoolId())
             ->findOrFail($this->assignEnrollmentId);
 
+        if ($this->assignToAllInGrade) {
+            $this->saveBulkAssignment($enrollment);
+            return;
+        }
+
         FeeAssignment::create([
             'school_id' => $enrollment->school_id,
             'enrollment_id' => $enrollment->id,
@@ -184,6 +223,76 @@ class Index extends Component
         $this->dispatch('notify', message: "Fee assigned to {$this->assignStudentName}.", type: 'success');
     }
 
+    // New Menthod for bulk Assignmenet
+    protected function saveBulkAssignment(Enrollment $source): void
+    {
+        $schoolId = $source->school_id;
+
+        $category = FeeCategory::where('school_id', $schoolId)->find($this->assignFeeCategoryId);
+        if (! $category) {
+            $this->addError('assignFeeCategoryId', 'Selected fee category does not belong to this school.');
+            return;
+        }
+
+        if (! AcademicYear::where('school_id', $schoolId)->where('name', $this->assignAcademicYear)->exists()) {
+            $this->addError('assignAcademicYear', 'Selected academic year does not belong to this school.');
+            return;
+        }
+
+        $installment = $this->assignInstallmentNumber ?: null;
+        $gradeLabel = $this->gradeLabel($source->loadMissing('grade'));
+
+        try {
+            [$created, $skipped] = DB::transaction(function () use ($source, $schoolId, $category, $installment) {
+                $targetIds = $this->gradeEnrollmentsQuery($source)->pluck('id');
+
+                $existing = $this->whereInstallment(
+                    FeeAssignment::where('school_id', $schoolId)
+                        ->whereIn('enrollment_id', $targetIds)
+                        ->where('fee_category_id', $category->id)
+                        ->where('academic_year', $this->assignAcademicYear),
+                    $installment
+                )->lockForUpdate()->pluck('enrollment_id');
+
+                $toCreate = $targetIds->diff($existing);
+
+                foreach ($toCreate as $enrollmentId) {
+                    FeeAssignment::create([
+                        'school_id' => $schoolId,
+                        'enrollment_id' => $enrollmentId,
+                        'fee_category_id' => $category->id,
+                        'academic_year' => $this->assignAcademicYear,
+                        'installment_number' => $installment,
+                        'amount' => $this->assignAmount,
+                        'due_date' => $this->assignDueDate,
+                        'remarks' => $this->assignRemarks,
+                        'status' => 'pending',
+                        'assigned_by' => auth()->id(),
+                    ]);
+                }
+
+                return [$toCreate->count(), $existing->count()];
+            });
+        } catch (\Throwable $e) {
+            report($e);
+            $this->dispatch('notify', message: 'Bulk assignment failed. No changes were saved.', type: 'error');
+            return;
+        }
+
+        $this->showAssignModal = false;
+        $this->assignToAllInGrade = false;
+
+        if ($created === 0) {
+            $this->dispatch('notify', message: "No new assignments created. All {$skipped} students in {$gradeLabel} already have this fee.", type: 'error');
+            return;
+        }
+
+        $msg = "{$category->name} assigned to {$created} students in {$gradeLabel} successfully.";
+        if ($skipped > 0) {
+            $msg .= " {$skipped} already had it and were skipped.";
+        }
+        $this->dispatch('notify', message: $msg, type: 'success');
+    }
     /*
     |--------------------------------------------------------------------------
     | Record Payment — student pre-selected, then a short dropdown of only
@@ -370,6 +479,19 @@ class Index extends Component
         $this->editDueDate = $assignment->due_date->format('Y-m-d');
         $this->editRemarks = $assignment->remarks;
         $this->showEditAssignmentModal = true;
+
+        $enrollment = Enrollment::where('school_id', $this->currentSchoolId())
+            ->with('grade')->findOrFail($assignment->enrollment_id);
+
+        $this->editApplyToGrade = false;
+        $this->editGradeLabel = $this->gradeLabel($enrollment);
+        $this->editGradeMatchCount = $this->whereInstallment(
+            FeeAssignment::where('school_id', $assignment->school_id)
+                ->whereIn('enrollment_id', $this->gradeEnrollmentsQuery($enrollment)->pluck('id'))
+                ->where('fee_category_id', $assignment->fee_category_id)
+                ->where('academic_year', $assignment->academic_year),
+            $assignment->installment_number
+        )->count();
     }
 
     public function closeEditAssignmentModal()
@@ -385,6 +507,12 @@ class Index extends Component
         }
 
         $assignment = FeeAssignment::where('school_id', $this->currentSchoolId())->findOrFail($this->editAssignmentId);
+
+        // Bulk path: must run BEFORE the single update below touches the record
+        if ($this->editApplyToGrade) {
+            $this->updateAssignmentForGrade($assignment);
+            return;
+        }
 
         if ($assignment->isLockedForEditing()) {
             // Only due_date/remarks are editable once a payment exists.
@@ -417,11 +545,135 @@ class Index extends Component
             ]);
         }
 
+
         $assignment->recalculateStatus();
 
         $this->showEditAssignmentModal = false;
 
         $this->dispatch('notify', message: 'Success fee assignment updated.', type: 'success');
+    }
+
+
+    protected function updateAssignmentForGrade(FeeAssignment $source): void
+    {
+        $schoolId = $this->currentSchoolId();
+        $sourceEnrollment = Enrollment::where('school_id', $schoolId)->with('grade')->findOrFail($source->enrollment_id);
+        $sourceLocked = $source->isLockedForEditing();
+
+        // ORIGINAL identity of the assignment being edited. Targets are matched on this.
+        $origCategory = $source->fee_category_id;
+        $origYear = $source->academic_year;
+        $origInstallment = $source->installment_number;
+
+        if ($sourceLocked) {
+            $this->validate([
+                'editDueDate' => 'required|date',
+                'editRemarks' => 'nullable|string',
+            ]);
+        } else {
+            $this->validate([
+                'editFeeCategoryId' => 'required|exists:fee_categories,id',
+                'editAcademicYear' => $this->academicYearRules(),
+                'editInstallmentNumber' => 'nullable|string|max:255',
+                'editAmount' => 'required|numeric|min:0.01',
+                'editDueDate' => 'required|date',
+                'editRemarks' => 'nullable|string',
+            ]);
+
+            if (! FeeCategory::where('school_id', $schoolId)->whereKey($this->editFeeCategoryId)->exists()) {
+                $this->addError('editFeeCategoryId', 'Selected fee category does not belong to this school.');
+                return;
+            }
+            if (! AcademicYear::where('school_id', $schoolId)->where('name', $this->editAcademicYear)->exists()) {
+                $this->addError('editAcademicYear', 'Selected academic year does not belong to this school.');
+                return;
+            }
+        }
+
+        $newInstallment = $this->editInstallmentNumber ?: null;
+        $keyChanged = ! $sourceLocked && (
+            (int) $this->editFeeCategoryId !== (int) $origCategory
+            || $this->editAcademicYear !== $origYear
+            || $newInstallment !== $origInstallment
+        );
+
+        try {
+            [$updated, $skipped] = DB::transaction(function () use (
+                $sourceEnrollment,
+                $schoolId,
+                $origCategory,
+                $origYear,
+                $origInstallment,
+                $sourceLocked,
+                $keyChanged,
+                $newInstallment
+            ) {
+                $enrollmentIds = $this->gradeEnrollmentsQuery($sourceEnrollment)->pluck('id')
+                    ->push($sourceEnrollment->id)->unique();
+
+                $targets = $this->whereInstallment(
+                    FeeAssignment::where('school_id', $schoolId)
+                        ->whereIn('enrollment_id', $enrollmentIds)
+                        ->where('fee_category_id', $origCategory)
+                        ->where('academic_year', $origYear),
+                    $origInstallment
+                )->withCount('payments')->lockForUpdate()->get();
+
+                $updated = 0;
+                $skipped = 0;
+
+                foreach ($targets as $target) {
+                    if ($sourceLocked || $target->payments_count > 0) {
+                        // Same audit-trail rule as the single edit: only due date + remarks.
+                        $data = ['due_date' => $this->editDueDate, 'remarks' => $this->editRemarks];
+                    } else {
+                        if ($keyChanged) {
+                            $clash = $this->whereInstallment(
+                                FeeAssignment::where('school_id', $schoolId)
+                                    ->where('enrollment_id', $target->enrollment_id)
+                                    ->where('fee_category_id', $this->editFeeCategoryId)
+                                    ->where('academic_year', $this->editAcademicYear)
+                                    ->where('id', '!=', $target->id),
+                                $newInstallment
+                            )->exists();
+
+                            if ($clash) {
+                                $skipped++;
+                                continue;
+                            }
+                        }
+
+                        $data = [
+                            'fee_category_id' => $this->editFeeCategoryId,
+                            'academic_year' => $this->editAcademicYear,
+                            'installment_number' => $newInstallment,
+                            'amount' => $this->editAmount,
+                            'due_date' => $this->editDueDate,
+                            'remarks' => $this->editRemarks,
+                        ];
+                    }
+
+                    $target->update($data);
+                    $target->recalculateStatus();
+                    $updated++;
+                }
+
+                return [$updated, $skipped];
+            });
+        } catch (\Throwable $e) {
+            report($e);
+            $this->dispatch('notify', message: 'Bulk update failed. No changes were saved.', type: 'error');
+            return;
+        }
+
+        $this->showEditAssignmentModal = false;
+        $this->editApplyToGrade = false;
+
+        $msg = "Fee assignment updated for {$updated} students in {$this->editGradeLabel} successfully.";
+        if ($skipped > 0) {
+            $msg .= " {$skipped} skipped (already had an assignment with the new details).";
+        }
+        $this->dispatch('notify', message: $msg, type: 'success');
     }
 
     /*
