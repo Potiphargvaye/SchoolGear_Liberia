@@ -13,7 +13,7 @@
 
         <!-- Logo -->
         <div style="background:#ffffff; padding:22px 25px 16px; text-align:center;">
-            <img src="{{ asset('logo/download (1).png') }}" alt="SchoolGear Liberia"
+            <img src="{{ asset('logo/schoolgear-logo.png') }}" alt="SchoolGear Liberia"
                 style="height:52px; width:auto; border:0;">
         </div>
 
