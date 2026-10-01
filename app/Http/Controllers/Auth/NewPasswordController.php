@@ -20,7 +20,13 @@ class NewPasswordController extends Controller
      */
     public function create(Request $request): View
     {
-        return view('auth.reset-password', ['request' => $request]);
+        $user = User::where('email', $request->query('email'))->first();
+        $school = $user?->school; // null for unknown email, platform admin, etc.
+
+        return view('auth.reset-password', [
+            'request' => $request,
+            'school'  => $school,
+        ]);
     }
 
     /**
@@ -33,7 +39,7 @@ class NewPasswordController extends Controller
         $request->validate([
             'token' => ['required'],
             'email' => ['required', 'email'],
-           'password' => ['required', 'confirmed'],
+            'password' => ['required', 'confirmed'],
         ]);
 
         // Here we will attempt to reset the user's password. If it is successful we
@@ -43,24 +49,24 @@ class NewPasswordController extends Controller
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function (User $user) use ($request) {
 
-    $user->forceFill([
-        'password' => Hash::make($request->password),
-        'remember_token' => Str::random(60),
-    ])->save();
+                $user->forceFill([
+                    'password' => Hash::make($request->password),
+                    'remember_token' => Str::random(60),
+                ])->save();
 
-    event(new PasswordReset($user));
+                event(new PasswordReset($user));
 
-    // ✅ SEND SUCCESS EMAIL AFTER RESET
-    $user->notify(new PasswordResetSuccessNotification($user));
-}
+                // ✅ SEND SUCCESS EMAIL AFTER RESET
+                $user->notify(new PasswordResetSuccessNotification($user));
+            }
         );
 
         // If the password was successfully reset, we will redirect the user back to
         // the application's home authenticated view. If there is an error we can
         // redirect them back to where they came from with their error message.
         return $status == Password::PASSWORD_RESET
-                    ? redirect()->route('login')->with('status', __($status))
-                    : back()->withInput($request->only('email'))
-                        ->withErrors(['email' => __($status)]);
+            ? redirect()->route('login')->with('status', __($status))
+            : back()->withInput($request->only('email'))
+            ->withErrors(['email' => __($status)]);
     }
 }

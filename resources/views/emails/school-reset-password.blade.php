@@ -15,7 +15,7 @@
         $logoUrl =
             $school && $school->logo
                 ? \Illuminate\Support\Facades\Storage::disk('public')->url($school->logo)
-                : asset('logo/logo1.jpeg');
+                : asset('logo/schoolgear-logo.png');
     @endphp
 
     <div
