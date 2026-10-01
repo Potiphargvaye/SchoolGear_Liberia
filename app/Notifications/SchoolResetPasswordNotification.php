@@ -26,11 +26,15 @@ class SchoolResetPasswordNotification extends Notification
             'email' => $notifiable->getEmailForPasswordReset(),
         ], false));
 
+        $school = $notifiable->school; // null for the Platform Admin
+        $schoolName = $school->school_name ?? 'SchoolGear Liberia';
+
         return (new MailMessage)
-            ->subject('Password Reset | ED-Mol Memorial Matadi Baptist High School')
+            ->subject("Password Reset | {$schoolName}")
             ->view('emails.school-reset-password', [
-                'user' => $notifiable,
-                'url' => $url,
+                'user'   => $notifiable,
+                'school' => $school,
+                'url'    => $url,
             ]);
     }
 }

@@ -24,10 +24,14 @@ class PasswordResetSuccessNotification extends Notification
 
     public function toMail($notifiable)
     {
+        $school = $this->user->school;
+        $schoolName = $school->school_name ?? 'SchoolGear Liberia';
+
         return (new MailMessage)
-            ->subject('🔐ED-Mol Portal - Password Reset Successful')
+            ->subject("Password Reset Successful | {$schoolName}")
             ->view('emails.school-password-reset-success', [
-                'user' => $this->user
+                'user'   => $this->user,
+                'school' => $school,
             ]);
     }
 }
