@@ -12,12 +12,12 @@
         $schoolName = $school->school_name ?? 'SchoolGear Liberia';
         $tagline = $school ? 'Academic Management Portal' : 'School Management Platform';
 
-        $logoUrl =
-            $school && $school->logo
-                ? \Illuminate\Support\Facades\Storage::disk('public')->url($school->logo)
-                : asset('logo/schoolgear-logo.png');
-    @endphp
+        $logoUrl = asset('logo/schoolgear-logo.png');
 
+        if ($school && $school->logo && \Illuminate\Support\Facades\Storage::disk('public')->exists($school->logo)) {
+            $logoUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($school->logo);
+        }
+    @endphp
     <div
         style="max-width:600px; margin:40px auto; background:#ffffff; border-radius:10px; overflow:hidden; border:1px solid #e5e7eb;">
 
