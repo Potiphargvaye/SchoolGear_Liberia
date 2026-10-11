@@ -100,6 +100,7 @@ class StudentGradeController extends Controller
         $enrollments = Enrollment::where('school_id', $schoolId)
             ->where('grade_id', $gradeId)
             ->where('academic_year_id', $academicYearId)
+            ->where('status', 'active')
             ->with('student')
             ->get();
 

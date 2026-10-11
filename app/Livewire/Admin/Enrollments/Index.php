@@ -209,7 +209,7 @@ class Index extends Component
     public function render()
     {
         $enrollments = Enrollment::where('school_id', $this->currentSchoolId())
-            ->where('status', $this->status)
+            ->when($this->status, fn($q) => $q->where('status', $this->status))
             ->when($this->gradeFilter, fn($q) => $q->where('grade_id', $this->gradeFilter))
             ->when($this->academicYearId, fn($q) => $q->where('academic_year_id', $this->academicYearId))
             ->when($this->search, function ($q) {

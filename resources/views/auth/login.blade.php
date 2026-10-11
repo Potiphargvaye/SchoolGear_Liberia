@@ -95,6 +95,20 @@
             overflow: hidden;
             pointer-events: none;
             z-index: 0;
+
+            /* NEW: whole layer fades in slowly after a short pause */
+            opacity: 0;
+            animation: iconsFadeIn 5s ease-out 1.5s forwards;
+        }
+
+        @keyframes iconsFadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
         }
 
         .float-icon {
@@ -104,6 +118,12 @@
             animation-name: iconFloat, iconGlow;
             animation-timing-function: ease-in-out, ease-in-out;
             animation-iteration-count: infinite, infinite;
+            animation-fill-mode: both, both;
+            /* NEW: hold the first (dim) keyframe during the delay */
+            opacity: var(--icon-opacity, 0.2);
+            /* NEW: dim starting state */
+            filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.15));
+            /* NEW: no glow at the start */
             user-select: none;
         }
 
@@ -187,11 +207,10 @@
 
                 <div class="flex flex-col items-center text-center mb-6">
                     <div
-                        class="h-20 w-20 rounded-full bg-white/10 border border-white/20 flex items-center justify-center mb-5 overflow-hidden">
+                        class="h-24 w-24 rounded-full bg-white shadow-lg ring-4 ring-white/30 flex items-center justify-center mb-5 overflow-hidden p-1">
 
-                        <img src="{{ asset('logo/download (1).png
-                                                ') }}" alt="SchoolGear Logo"
-                            class="h-16 w-16 object-contain">
+                        <img src="{{ asset('logo/hello1.png') }}" alt="SchoolGear Logo"
+                            class="h-full w-full object-contain">
 
                     </div>
                     <h1 class="text-white text-2xl lg:text-[26px] font-bold tracking-tight">Welcome to SchoolGear
@@ -491,9 +510,9 @@
                 span.style.setProperty('--icon-opacity', iconOpacity);
 
                 const floatDuration = (8 + Math.random() * 10).toFixed(2); // 8s - 18s
-                const floatDelay = (Math.random() * 6).toFixed(2); // 0s - 6s
+                const floatDelay = (3 + Math.random() * 4).toFixed(2); // CHANGED: 3s - 7s
                 const glowDuration = (3 + Math.random() * 3).toFixed(2); // 3s - 6s
-                const glowDelay = (Math.random() * 4).toFixed(2); // 0s - 4s
+                const glowDelay = (3 + Math.random() * 4).toFixed(2); // CHANGED: 3s - 7s
 
                 span.style.animationDuration = `${floatDuration}s, ${glowDuration}s`;
                 span.style.animationDelay = `${floatDelay}s, ${glowDelay}s`;

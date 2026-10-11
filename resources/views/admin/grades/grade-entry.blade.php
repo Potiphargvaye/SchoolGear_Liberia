@@ -82,7 +82,7 @@
                         <input type="text" id="studentSearch" placeholder="Search student..."
                             class="border rounded px-3 py-1 text-sm w-48 focus:outline-none focus:ring-1 focus:ring-gray-400">
 
-                        <!-- Lock/Unlock Button -->
+                        <!-- Lock/Unlock Button. -->
                         @can('lock & unlock grade submission')
                             <button type="button"
                                 class="bg-red-600 text-white px-3 py-1 rounded shadow hover:bg-red-700 text-sm"

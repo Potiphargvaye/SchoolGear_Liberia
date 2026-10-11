@@ -17,6 +17,7 @@ class Index extends Component
     public string $search = '';
     public string $gradeFilter = '';
     public string $academicYearFilter = '';
+    public string $statusFilter = '';
 
     public function updatedSearch()
     {
@@ -28,6 +29,11 @@ class Index extends Component
     }
 
     public function updatedAcademicYearFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedStatusFilter()
     {
         $this->resetPage();
     }
@@ -104,6 +110,9 @@ class Index extends Component
             ->when($this->academicYearFilter, function ($q) {              // ← ADD THIS BLOCK
                 $q->whereHas('enrollment', fn($q) => $q->where('academic_year_id', $this->academicYearFilter));
             })
+            ->when($this->statusFilter, function ($q) {                    // ← ADD THIS BLOCK
+                $q->whereHas('enrollment', fn($q) => $q->where('status', $this->statusFilter));
+            })
             ->when($this->search, function ($q) {
                 $q->where(function ($q) {
                     $q->where('name', 'like', "%{$this->search}%")
@@ -126,9 +135,13 @@ class Index extends Component
             'grades' => $grades,
             'academicYears' => $academicYears,   // ← ADD THIS LINE
             'totalStudents' => Student::where('school_id', $this->currentSchoolId())
-                ->when($this->academicYearFilter, function ($q) {                              // ← CHANGED
+                ->when($this->academicYearFilter, function ($q) {
                     $q->whereHas('enrollment', fn($q) => $q->where('academic_year_id', $this->academicYearFilter));
-                })->count(),
+                })
+                ->when($this->statusFilter, function ($q) {
+                    $q->whereHas('enrollment', fn($q) => $q->where('status', $this->statusFilter));
+                })
+                ->count(),
             'activeCount' => $this->statusCount('active'),          // ← ADD
             'graduatedCount' => $this->statusCount('graduated'),    // ← ADD
             'suspendedCount' => $this->statusCount('suspended'),    // ← ADD

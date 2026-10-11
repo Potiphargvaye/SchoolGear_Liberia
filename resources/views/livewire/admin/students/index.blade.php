@@ -105,6 +105,16 @@
                 <option value="{{ $grade->id }}">{{ $grade->level }} {{ $grade->section }}</option>
             @endforeach
         </select>
+        {{-- ADD THIS SELECT: STATUS FILTER --}}
+        <select wire:model.live="statusFilter" class="rounded-lg border border-slate-300 px-3 py-2.5 text-sm">
+            <option value="">All Statuses</option>
+            <option value="active">Active</option>
+            <option value="graduated">Graduated</option>
+            <option value="suspended">Suspended</option>
+            <option value="transferred">Transferred</option>
+            <option value="dropped_out">Dropped Out</option>
+            <option value="expelled">Expelled</option>
+        </select>
         {{-- ADD THIS SELECT --}}
         <select wire:model.live="academicYearFilter" class="rounded-lg border border-slate-300 px-3 py-2.5 text-sm">
             <option value="">All Academic Years</option>
@@ -191,8 +201,8 @@
                                     @endif
 
                                     @if ($canEdit)
-                                        <a href="{{ route('admin.students.show', $student->id) }}?edit=1" wire:navigate
-                                            title="Edit"
+                                        <a href="{{ route('admin.students.show', $student->id) }}?edit=1"
+                                            wire:navigate title="Edit"
                                             class="h-8 w-8 rounded-md bg-amber-100 hover:bg-amber-600 hover:text-white text-amber-700 flex items-center justify-center">
                                             <i class="fas fa-pen text-xs"></i>
                                         </a>

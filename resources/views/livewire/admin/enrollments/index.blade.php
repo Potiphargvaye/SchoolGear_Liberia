@@ -16,10 +16,10 @@
 
     {{-- Status Tabs with counts --}}
     <div class="flex flex-wrap gap-2">
-        @foreach (['active' => 'Active', 'graduated' => 'Graduated', 'transferred' => 'Transferred', 'dropped_out' => 'Dropped Out', 'suspended' => 'Suspended', 'expelled' => 'Expelled'] as $key => $label)
+        @foreach (['' => 'All', 'active' => 'Active', 'graduated' => 'Graduated', 'transferred' => 'Transferred', 'dropped_out' => 'Dropped Out', 'suspended' => 'Suspended', 'expelled' => 'Expelled'] as $key => $label)
             <button wire:click="$set('status', '{{ $key }}')"
                 class="px-4 py-2 rounded-lg text-sm font-semibold transition-colors {{ $status === $key ? 'bg-[#155E8A] text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200' }}">
-                {{ $label }} ({{ $statusCounts[$key] ?? 0 }})
+                {{ $label }} ({{ $key === '' ? $statusCounts->sum() : $statusCounts[$key] ?? 0 }})
             </button>
         @endforeach
     </div>
@@ -52,6 +52,7 @@
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold uppercase">Name</th>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold uppercase">Grade</th>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold uppercase">Academic Year</th>
+                        <th class="px-4 sm:px-6 py-3 text-center text-xs font-semibold uppercase">Status</th>
                         <th class="px-4 sm:px-6 py-3 text-center text-xs font-semibold uppercase">Actions</th>
                     </tr>
                 </thead>
@@ -69,6 +70,24 @@
                             <td class="px-4 sm:px-6 py-3 text-slate-600">{{ $enrollment->grade->level }}
                                 {{ $enrollment->grade->section }}</td>
                             <td class="px-4 sm:px-6 py-3 text-slate-600">{{ $enrollment->academicYear->name }}</td>
+
+                            {{-- ADD --}}
+                            <td class="px-4 sm:px-6 py-3 text-center">
+                                @php $st = $enrollment->status; @endphp
+                                @if ($st === 'active')
+                                    <span
+                                        class="px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-700">Active</span>
+                                @elseif ($st === 'graduated')
+                                    <span
+                                        class="px-2.5 py-1 rounded-full text-xs font-medium bg-sky-100 text-[#155E8A]">Graduated</span>
+                                @elseif ($st === 'suspended')
+                                    <span
+                                        class="px-2.5 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700">Suspended</span>
+                                @else
+                                    <span
+                                        class="px-2.5 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 capitalize">{{ str_replace('_', ' ', $st) }}</span>
+                                @endif
+                            </td>
                             <td class="px-4 sm:px-6 py-3">
                                 <div class="flex justify-center flex-wrap gap-2">
                                     @if ($canManage && $enrollment->status === 'active')
@@ -146,7 +165,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-14">
+                            <td colspan="6" class="text-center py-14">
                                 <i class="fas fa-graduation-cap text-4xl text-slate-300 mb-3"></i>
                                 <p class="text-slate-500 text-sm">No enrollments found.</p>
                             </td>
