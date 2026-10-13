@@ -32,4 +32,8 @@ Route::middleware(['auth'])
         Route::get('/grades/audit-trail', [\App\Http\Controllers\Admin\GradeController::class, 'auditTrail'])
             ->middleware('permission:view grade audit trail')
             ->name('grades.audit-trail');
+
+        Route::get('/grades/export', [StudentGradeController::class, 'export'])
+            ->middleware('permission:enter student grades')
+            ->name('grades.export');
     });

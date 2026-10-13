@@ -10,6 +10,9 @@ use App\Models\GradeAudit;
 use App\Models\GradeLock;
 use App\Models\StudentGrade;
 use Illuminate\Http\Request;
+use App\Exports\GradeSheetExport;
+use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class StudentGradeController extends Controller
 {
@@ -327,6 +330,73 @@ class StudentGradeController extends Controller
             'academic_year_id' => $academicYearId,
         ])->with('success', 'Grades saved successfully 🎉');
     }
+
+    /**
+     * Resolves exactly what the Grade Entry sheet shows for a grade + academic
+     * year (same school scoping, Teacher grade/subject guards, and active-only
+     * enrollments as load()), so the export can never include anything the
+     * sheet itself hides.
+     */
+    protected function sheetContext(Request $request): array
+    {
+        $user = auth()->user();
+        $schoolId = $this->currentSchoolId();
+        $isTeacher = $user->hasRole('Teacher');
+
+        $gradeId = $request->grade_id;
+        $academicYearId = $request->academic_year_id;
+
+        if ($isTeacher) {
+            $allowedGradeIds = $user->teacherGrades()->pluck('grades.id')->toArray();
+            if (! in_array((int) $gradeId, $allowedGradeIds)) {
+                abort(403, 'You are not assigned to this grade.');
+            }
+        }
+
+        $grade = Grade::findOrFail($gradeId);
+        $academicYear = AcademicYear::where('school_id', $schoolId)->findOrFail($academicYearId);
+
+        $subjectsQuery = AcademicSubject::where('school_id', $schoolId)
+            ->where('level', Grade::resolveLevel($grade->level));
+
+        if ($isTeacher) {
+            $subjectsQuery->whereIn('id', $user->teacherSubjects()->pluck('academic_subjects.id')->toArray());
+        }
+
+        $subjects = $subjectsQuery->get();
+
+        $enrollments = Enrollment::where('school_id', $schoolId)
+            ->where('grade_id', $gradeId)
+            ->where('academic_year_id', $academicYearId)
+            ->where('status', 'active')
+            ->with('student.user')
+            ->get();
+
+        $grades = StudentGrade::where('school_id', $schoolId)
+            ->whereIn('enrollment_id', $enrollments->pluck('id'))
+            ->get()
+            ->keyBy(fn($g) => $g->enrollment_id . '-' . $g->academic_subject_id);
+
+        return compact('grade', 'academicYear', 'subjects', 'enrollments', 'grades');
+    }
+
+    public function export(Request $request)
+    {
+        $this->authorize('enter student grades');
+
+        ['grade' => $grade, 'academicYear' => $academicYear, 'subjects' => $subjects, 'enrollments' => $enrollments, 'grades' => $grades]
+            = $this->sheetContext($request);
+
+        $gradeLabel = $grade->level . ($grade->section ? ' - ' . $grade->section : '');
+
+        $filename = 'grade-entry-' . Str::slug($gradeLabel) . '-' . Str::slug($academicYear->name) . '-' . now()->format('Y-m-d') . '.xlsx';
+
+        return Excel::download(
+            new GradeSheetExport($enrollments, $subjects, $grades, $gradeLabel, $academicYear->name),
+            $filename
+        );
+    }
+
 
     public function lockSemester(Request $request)
     {

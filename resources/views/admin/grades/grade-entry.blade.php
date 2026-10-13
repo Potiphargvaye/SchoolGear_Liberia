@@ -91,9 +91,14 @@
                             </button>
                         @endcan
 
+                        <!-- Export Button -->
+                        <button type="button" id="exportBtn" onclick="exportGradeSheet(this)"
+                            class="bg-[#155E8A] text-white px-3 py-2 hover:bg-[#0F4A6E] rounded text-xs inline-flex items-center gap-1.5">
+                            <i class="fas fa-file-excel"></i> Export to Excel
+                        </button>
                         <!-- Save Changes Button -->
-                        <button type="button" onclick="submitGrades()"
-                            class="bg-[#25D366] text-white px-3 py-2 hover:bg-[#1ebe5d] rounded text-xs">
+                        <button type="button" onclick="submitGrades(this)"
+                            class="bg-[#25D366] text-white px-3 py-2 hover:bg-[#1ebe5d] rounded text-xs inline-flex items-center gap-1.5">
                             Save Changes
                         </button>
 
@@ -262,8 +267,8 @@
             <!-- Footer Save Button -->
             <div class="card-footer text-end">
                 <!-- CHANGE #12: green save button -->
-                <button type="button" onclick="submitGrades()"
-                    class="bg-[#25D366] text-white px-3 py-2 hover:bg-[#1ebe5d] rounded text-xs">
+                <button type="button" onclick="submitGrades(this)"
+                    class="bg-[#25D366] text-white px-3 py-2 hover:bg-[#1ebe5d] rounded text-xs inline-flex items-center gap-1.5">
                     Save Changes
                 </button>
             </div>
@@ -479,8 +484,55 @@
         });
 
 
+        // ───── EXPORT STUDENT RECORDS  Function (Excel) ─────
+        async function exportGradeSheet(btn) {
+            const url = "{{ route('grades.export') }}" + window.location.search;
+            const originalHtml = btn.innerHTML; // <-- add this line
+
+            btn.disabled = true;
+            btn.classList.add('opacity-70', 'cursor-not-allowed');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Exporting...';
+
+
+            try {
+                const response = await fetch(url, {
+                    credentials: 'same-origin',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Export failed (' + response.status + ')');
+                }
+
+                const blob = await response.blob();
+
+                // Use the server's filename if present
+                let filename = 'grade-entry-export.xlsx';
+                const disposition = response.headers.get('Content-Disposition');
+                const match = disposition && disposition.match(/filename\*?=(?:UTF-8'')?"?([^";]+)"?/i);
+                if (match) filename = decodeURIComponent(match[1]);
+
+                const objectUrl = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = objectUrl;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                link.remove();
+                URL.revokeObjectURL(objectUrl);
+            } catch (error) {
+                console.error(error);
+                alert('Could not export the records. Please try again.');
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-70', 'cursor-not-allowed');
+                btn.innerHTML = originalHtml;
+            }
+        }
         // =====for my form submission to alow every data to be inserted insted of 10 rows only  ======
-        function submitGrades() {
+        function submitGrades(btn) {
             let gradesData = {};
 
             document.querySelectorAll('input[name]').forEach(function(input) {
@@ -513,12 +565,18 @@
                 input.disabled = true;
             });
 
+            // ───── NEW: "Saving..." state ─────
+            if (btn) {
+                btn.disabled = true;
+                btn.classList.add('opacity-70', 'cursor-not-allowed');
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving...';
+            }
+
             console.log('Submitting grades for students:', Object.keys(gradesData).length);
 
             // Submit
             document.getElementById('gradesForm').submit();
         }
-
 
         // ─────────────────────────────────────────
         // ARROW KEY NAVIGATION (Excel-like)
