@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School Registration on SchoolGear | SchoolGear Liberia</title>
-    <meta name="description" content="Register a school on SchoolGear Liberia to create its account and organize admissions, student records, fees and grades with the school management platform.">
+    <meta name="description"
+        content="Register a school on SchoolGear Liberia to create its account and organize admissions, student records, fees and grades with the school management platform.">
 
     @php
         $seoHost = preg_replace('/^www\./i', '', parse_url(config('app.url'), PHP_URL_HOST));
@@ -17,7 +18,8 @@
     <link rel="canonical" href="{{ $seoCanonical }}">
     <meta name="robots" content="index, follow">
     <meta property="og:title" content="School Registration on SchoolGear | SchoolGear Liberia">
-    <meta property="og:description" content="Register a school on SchoolGear Liberia to create its account and organize admissions, student records, fees and grades with the school management platform.">
+    <meta property="og:description"
+        content="Register a school on SchoolGear Liberia to create its account and organize admissions, student records, fees and grades with the school management platform.">
     @if ($seoOgImage)
         <meta property="og:image" content="{{ $seoOgImage }}">
     @endif
@@ -26,7 +28,8 @@
     <meta property="og:site_name" content="SchoolGear Liberia">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="School Registration on SchoolGear | SchoolGear Liberia">
-    <meta name="twitter:description" content="Register a school on SchoolGear Liberia to create its account and organize admissions, student records, fees and grades with the school management platform.">
+    <meta name="twitter:description"
+        content="Register a school on SchoolGear Liberia to create its account and organize admissions, student records, fees and grades with the school management platform.">
     @if ($seoOgImage)
         <meta name="twitter:image" content="{{ $seoOgImage }}">
     @endif
@@ -54,6 +57,11 @@
     </script>
     <link rel="stylesheet" href="{{ asset('schoolGear_liberia_public_site/css/sg-cursor.css') }}">
     <script src="{{ asset('schoolGear_liberia_public_site/js/sg-cursor.js') }}" defer></script>
+    <link rel="stylesheet"
+        href="{{ asset('schoolGear_liberia_public_site/css/sg-cursor.css') }}?v={{ @filemtime(public_path('schoolGear_liberia_public_site/css/sg-cursor.css')) }}">
+    <script
+        src="{{ asset('schoolGear_liberia_public_site/js/sg-cursor.js') }}?v={{ @filemtime(public_path('schoolGear_liberia_public_site/js/sg-cursor.js')) }}"
+        defer></script>
 </head>
 
 <body class="bg-white min-h-screen flex flex-col">

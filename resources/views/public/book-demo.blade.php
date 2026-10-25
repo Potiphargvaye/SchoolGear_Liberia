@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Book a Live School Software Demo | SchoolGear Liberia</title>
-    <meta name="description" content="Book a live demo or school consultation with SchoolGear Liberia to see its tools for admissions, academic management, fees and daily school operations.">
+    <meta name="description"
+        content="Book a live demo or school consultation with SchoolGear Liberia to see its tools for admissions, academic management, fees and daily school operations.">
 
     @php
         $seoHost = preg_replace('/^www\./i', '', parse_url(config('app.url'), PHP_URL_HOST));
@@ -17,7 +18,8 @@
     <link rel="canonical" href="{{ $seoCanonical }}">
     <meta name="robots" content="index, follow">
     <meta property="og:title" content="Book a Live School Software Demo | SchoolGear Liberia">
-    <meta property="og:description" content="Book a live demo or school consultation with SchoolGear Liberia to see its tools for admissions, academic management, fees and daily school operations.">
+    <meta property="og:description"
+        content="Book a live demo or school consultation with SchoolGear Liberia to see its tools for admissions, academic management, fees and daily school operations.">
     @if ($seoOgImage)
         <meta property="og:image" content="{{ $seoOgImage }}">
     @endif
@@ -26,7 +28,8 @@
     <meta property="og:site_name" content="SchoolGear Liberia">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Book a Live School Software Demo | SchoolGear Liberia">
-    <meta name="twitter:description" content="Book a live demo or school consultation with SchoolGear Liberia to see its tools for admissions, academic management, fees and daily school operations.">
+    <meta name="twitter:description"
+        content="Book a live demo or school consultation with SchoolGear Liberia to see its tools for admissions, academic management, fees and daily school operations.">
     @if ($seoOgImage)
         <meta name="twitter:image" content="{{ $seoOgImage }}">
     @endif
@@ -54,6 +57,11 @@
     </script>
     <link rel="stylesheet" href="{{ asset('schoolGear_liberia_public_site/css/sg-cursor.css') }}">
     <script src="{{ asset('schoolGear_liberia_public_site/js/sg-cursor.js') }}" defer></script>
+    <link rel="stylesheet"
+        href="{{ asset('schoolGear_liberia_public_site/css/sg-cursor.css') }}?v={{ @filemtime(public_path('schoolGear_liberia_public_site/css/sg-cursor.css')) }}">
+    <script
+        src="{{ asset('schoolGear_liberia_public_site/js/sg-cursor.js') }}?v={{ @filemtime(public_path('schoolGear_liberia_public_site/js/sg-cursor.js')) }}"
+        defer></script>
 </head>
 
 <body class="bg-white min-h-screen flex flex-col">

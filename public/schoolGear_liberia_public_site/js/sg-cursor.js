@@ -73,10 +73,8 @@
       place(t.clientX, t.clientY, hovering ? 1.9 : 1.5);
     }
     function endTouch() {
-      lastTouch = Date.now();
-      clearTimeout(hideTimer);
-      hideTimer = setTimeout(hide, 350);
-    }
+  lastTouch = Date.now();
+}
     document.addEventListener('touchstart', onTouch, { passive: true });
     document.addEventListener('touchmove', onTouch, { passive: true });
     document.addEventListener('touchend', endTouch, { passive: true });

@@ -6,7 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     @php
         $seoTitle = trim($__env->yieldContent('title', 'SchoolGear Liberia'));
-        $seoDescription = trim($__env->yieldContent('description', 'SchoolGear Liberia is a school management platform helping schools simplify administration, manage academic information, and connect their school community through technology.'));
+        $seoDescription = trim(
+            $__env->yieldContent(
+                'description',
+                'SchoolGear Liberia is a school management platform helping schools simplify administration, manage academic information, and connect their school community through technology.',
+            ),
+        );
         $seoHost = preg_replace('/^www\./i', '', parse_url(config('app.url'), PHP_URL_HOST));
         $seoCanonical = trim($__env->yieldContent('canonical', 'https://' . $seoHost . request()->getPathInfo()));
         $seoRobots = trim($__env->yieldContent('robots', 'index, follow'));
@@ -59,6 +64,12 @@
     @stack('styles')
     <link rel="stylesheet" href="{{ asset('schoolGear_liberia_public_site/css/sg-cursor.css') }}">
     <script src="{{ asset('schoolGear_liberia_public_site/js/sg-cursor.js') }}" defer></script>
+
+    <link rel="stylesheet"
+        href="{{ asset('schoolGear_liberia_public_site/css/sg-cursor.css') }}?v={{ @filemtime(public_path('schoolGear_liberia_public_site/css/sg-cursor.css')) }}">
+    <script
+        src="{{ asset('schoolGear_liberia_public_site/js/sg-cursor.js') }}?v={{ @filemtime(public_path('schoolGear_liberia_public_site/js/sg-cursor.js')) }}"
+        defer></script>
 </head>
 
 <body>
@@ -138,7 +149,8 @@
                                     </li>
 
                                     <li class="nav-item header_cta_item">
-                                        <a class="btn_2 header_signin_btn" href="{{ route('login') }}" id="signInBtn">
+                                        <a class="btn_2 header_signin_btn" href="{{ route('login') }}"
+                                            id="signInBtn">
                                             <span class="signin_btn_text">Sign In</span>
                                             <span class="signin_btn_spinner"></span>
                                         </a>
