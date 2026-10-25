@@ -1,10 +1,11 @@
 @extends('public.layouts.public')
 
-@section('title', 'About Us | SchoolGear Liberia')
+@section('title', 'About Our School Management Platform | SchoolGear Liberia')
 
-@section('description',
-    'Learn about SchoolGear Liberia, why it was created, the problem it was built to solve, our
-    mission, vision, journey, and our goal of helping schools across Liberia embrace better digital management.')
+@section('description')
+    Learn about SchoolGear Liberia, a school management platform for Liberian schools to organize student records,
+    admissions, fees, grades and administration.
+@endsection
 
 @section('content')
 
@@ -15,7 +16,7 @@
                 <div class="col-lg-12">
                     <div class="breadcrumb_iner text-center">
                         <div class="breadcrumb_iner_item">
-                            <h2>About Us</h2>
+                            <h1>About SchoolGear</h1>
                             <p>Home<span>/</span>About Us</p>
                         </div>
                     </div>

@@ -1,10 +1,46 @@
 @extends('public.layouts.public')
 
-@section('title', 'SchoolGear Liberia | Powering Smarter Schools')
+@section('title', 'School Management System in Liberia | SchoolGear Liberia')
 
-@section('description',
-    'SchoolGear Liberia is a school management platform helping schools simplify administration,
-    manage academic information, and connect their school community through technology.')
+@section('description')
+SchoolGear Liberia is school administration software for Liberian schools: manage admissions, student records, fees, grades and report cards in one platform.
+@endsection
+
+@push('json-ld')
+    @php
+        $structuredHost = preg_replace('/^www\./i', '', parse_url(config('app.url'), PHP_URL_HOST));
+        $structuredUrl = 'https://' . $structuredHost;
+        $organizationData = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            'name' => 'SchoolGear Liberia',
+            'url' => $structuredUrl,
+            'telephone' => '+231 77 012 3498',
+            'address' => 'Airfield, Sinkor, Monrovia, Liberia',
+        ];
+        if (file_exists(public_path('logo/download.png'))) {
+            $organizationData['logo'] = $structuredUrl . '/logo/download.png';
+        }
+        $websiteData = [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebSite',
+            'name' => 'SchoolGear Liberia',
+            'url' => $structuredUrl,
+        ];
+        $applicationData = [
+            '@context' => 'https://schema.org',
+            '@type' => 'SoftwareApplication',
+            'name' => 'SchoolGear Liberia',
+            'url' => $structuredUrl,
+            'applicationCategory' => 'EducationalApplication',
+            'operatingSystem' => 'Web',
+            'description' => 'School management tools for admissions, enrollment, fees, grades, report cards, and student records.',
+        ];
+    @endphp
+    <script type="application/ld+json">@json($organizationData)</script>
+    <script type="application/ld+json">@json($websiteData)</script>
+    <script type="application/ld+json">@json($applicationData)</script>
+@endpush
 
 @section('content')
 

@@ -1,8 +1,11 @@
 @extends('public.layouts.public')
 
-@section('title', 'Registeration - Edmol MBHS')
-@section('description', 'Resister your child child Now! Edmol MBHS.')
-@section('canonical_url', 'https://www.edmolmbhs.com/registeration-form')
+@section('title', 'Online Student Registration Form | SchoolGear Liberia')
+@section('robots', 'noindex, nofollow')
+
+@section('description')
+Submit a student's details online through SchoolGear Liberia for registration and admission, including the class applying for and previous school information.
+@endsection
 
 @section('content')
     <meta name="csrf-token" content="{{ csrf_token() }}">

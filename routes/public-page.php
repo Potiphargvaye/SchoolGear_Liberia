@@ -13,29 +13,34 @@ Route::get('/about-us', function () {
     return view('public.about-us');
 });
 
-Route::get('/fees-structure', function () {
-    return view('public.fees-structure');
-});
-
-Route::get('/courses', function () {
-    return view('public.courses');
-});
-
-
-Route::get('/teachers', function () {
-    return view('public.teachers');
-});
-
-
 Route::get('/contact-us', function () {
     return view('public.contact-us');
 });
 
+Route::get('/sitemap.xml', function () {
+    $host = parse_url(config('app.url'), PHP_URL_HOST) ?: 'schoolgearliberia.com';
+    $host = preg_replace('/^www\./i', '', $host);
+    $baseUrl = 'https://' . $host;
+    $pages = [
+        '/' => resource_path('views/public/index.blade.php'),
+        '/about-us' => resource_path('views/public/about-us.blade.php'),
+        '/contact-us' => resource_path('views/public/contact-us.blade.php'),
+        '/book-demo' => resource_path('views/public/book-demo.blade.php'),
+        '/school-registration' => resource_path('views/public/register.blade.php'),
+    ];
 
-Route::get('/blog', function () {
-    return view('public.blog');
+    $urls = [];
+    foreach ($pages as $path => $viewPath) {
+        $urls[] = [
+            'loc' => $baseUrl . ($path === '/' ? '/' : $path),
+            'lastmod' => date(DATE_ATOM, filemtime($viewPath)),
+        ];
+    }
+
+    return response()->view('public.sitemap', compact('urls'), 200, [
+        'Content-Type' => 'application/xml; charset=UTF-8',
+    ]);
 });
-
 
 Route::get('/registeration-form', function () {
     return view('public.registeration-form');

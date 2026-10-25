@@ -1,21 +1,15 @@
 {
-  "name": "ED-Mol Memorial Matadi Baptist High School",
-  "short_name": "Edmol-MBHS Portal",
+  "name": "SchoolGear Liberia",
+  "short_name": "SchoolGear",
   "icons": [
     {
-      "src": "/web-app-manifest-192x192.png",
+      "src": "/android-icon-192x192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "/web-app-manifest-512x512.png",
-      "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
     }
   ],
-  "theme_color": "#FFFFFF",
-  "background_color": "#164791",
+  "theme_color": "#5B3DE0",
+  "background_color": "#FFFFFF",
   "display": "standalone"
 }

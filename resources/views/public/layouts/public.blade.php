@@ -4,8 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>@yield('title', 'SchoolGear Liberia')</title>
-    <meta name="description" content="@yield('description', 'SchoolGear Liberia is a school management platform helping schools simplify administration, manage academic information, and connect their school community through technology.')">
+    @php
+        $seoTitle = trim($__env->yieldContent('title', 'SchoolGear Liberia'));
+        $seoDescription = trim($__env->yieldContent('description', 'SchoolGear Liberia is a school management platform helping schools simplify administration, manage academic information, and connect their school community through technology.'));
+        $seoHost = preg_replace('/^www\./i', '', parse_url(config('app.url'), PHP_URL_HOST));
+        $seoCanonical = trim($__env->yieldContent('canonical', 'https://' . $seoHost . request()->getPathInfo()));
+        $seoRobots = trim($__env->yieldContent('robots', 'index, follow'));
+        $seoOgImage = file_exists(public_path('schoolGear_liberia_public_site/img/og-share.jpg'))
+            ? asset('schoolGear_liberia_public_site/img/og-share.jpg')
+            : '';
+    @endphp
+    <title>{{ $seoTitle }}</title>
+    <meta name="description" content="{{ $seoDescription }}">
+    <link rel="canonical" href="{{ $seoCanonical }}">
+    <meta name="robots" content="{{ $seoRobots }}">
+    <meta property="og:title" content="@yield('og_title', $seoTitle)">
+    <meta property="og:description" content="@yield('og_description', $seoDescription)">
+    @if ($seoOgImage !== '')
+        <meta property="og:image" content="{{ $seoOgImage }}">
+    @endif
+    <meta property="og:url" content="@yield('og_url', $seoCanonical)">
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:site_name" content="SchoolGear Liberia">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('twitter_title', $seoTitle)">
+    <meta name="twitter:description" content="@yield('twitter_description', $seoDescription)">
+    @if ($seoOgImage !== '')
+        <meta name="twitter:image" content="{{ $seoOgImage }}">
+    @endif
+    @stack('json-ld')
 
     <link rel="icon" href="{{ asset('schoolGear_liberia_public_site/img/favicon-96x96.png') }}">
 

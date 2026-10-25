@@ -1,10 +1,11 @@
 @extends('public.layouts.public')
 
-@section('title', 'Contact Us | SchoolGear Liberia')
+@section('title', 'Contact Us for School Software | SchoolGear Liberia')
 
-@section('description',
-    'Get in touch with SchoolGear Liberia to learn more about our school management platform,
-    request a demonstration, or discuss how SchoolGear can support your school.')
+@section('description')
+    Contact SchoolGear Liberia about our school management software, request a demo or ask about setting up your school.
+    We're based in Monrovia, Liberia.
+@endsection
 
 @section('content')
 
@@ -16,7 +17,7 @@
                 <div class="col-lg-12">
                     <div class="breadcrumb_iner text-center">
                         <div class="breadcrumb_iner_item">
-                            <h2>Contact us</h2>
+                            <h1>Contact SchoolGear</h1>
                             <p>Home<span>/<span>Contact us</p>
                         </div>
                     </div>

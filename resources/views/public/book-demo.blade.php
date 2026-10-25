@@ -4,9 +4,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book a Live Demo | SchoolGear Liberia</title>
-    <meta name="description"
-        content="Book a live SchoolGear demo or a school consultation. Pick a date and time and our team will confirm with you.">
+    <title>Book a Live School Software Demo | SchoolGear Liberia</title>
+    <meta name="description" content="Book a live demo or school consultation with SchoolGear Liberia to see its tools for admissions, academic management, fees and daily school operations.">
+
+    @php
+        $seoHost = preg_replace('/^www\./i', '', parse_url(config('app.url'), PHP_URL_HOST));
+        $seoCanonical = 'https://' . $seoHost . request()->getPathInfo();
+        $seoOgImage = file_exists(public_path('schoolGear_liberia_public_site/img/og-share.jpg'))
+            ? asset('schoolGear_liberia_public_site/img/og-share.jpg')
+            : null;
+    @endphp
+    <link rel="canonical" href="{{ $seoCanonical }}">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="Book a Live School Software Demo | SchoolGear Liberia">
+    <meta property="og:description" content="Book a live demo or school consultation with SchoolGear Liberia to see its tools for admissions, academic management, fees and daily school operations.">
+    @if ($seoOgImage)
+        <meta property="og:image" content="{{ $seoOgImage }}">
+    @endif
+    <meta property="og:url" content="{{ $seoCanonical }}">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="SchoolGear Liberia">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Book a Live School Software Demo | SchoolGear Liberia">
+    <meta name="twitter:description" content="Book a live demo or school consultation with SchoolGear Liberia to see its tools for admissions, academic management, fees and daily school operations.">
+    @if ($seoOgImage)
+        <meta name="twitter:image" content="{{ $seoOgImage }}">
+    @endif
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('schoolGear_liberia_public_site/css/whatsapp-widget.css') }}">

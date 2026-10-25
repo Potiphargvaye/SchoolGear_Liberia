@@ -773,3 +773,16 @@ body {
   }
 }
 
+
+/* Keep the breadcrumb page title on a single line */
+.breadcrumb .breadcrumb_iner .breadcrumb_iner_item h1 {
+  white-space: nowrap !important;
+}
+
+/* On phones, shrink the title so it fits the screen instead of wrapping */
+@media (max-width: 767px) {
+  .breadcrumb .breadcrumb_iner .breadcrumb_iner_item h1 {
+    font-size: clamp(22px, 7.5vw, 35px) !important;
+  }
+}
+

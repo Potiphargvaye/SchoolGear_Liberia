@@ -6899,7 +6899,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* line 31, E:/172 Etrain Education/172_Etrain_Education_html/sass/_breadcrumb.scss */
-.breadcrumb .breadcrumb_iner .breadcrumb_iner_item h2 {
+.breadcrumb .breadcrumb_iner .breadcrumb_iner_item h1 {
   color: #fff;
   font-size: 50px;
   font-weight: 600;
@@ -6909,21 +6909,21 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (max-width: 576px) {
   /* line 31, E:/172 Etrain Education/172_Etrain_Education_html/sass/_breadcrumb.scss */
-  .breadcrumb .breadcrumb_iner .breadcrumb_iner_item h2 {
+  .breadcrumb .breadcrumb_iner .breadcrumb_iner_item h1 {
     font-size: 35px;
   }
 }
 
 @media only screen and (min-width: 576px) and (max-width: 767px) {
   /* line 31, E:/172 Etrain Education/172_Etrain_Education_html/sass/_breadcrumb.scss */
-  .breadcrumb .breadcrumb_iner .breadcrumb_iner_item h2 {
+  .breadcrumb .breadcrumb_iner .breadcrumb_iner_item h1 {
     font-size: 35px;
   }
 }
 
 @media only screen and (min-width: 768px) and (max-width: 991px) {
   /* line 31, E:/172 Etrain Education/172_Etrain_Education_html/sass/_breadcrumb.scss */
-  .breadcrumb .breadcrumb_iner .breadcrumb_iner_item h2 {
+  .breadcrumb .breadcrumb_iner .breadcrumb_iner_item h1 {
     font-size: 40px;
   }
 }
