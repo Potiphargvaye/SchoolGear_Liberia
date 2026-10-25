@@ -52,6 +52,8 @@
             }
         }
     </script>
+    <link rel="stylesheet" href="{{ asset('schoolGear_liberia_public_site/css/sg-cursor.css') }}">
+    <script src="{{ asset('schoolGear_liberia_public_site/js/sg-cursor.js') }}" defer></script>
 </head>
 
 <body class="bg-white min-h-screen flex flex-col">

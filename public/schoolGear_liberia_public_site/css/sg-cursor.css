@@ -1,0 +1,28 @@
+/* SchoolGear Liberia custom cursor */
+:root {
+  --sg-cursor-dot: #5B3DE0;
+  --sg-cursor-ring: #5B3DE0;
+  --sg-cursor-hover-bg: rgba(56, 189, 248, 0.2);
+}
+.sg-cursor-dot,
+.sg-cursor-ring {
+  pointer-events: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-radius: 50%;
+  opacity: 0;
+  z-index: 100000;
+  transition: opacity 0.3s ease-in-out, transform 0.15s ease-out, background-color 0.2s ease;
+}
+.sg-cursor-dot { width: 8px; height: 8px; background-color: var(--sg-cursor-dot); }
+.sg-cursor-ring { width: 40px; height: 40px; border: 2px solid var(--sg-cursor-ring); }
+.sg-cursor-ring.sg-cursor-hover { background-color: var(--sg-cursor-hover-bg); border-color: transparent; }
+.sg-cursor-dot.sg-cursor-hidden,
+.sg-cursor-ring.sg-cursor-hidden { opacity: 0 !important; }
+/* Hide the native cursor only after the script has started */
+html.sg-cursor-on, html.sg-cursor-on * { cursor: none !important; }
+/* Keep the normal text cursor in form fields */
+html.sg-cursor-on input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+html.sg-cursor-on textarea { cursor: text !important; }
+html.sg-cursor-on select { cursor: auto !important; }
