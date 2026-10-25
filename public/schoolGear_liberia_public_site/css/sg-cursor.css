@@ -20,9 +20,16 @@
 .sg-cursor-ring.sg-cursor-hover { background-color: var(--sg-cursor-hover-bg); border-color: transparent; }
 .sg-cursor-dot.sg-cursor-hidden,
 .sg-cursor-ring.sg-cursor-hidden { opacity: 0 !important; }
-/* Hide the native cursor only after the script has started */
+
+/* Hide the native cursor only while a real mouse is in use (class is added by the script) */
 html.sg-cursor-on, html.sg-cursor-on * { cursor: none !important; }
 /* Keep the normal text cursor in form fields */
 html.sg-cursor-on input:not([type="submit"]):not([type="button"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]),
 html.sg-cursor-on textarea { cursor: text !important; }
 html.sg-cursor-on select { cursor: auto !important; }
+
+/* Reduced motion: still show the cursor, but without the trailing animation */
+@media (prefers-reduced-motion: reduce) {
+  .sg-cursor-dot,
+  .sg-cursor-ring { transition: opacity 0.2s ease; }
+}
