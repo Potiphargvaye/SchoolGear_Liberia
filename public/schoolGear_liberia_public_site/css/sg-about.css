@@ -1,0 +1,363 @@
+/* SchoolGear Liberia About page */
+.sg-about {
+  --sg-about-primary: #5B3DE0;
+  --sg-about-primary-dark: #3A2A99;
+  --sg-about-sky: #38BDF8;
+  --sg-about-sky-light: #5FD0FA;
+  --sg-about-accent: #FFE29A;
+  --sg-about-success: #2E7D5B;
+  --sg-about-background: #F4F6FE;
+  --sg-about-ink: #20243A;
+  --sg-about-muted: #4B5568;
+  --sg-about-border: #E1E5EF;
+  color: var(--sg-about-ink);
+  font-family: "Roboto", sans-serif;
+  overflow: hidden;
+}
+.sg-about *,
+.sg-about *::before,
+.sg-about *::after { box-sizing: border-box; }
+.sg-about h1,
+.sg-about h2,
+.sg-about h3 { color: var(--sg-about-ink); font-family: "Poppins", sans-serif; font-weight: 700; }
+.sg-about p { color: var(--sg-about-muted); font-size: 16px; line-height: 1.75; margin: 0 0 16px; }
+.sg-about a { text-decoration: none; }
+.sg-about a:focus-visible,
+.sg-about button:focus-visible,
+.sg-about summary:focus-visible { outline: 3px solid var(--sg-about-sky); outline-offset: 3px; }
+.sg-about-hero {
+  background: linear-gradient(125deg, var(--sg-about-primary), var(--sg-about-primary-dark));
+  color: #fff;
+  padding: clamp(145px, 17vw, 190px) 0 112px;
+}
+.sg-about-hero-copy { margin-left: auto; margin-right: auto; }
+.sg-about-hero h1 { color: #fff; font-size: clamp(1.8rem, 6.5vw, 3.7rem); line-height: 1.12; margin: 18px 0 18px; }
+.sg-about-breadcrumb { align-items: center; color: rgba(255,255,255,.82); display: flex; flex-wrap: wrap; font-size: 14px; gap: 10px; }
+.sg-about-breadcrumb a { color: #fff; text-decoration: underline; text-underline-offset: 3px; }
+.sg-about-hero-subtitle { color: rgba(255,255,255,.9) !important; font-size: clamp(16px, 2vw, 19px) !important; max-width: 650px; }
+.sg-about-hero-actions,
+.sg-about-final-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
+.sg-about-button { align-items: center; border: 2px solid transparent; border-radius: 10px; display: inline-flex; font-family: "Poppins", sans-serif; font-size: 14px; font-weight: 600; justify-content: center; min-height: 48px; padding: 11px 20px; text-align: center; transition: background-color .18s ease, color .18s ease, border-color .18s ease; }
+.sg-about-button-light { background: #fff; color: var(--sg-about-primary-dark); }
+.sg-about-button-light:hover { background: var(--sg-about-accent); color: var(--sg-about-primary-dark); }
+.sg-about-button-outline { background: transparent; border-color: rgba(255,255,255,.78); color: #fff; }
+.sg-about-button-outline:hover { background: rgba(255,255,255,.12); color: #fff; }
+.sg-about-button-primary { background: var(--sg-about-primary); color: #fff; }
+.sg-about-button-primary:hover { background: var(--sg-about-primary-dark); color: #fff; }
+.sg-about-stats { margin-top: -54px; position: relative; z-index: 1; }
+.sg-about-stats-card { background: #fff; border: 1px solid var(--sg-about-border); border-radius: 16px; box-shadow: 0 14px 38px rgba(32,36,58,.1); margin: 0; padding: 18px 8px; }
+.sg-about-stat { align-items: center; display: flex; flex-wrap: wrap; justify-content: center; min-height: 94px; padding: 10px 4px; text-align: center; }
+.sg-about-stat .sg-about-counter,
+.sg-about-stat .sg-about-percent { color: var(--sg-about-primary); font-family: "Poppins", sans-serif; font-size: clamp(27px, 4vw, 36px); font-weight: 700; line-height: 1; }
+.sg-about-stat-label { color: var(--sg-about-muted); flex-basis: 100%; font-size: 13px; margin-top: 9px; }
+.sg-about-section { padding: 76px 0; }
+.sg-about-section-heading { margin-bottom: 30px; }
+.sg-about-eyebrow { color: var(--sg-about-success) !important; font-family: "Poppins", sans-serif; font-size: 13px !important; font-weight: 700; letter-spacing: .09em; margin-bottom: 10px !important; text-transform: uppercase; }
+.sg-about-section h2,
+.sg-about-final-cta h2 { font-size: clamp(27px, 4vw, 40px); line-height: 1.22; margin: 0 0 16px; }
+.sg-about-lead { font-size: 17px !important; max-width: 760px; }
+.sg-about-feature-grid { margin-top: 8px; }
+.sg-about-feature-grid > [class*="col-"],
+.sg-about-audience-grid > [class*="col-"],
+.sg-about-mission-row > [class*="col-"],
+.sg-about-contact-cards > [class*="col-"] { margin-bottom: 20px; }
+.sg-about-feature-card,
+.sg-about-feature-cta,
+.sg-about-audience-card,
+.sg-about-value-card,
+.sg-about-testimonial-card,
+.sg-about-contact-card,
+.sg-about-faq-item { background: #fff; border: 1px solid var(--sg-about-border); border-radius: 14px; box-shadow: 0 8px 22px rgba(32,36,58,.045); }
+.sg-about-feature-card,
+.sg-about-feature-cta { height: 100%; min-height: 260px; padding: 25px 22px; }
+.sg-about-feature-card h3,
+.sg-about-feature-cta h3,
+.sg-about-audience-card h3,
+.sg-about-contact-card h3 { font-size: 18px; line-height: 1.35; margin: 18px 0 10px; }
+.sg-about-feature-card p,
+.sg-about-feature-cta p,
+.sg-about-audience-card p,
+.sg-about-contact-card p { font-size: 14px; line-height: 1.65; margin-bottom: 0; }
+.sg-about-icon { align-items: center; background: rgba(56,189,248,.14); border-radius: 12px; color: var(--sg-about-primary-dark); display: inline-flex; font-size: 22px; height: 48px; justify-content: center; width: 48px; }
+.sg-about-feature-cta { background: var(--sg-about-background); display: flex; flex-direction: column; }
+.sg-about-feature-cta .sg-about-text-link { color: var(--sg-about-primary-dark); font-family: "Poppins", sans-serif; font-size: 14px; font-weight: 700; margin-top: auto; padding-top: 16px; }
+.sg-about-text-link span { color: var(--sg-about-success); font-size: 20px; margin-left: 5px; }
+.sg-about-story { background: var(--sg-about-background); }
+.sg-about-story-image { overflow: hidden; border-radius: 16px; }
+.sg-about-story-image img { display: block; height: auto; max-width: 100%; width: 100%; }
+.sg-about-story-copy { padding: 20px 0 20px 8px; }
+.sg-about-story-copy h2 { max-width: 18ch; }
+.sg-about-mission-row { margin-top: 42px; }
+.sg-about-value-card { height: 100%; padding: 28px; }
+.sg-about-value-card h3 { font-size: 21px; line-height: 1.35; margin: 15px 0 12px; }
+.sg-about-value-card .sg-about-eyebrow { margin-top: 18px !important; }
+.sg-about-audiences { background: #fff; }
+.sg-about-audience-grid { margin-top: 28px; }
+.sg-about-audience-card { height: 100%; min-height: 205px; padding: 24px 20px; }
+.sg-about-journey { background: var(--sg-about-background); }
+.sg-about-journey-track { margin-top: 38px; position: relative; }
+.sg-about-milestone { height: 100%; padding: 20px 18px 18px; position: relative; }
+.sg-about-milestone-icon { align-items: center; background: #fff; border: 2px solid var(--sg-about-primary); border-radius: 50%; color: var(--sg-about-primary); display: inline-flex; font-size: 18px; height: 42px; justify-content: center; margin-bottom: 16px; position: relative; width: 42px; z-index: 1; }
+.sg-about-milestone h3 { font-size: 17px; margin: 0 0 8px; }
+.sg-about-milestone p { font-size: 14px; margin: 0; }
+.sg-about-testimonials { background: #fff; }
+.sg-about-testimonial-carousel { margin-top: 28px; }
+.sg-about-testimonial-track { flex-wrap: nowrap; margin-left: 0; margin-right: 0; overflow-x: auto; overscroll-behavior-x: contain; scroll-behavior: smooth; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.sg-about-testimonial-track::-webkit-scrollbar { display: none; }
+.sg-about-testimonial-slide { display: flex; scroll-snap-align: start; }
+.sg-about-testimonial-card { display: flex; flex: 1 0 auto; flex-direction: column; min-height: 310px; padding: 24px; }
+.sg-about-testimonial-card blockquote { color: var(--sg-about-ink); font-size: 16px; line-height: 1.7; margin: 0 0 22px; }
+.sg-about-person { align-items: center; display: flex; gap: 13px; margin-top: auto; }
+.sg-about-person img,
+.sg-about-initials { border-radius: 50%; flex: 0 0 58px; height: 58px; object-fit: cover; width: 58px; }
+.sg-about-initials { align-items: center; background: var(--sg-about-background); color: var(--sg-about-primary-dark); font-family: "Poppins", sans-serif; font-weight: 700; justify-content: center; }
+.sg-about-initials:not([hidden]) { display: inline-flex; }
+.sg-about-person h3 { font-size: 14px; line-height: 1.35; margin: 0 0 4px; }
+.sg-about-person p { font-size: 12px; line-height: 1.45; margin: 0; }
+.sg-about-carousel-controls { align-items: center; display: flex; gap: 14px; justify-content: center; margin-top: 22px; }
+.sg-about-carousel-button,
+.sg-about-carousel-dot { align-items: center; background: #fff; border: 1px solid var(--sg-about-border); color: var(--sg-about-primary-dark); cursor: pointer; display: inline-flex; justify-content: center; }
+.sg-about-carousel-button { border-radius: 50%; font-size: 16px; height: 46px; width: 46px; }
+.sg-about-carousel-button:hover { background: var(--sg-about-primary); border-color: var(--sg-about-primary); color: #fff; }
+.sg-about-carousel-dots { align-items: center; display: flex; gap: 8px; }
+.sg-about-carousel-dot { background: #D5D8E3; border: 0; border-radius: 50%; height: 12px; padding: 0; width: 12px; }
+.sg-about-carousel-dot[aria-current="true"] { background: var(--sg-about-primary); transform: scale(1.15); }
+.sg-about-contact { background: var(--sg-about-background); }
+.sg-about-contact-cards { margin-top: 4px; }
+.sg-about-contact-card { height: 100%; padding: 24px 20px; }
+.sg-about-contact-card h3 { margin-top: 16px; }
+.sg-about-contact-card p + p { margin-top: 6px; }
+.sg-about-contact-card p a { color: var(--sg-about-primary-dark); overflow-wrap: anywhere; text-decoration: underline; text-underline-offset: 3px; }
+.sg-about-contact-card .sg-about-button { margin-top: 20px; }
+.sg-about-faq { background: #fff; }
+.sg-about-faq-list { margin-top: 24px; }
+.sg-about-faq-item { margin-bottom: 12px; overflow: hidden; }
+.sg-about-faq-item summary { align-items: center; cursor: pointer; display: flex; gap: 14px; justify-content: space-between; list-style: none; min-height: 62px; padding: 16px 20px; }
+.sg-about-faq-item summary::-webkit-details-marker { display: none; }
+.sg-about-faq-item summary h3 { font-size: 16px; line-height: 1.45; margin: 0; }
+.sg-about-faq-mark { border-bottom: 2px solid var(--sg-about-primary); border-right: 2px solid var(--sg-about-primary); flex: 0 0 10px; height: 10px; transform: rotate(45deg); transition: transform .15s ease; }
+.sg-about-faq-item[open] .sg-about-faq-mark { transform: rotate(225deg); }
+.sg-about-faq-answer { border-top: 1px solid var(--sg-about-border); padding: 16px 20px; }
+.sg-about-faq-answer p { font-size: 15px; margin: 0; }
+.sg-about-final-cta { background: linear-gradient(125deg, var(--sg-about-primary-dark), #24195F); padding: 62px 0; }
+.sg-about-final-cta h2 { color: #fff; margin: 0; }
+.sg-about-final-cta .sg-about-eyebrow { color: var(--sg-about-accent) !important; }
+.sg-about-final-actions { justify-content: flex-start; margin: 0; }
+.sg-about-final-link { color: #fff; font-family: "Poppins", sans-serif; font-size: 14px; font-weight: 600; min-height: 44px; padding: 12px 4px; }
+.sg-about-final-link:hover { color: var(--sg-about-accent); }
+.sg-about-final-link span { color: var(--sg-about-accent); margin-left: 4px; }
+@media (min-width: 992px) {
+  .sg-about-journey-track::before { background: #D9D2FA; content: ""; height: 2px; left: 12%; position: absolute; right: 12%; top: 40px; }
+}
+@media (max-width: 991.98px) {
+  .sg-about-section { padding: 58px 0; }
+  .sg-about-story-copy { padding: 32px 0 0; }
+  .sg-about-final-cta { padding: 52px 0; }
+  .sg-about-final-actions { margin-top: 22px; }
+}
+@media (max-width: 767.98px) {
+  .sg-about-hero { padding: 142px 0 88px; }
+  .sg-about-hero h1 { font-size: clamp(1.8rem, 7.2vw, 2.7rem); }
+  .sg-about-stats { margin-top: -38px; }
+  .sg-about-stats-card { padding: 12px 4px; }
+  .sg-about-stat { min-height: 82px; }
+  .sg-about-section { padding: 48px 0; }
+  .sg-about-journey-track { margin-top: 26px; }
+  .sg-about-milestone { border-left: 2px solid #D9D2FA; margin-left: 20px; padding: 0 0 28px 25px; }
+  .sg-about-milestone-icon { margin-left: -47px; }
+  .sg-about-testimonial-card { min-height: 300px; }
+  .sg-about-final-actions { align-items: flex-start; flex-direction: column; }
+}
+@media (max-width: 575.98px) {
+  .sg-about p { font-size: 15px; }
+  .sg-about-hero { padding-top: 138px; }
+  .sg-about-hero h1 { font-size: clamp(1.35rem, 6.8vw, 2.05rem); }
+  .sg-about-hero-actions { align-items: stretch; flex-direction: column; max-width: 280px; }
+  .sg-about-button { width: 100%; }
+  .sg-about-section h2,
+  .sg-about-final-cta h2 { font-size: 27px; }
+  .sg-about-feature-card,
+  .sg-about-feature-cta { min-height: 0; padding: 22px 20px; }
+  .sg-about-testimonial-card { padding: 21px; }
+  .sg-about-faq-item summary { padding: 15px 16px; }
+  .sg-about-faq-answer { padding: 15px 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sg-about *,
+  .sg-about *::before,
+  .sg-about *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}
+
+
+/* About page visual fixes: keep dark sections readable above Etrain theme colors. */
+.sg-about {
+  background: #fff;
+  padding-top: clamp(96px, 9vw, 112px);
+}
+.sg-about .sg-about-hero {
+  background: transparent;
+  padding: 0;
+}
+.sg-about .sg-about-hero-panel {
+  background: linear-gradient(125deg, var(--sg-about-primary), var(--sg-about-primary-dark));
+  border-radius: 24px;
+  color: #fff;
+  padding: clamp(48px, 7vw, 82px) clamp(18px, 5vw, 52px) 104px;
+}
+.sg-about .sg-about-hero h1,
+.sg-about .sg-about-final-cta h2 {
+  color: #fff !important;
+}
+.sg-about .sg-about-hero .sg-about-breadcrumb,
+.sg-about .sg-about-hero .sg-about-breadcrumb span,
+.sg-about .sg-about-hero .sg-about-breadcrumb a {
+  color: rgba(255, 255, 255, .92);
+}
+.sg-about .sg-about-hero .sg-about-breadcrumb a { text-decoration: underline; }
+.sg-about .sg-about-hero .sg-about-hero-subtitle,
+.sg-about .sg-about-final-cta p:not(.sg-about-eyebrow) {
+  color: rgba(255, 255, 255, .92);
+}
+.sg-about .sg-about-stat .counter,
+.sg-about .sg-about-stat .percent {
+  align-items: baseline;
+  color: var(--sg-about-primary);
+  display: inline-flex;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-style: normal;
+  font-weight: 700;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: baseline;
+}
+.sg-about .sg-about-stat .percent { margin-left: 0; }
+.sg-about .sg-about-stat-label {
+  color: var(--sg-about-muted);
+  font-weight: 400;
+  line-height: 1.4;
+}
+.sg-about .sg-about-testimonials h2 {
+  max-width: 25ch;
+  text-wrap: balance;
+}
+.sg-about .sg-about-testimonial-track {
+  align-items: stretch;
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 24px;
+  margin: 0;
+  overflow-x: auto;
+  padding: 0;
+  scroll-padding-inline: 0;
+  scroll-snap-type: x mandatory;
+}
+.sg-about .sg-about-testimonial-track > .sg-about-testimonial-slide {
+  flex: 0 0 calc((100% - 48px) / 3);
+  max-width: none;
+  min-width: 0;
+  padding: 0;
+  scroll-snap-align: start;
+  width: calc((100% - 48px) / 3);
+}
+.sg-about .sg-about-testimonial-card {
+  flex: 1 1 auto;
+  height: 100%;
+  min-width: 0;
+  overflow: hidden;
+  padding: 24px;
+}
+.sg-about .sg-about-testimonial-card blockquote,
+.sg-about .sg-about-testimonial-card blockquote .sg-about-quote-text {
+  color: var(--sg-about-ink);
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.sg-about .sg-about-testimonial-card blockquote {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  margin-bottom: 22px;
+  overflow: visible;
+  text-overflow: clip;
+}
+.sg-about .sg-about-testimonial-card blockquote .sg-about-quote-text { display: block; }
+.sg-about .sg-about-testimonial-card blockquote:not(.sg-about-quote-expanded) .sg-about-quote-text {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 6;
+  display: -webkit-box;
+  overflow: hidden;
+}
+.sg-about .sg-about-quote-toggle {
+  align-self: flex-start;
+  background: transparent;
+  border: 0;
+  color: var(--sg-about-primary-dark);
+  cursor: pointer;
+  font: 600 13px/1.5 "Poppins", sans-serif;
+  margin-top: 8px;
+  min-height: 32px;
+  padding: 2px 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.sg-about .sg-about-quote-toggle[hidden] { display: none; }
+.sg-about .sg-about-person,
+.sg-about .sg-about-person > div {
+  min-width: 0;
+}
+.sg-about .sg-about-person h3,
+.sg-about .sg-about-person p {
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  white-space: normal;
+}
+.sg-about .sg-about-final-cta .sg-about-final-actions { gap: 12px; }
+.sg-about .sg-about-final-cta .sg-about-button,
+.sg-about .sg-about-final-cta .sg-about-final-link { min-height: 48px; }
+.sg-about .sg-about-final-cta .sg-about-final-link,
+.sg-about .sg-about-final-cta .sg-about-final-link span { color: #fff; }
+.sg-about .sg-about-final-cta .sg-about-final-link:hover { color: var(--sg-about-accent); }
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .sg-about .sg-about-testimonial-track > .sg-about-testimonial-slide {
+    flex-basis: calc((100% - 24px) / 2);
+    width: calc((100% - 24px) / 2);
+  }
+}
+@media (max-width: 767.98px) {
+  .sg-about .sg-about-hero-panel { padding-bottom: 86px; }
+  .sg-about .sg-about-testimonial-track > .sg-about-testimonial-slide {
+    flex-basis: 100%;
+    width: 100%;
+  }
+  .sg-about .sg-about-testimonial-card { min-height: 310px; }
+  .sg-about .sg-about-testimonial-card blockquote:not(.sg-about-quote-expanded) .sg-about-quote-text {
+    -webkit-line-clamp: unset;
+    display: block;
+    overflow: visible;
+  }
+}
+@media (max-width: 575.98px) {
+  .sg-about { padding-top: 96px; }
+  .sg-about .sg-about-hero-panel { border-radius: 18px; padding: 42px 18px 82px; }
+  .sg-about .sg-about-final-cta .sg-about-final-actions { align-items: flex-start; flex-direction: column; }
+  .sg-about .sg-about-testimonial-card { padding: 24px; }
+}
+
+/* Keep clamping desktop-only so tablet and phone quotes always remain complete. */
+.sg-about .sg-about-testimonial-card blockquote:not(.sg-about-quote-expanded) .sg-about-quote-text {
+  -webkit-line-clamp: unset;
+  display: block;
+  overflow: visible;
+}
+@media (min-width: 992px) {
+  .sg-about .sg-about-testimonial-card blockquote:not(.sg-about-quote-expanded) .sg-about-quote-text {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 6;
+    display: -webkit-box;
+    overflow: hidden;
+  }
+  .sg-about .sg-about-final-cta .sg-about-final-actions { flex-wrap: nowrap; }
+}
