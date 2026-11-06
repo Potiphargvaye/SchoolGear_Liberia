@@ -535,13 +535,13 @@
                                         <img src="{{ asset('storage/' . $sgModalSchool->logo) }}"
                                             alt="{{ $sgModalSchool->school_name }}" class="h-full w-full object-contain">
                                     @else
-                                        <img src="{{ asset('lipa-liberia-public-site/assets/img/logo/logo_header.png') }}"
-                                            alt="LIPA Logo" class="h-full w-full object-contain">
+                                        <img src="{{ asset('logo/schoolgearlogo.png') }}"
+                                            alt="SchoolGear Logo" class="h-full w-full object-contain">
                                     @endif
                                 </div>
                                 <div>
                                     <p class="text-[11px] uppercase tracking-[0.14em] text-sky-200 font-semibold">
-                                        {{ $sgModalSchool->school_name ?? 'Liberia Institute of Public Administration' }}
+                                        {{ $sgModalSchool->school_name ?? 'SchoolGear Liberia Software' }}
                                     </p>
                                     <h3 class="text-white text-lg font-bold leading-tight mt-0.5">
                                         Staff Account Registration
@@ -847,8 +847,8 @@
                                             alt="{{ $sgEditModalSchool->school_name }}"
                                             class="h-full w-full object-contain">
                                     @else
-                                        <img src="{{ asset('lipa-liberia-public-site/assets/img/logo/logo_header.png') }}"
-                                            alt="LIPA Logo" class="h-full w-full object-contain">
+                                        <img src="{{ asset('logo/schoolgearlogo.png') }}"
+                                            alt="SchoolGear Logo" class="h-full w-full object-contain">
                                     @endif
 
                                 </div>
@@ -858,7 +858,7 @@
                                     <p
                                         class="text-[11px] uppercase tracking-[0.14em] text-blue-100 font-semibold truncate">
 
-                                        {{ $sgEditModalSchool->school_name ?? 'Liberia Institute of Public Administration' }}
+                                        {{ $sgEditModalSchool->school_name ?? 'SchoolGear Liberia Software' }}
 
                                     </p>
 
@@ -1166,14 +1166,14 @@
                                     <img src="{{ asset('storage/' . $sgViewModalSchool->logo) }}"
                                         alt="{{ $sgViewModalSchool->school_name }}" class="h-full w-full object-contain">
                                 @else
-                                    <img src="{{ asset('lipa-liberia-public-site/assets/img/logo/logo_header.png') }}"
-                                        alt="LIPA Logo" class="h-full w-full object-contain">
+                                    <img src="{{ asset('logo/schoolgearlogo.png') }}"
+                                        alt="SchoolGear Logo" class="h-full w-full object-contain">
                                 @endif
                             </div>
 
                             <div class="min-w-0">
                                 <p class="text-[11px] uppercase tracking-[0.14em] text-sky-200 font-semibold truncate">
-                                    {{ $sgViewModalSchool->school_name ?? 'Liberia Institute of Public Administration' }}
+                                    {{ $sgViewModalSchool->school_name ?? 'SchoolGear Liberia Software' }}
                                 </p>
                                 <h2 class="text-white text-base sm:text-xl font-bold leading-tight mt-0.5">
                                     Staff Account Details

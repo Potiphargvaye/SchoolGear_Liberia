@@ -146,13 +146,13 @@
 
                         <div
                             class="h-11 w-11 shrink-0 rounded-full bg-white/10 border border-white/25 flex items-center justify-center overflow-hidden p-1.5">
-                            <img src="{{ asset('lipa-liberia-public-site/assets/img/logo/logo_header.png') }}"
-                                alt="LIPA Logo" class="h-full w-full object-contain">
+                            <img src="{{ asset('logo/schoolgearlogo.png') }}"
+                                alt="SchoolGear Logo" class="h-full w-full object-contain">
                         </div>
 
                         <div class="min-w-0">
                             <p class="text-[11px] uppercase tracking-[0.14em] text-sky-200 font-semibold truncate">
-                                Liberia Institute of Public Administration
+                                SCHOOLGEAR LIBERIA SOFTWARE
                             </p>
                             <h2 class="text-white text-base sm:text-lg font-bold leading-tight mt-0.5">
                                 Assign Permissions
