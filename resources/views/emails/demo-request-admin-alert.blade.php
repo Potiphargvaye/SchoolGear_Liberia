@@ -1,109 +1,63 @@
-<!DOCTYPE html>
-<html>
+@extends('emails.layouts.base')
 
-<head>
-    <meta charset="UTF-8">
-    <title>New Demo Request</title>
-</head>
+@section('title', 'New demo request')
 
-<body style="margin:0; padding:0; background:#F4F6FE; font-family:Arial, sans-serif;">
+@section('content')
+    <p style="margin:0 0 20px; color:#475467; font-size:15px; line-height:1.7;">
+        A school has requested a SchoolGear demo. Reply to this email to contact {{ $demoRequest->full_name }}.
+    </p>
 
-    <div
-        style="max-width:600px; margin:40px auto; background:#ffffff; border-radius:10px; overflow:hidden; border:1px solid #e5e7eb;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+        style="width:100%; border-collapse:collapse; font-size:14px; line-height:1.5;">
+        <tr>
+            <td width="38%" style="padding:11px 12px; color:#667085; border-top:1px solid #E2E5EC;">Reference</td>
+            <td style="padding:11px 12px; color:#3A2A99; font-weight:700; border-top:1px solid #E2E5EC;">{{ $demoRequest->reference }}</td>
+        </tr>
+        <tr>
+            <td style="padding:11px 12px; color:#667085; border-top:1px solid #E2E5EC;">Contact person</td>
+            <td style="padding:11px 12px; color:#1F2937; border-top:1px solid #E2E5EC;">{{ $demoRequest->full_name }}</td>
+        </tr>
+        <tr>
+            <td style="padding:11px 12px; color:#667085; border-top:1px solid #E2E5EC;">Email</td>
+            <td style="padding:11px 12px; color:#1F2937; border-top:1px solid #E2E5EC;">{{ $demoRequest->email }}</td>
+        </tr>
+        <tr>
+            <td style="padding:11px 12px; color:#667085; border-top:1px solid #E2E5EC;">WhatsApp</td>
+            <td style="padding:11px 12px; border-top:1px solid #E2E5EC;">
+                <a href="{{ $demoRequest->whatsapp_link }}" style="color:#3A2A99; text-decoration:underline;">{{ $demoRequest->whatsapp_number }}</a>
+            </td>
+        </tr>
+        <tr>
+            <td style="padding:11px 12px; color:#667085; border-top:1px solid #E2E5EC;">School</td>
+            <td style="padding:11px 12px; color:#1F2937; border-top:1px solid #E2E5EC;">{{ $demoRequest->school_name }}</td>
+        </tr>
+        <tr>
+            <td style="padding:11px 12px; color:#667085; border-top:1px solid #E2E5EC;">Category</td>
+            <td style="padding:11px 12px; color:#1F2937; border-top:1px solid #E2E5EC;">{{ $demoRequest->category_label }}</td>
+        </tr>
+        <tr>
+            <td style="padding:11px 12px; color:#667085; border-top:1px solid #E2E5EC;">City / address</td>
+            <td style="padding:11px 12px; color:#1F2937; border-top:1px solid #E2E5EC;">{{ $demoRequest->city }} / {{ $demoRequest->school_address }}</td>
+        </tr>
+        <tr>
+            <td style="padding:11px 12px; color:#667085; border-top:1px solid #E2E5EC;">Preferred slot</td>
+            <td style="padding:11px 12px; color:#1F2937; border-top:1px solid #E2E5EC;">{{ $demoRequest->preferred_date->format('l, j F Y') }} at {{ $demoRequest->time_label }} (GMT)</td>
+        </tr>
+        <tr>
+            <td valign="top" style="padding:11px 12px; color:#667085; border-top:1px solid #E2E5EC; border-bottom:1px solid #E2E5EC;">Message</td>
+            <td style="padding:11px 12px; color:#1F2937; white-space:pre-line; border-top:1px solid #E2E5EC; border-bottom:1px solid #E2E5EC;">{{ $demoRequest->message ?: 'No message provided.' }}</td>
+        </tr>
+    </table>
 
-        <!-- Logo -->
-        <div style="background:#ffffff; padding:22px 25px 16px; text-align:center;">
-            <img src="{{ asset('logo/schoolgear-logo.png') }}" alt="SchoolGear Liberia"
-                style="height:52px; width:auto; border:0;">
-        </div>
-
-        <!-- Header -->
-        <div style="background:#3A2A99; padding:24px 25px; text-align:center;">
-            <h2 style="color:#ffffff; margin:0; font-size:20px;">New demo request</h2>
-            <p style="color:#dcd6fb; margin:6px 0 0; font-size:13px;">{{ $demoRequest->reference }}</p>
-        </div>
-
-        <!-- Body -->
-        <div style="padding:30px; color:#111827;">
-
-            <p style="font-size:15px; line-height:1.6; margin-top:0;">
-                <strong>{{ $demoRequest->school_name }}</strong> asked to book a live demo or consultation.
-            </p>
-
-            <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-                style="border:1px solid #e5e7eb; border-radius:8px; margin:20px 0; font-size:14px;">
-                <tr>
-                    <td style="padding:10px 14px; color:#6b7280; width:38%; border-bottom:1px solid #f0f0f5;">Contact
-                        person</td>
-                    <td style="padding:10px 14px; border-bottom:1px solid #f0f0f5;">{{ $demoRequest->full_name }}</td>
-                </tr>
-                <tr>
-                    <td style="padding:10px 14px; color:#6b7280; border-bottom:1px solid #f0f0f5;">Email</td>
-                    <td style="padding:10px 14px; border-bottom:1px solid #f0f0f5;">{{ $demoRequest->email }}</td>
-                </tr>
-                <tr>
-                    <td style="padding:10px 14px; color:#6b7280; border-bottom:1px solid #f0f0f5;">WhatsApp</td>
-                    <td style="padding:10px 14px; border-bottom:1px solid #f0f0f5;">
-                        <a href="{{ $demoRequest->whatsapp_link }}"
-                            style="color:#5B3DE0;">{{ $demoRequest->whatsapp_number }}</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:10px 14px; color:#6b7280; border-bottom:1px solid #f0f0f5;">Category</td>
-                    <td style="padding:10px 14px; border-bottom:1px solid #f0f0f5;">{{ $demoRequest->category_label }}
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:10px 14px; color:#6b7280; border-bottom:1px solid #f0f0f5;">City</td>
-                    <td style="padding:10px 14px; border-bottom:1px solid #f0f0f5;">{{ $demoRequest->city }}</td>
-                </tr>
-                <tr>
-                    <td style="padding:10px 14px; color:#6b7280; border-bottom:1px solid #f0f0f5;">Address</td>
-                    <td style="padding:10px 14px; border-bottom:1px solid #f0f0f5;">{{ $demoRequest->school_address }}
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:10px 14px; color:#6b7280; border-bottom:1px solid #f0f0f5;">Preferred slot</td>
-                    <td style="padding:10px 14px; border-bottom:1px solid #f0f0f5;">
-                        {{ $demoRequest->preferred_date->format('l, j F Y') }} at {{ $demoRequest->time_label }} (GMT)
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding:10px 14px; color:#6b7280; vertical-align:top;">Message</td>
-                    <td style="padding:10px 14px;">{!! $demoRequest->message ? nl2br(e($demoRequest->message)) : 'No message provided.' !!}</td>
-                </tr>
-            </table>
-
-            <!-- Button -->
-            <div style="text-align:center; margin:30px 0 10px;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center"
+        style="margin:24px auto 0; border-collapse:collapse;">
+        <tr>
+            <td align="center" bgcolor="#F2C14E" style="background-color:#F2C14E; border-radius:4px;">
                 <a href="{{ route('admin.demo-requests.index') }}"
-                    style="
-                    background-color:#5B3DE0;
-                    background:linear-gradient(135deg,#3A2A99,#5B3DE0);
-                    color:#ffffff;
-                    padding:12px 28px;
-                    text-decoration:none;
-                    border-radius:8px;
-                    display:inline-block;
-                    font-weight:bold;
-                    box-shadow:0 3px 10px rgba(0,0,0,0.15);
-               ">
-                    Open in admin
+                    style="display:inline-block; padding:13px 22px; color:#241A5B; font-size:14px; line-height:1.2; font-weight:700; text-decoration:none;">
+                    Open demo requests
                 </a>
-            </div>
-
-            <p style="font-size:12px; color:#6b7280; text-align:center;">
-                Reply to this email to write directly to {{ $demoRequest->full_name }}.
-            </p>
-        </div>
-
-        <!-- Footer -->
-        <div style="background:#f3f4f6; padding:15px; text-align:center; font-size:12px; color:#6b7280;">
-            &copy; {{ date('Y') }} SchoolGear Liberia
-        </div>
-
-    </div>
-
-</body>
-
-</html>
+            </td>
+        </tr>
+    </table>
+@endsection

@@ -2,10 +2,14 @@
 
 namespace App\Livewire\Admin\Schools;
 
+use App\Mail\NewSchoolRegistrationAlert;
+use App\Mail\SchoolRegistrationConfirmation;
 use App\Models\School;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -122,7 +126,7 @@ class Index extends Component
 
         ]);
 
-        DB::transaction(function () {
+        [$school, $owner] = DB::transaction(function () {
             $logoPath = $this->logo ? $this->logo->store('schools/logos', 'public') : null;
 
             $service = new \App\Services\RegistrationIdService();
@@ -181,7 +185,37 @@ class Index extends Component
             */
             $school->owner_user_id = $owner->id;
             $school->save();
+
+            return [$school, $owner];
         });
+
+        if ($owner->email) {
+            $adminName = auth()->user()?->name;
+
+            try {
+                Mail::to($owner->email)->send(new SchoolRegistrationConfirmation($school, $owner, true));
+            } catch (\Throwable $e) {
+                Log::error('School registration confirmation email failed', [
+                    'school_registration_id' => $school->registration_id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+
+            try {
+                $notifyAddress = config('mail.school_registration_notify_address');
+
+                if (! $notifyAddress) {
+                    throw new \RuntimeException('No school registration notification recipient is configured.');
+                }
+
+                Mail::to($notifyAddress)->send(new NewSchoolRegistrationAlert($school, $owner, true, $adminName));
+            } catch (\Throwable $e) {
+                Log::error('New school registration alert email failed', [
+                    'school_registration_id' => $school->registration_id,
+                    'error' => $e->getMessage(),
+                ]);
+            }
+        }
 
         $this->reset(['school_name', 'school_email', 'phone', 'address', 'city', 'logo', 'owner_name', 'owner_email', 'owner_password', 'owner_password_confirmation', 'showAddModal']);
         $this->country = 'Liberia';

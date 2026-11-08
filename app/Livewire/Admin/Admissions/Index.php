@@ -5,6 +5,12 @@ namespace App\Livewire\Admin\Admissions;
 use App\Models\Admission;
 use App\Models\Grade;
 use App\Models\AcademicYear;
+use App\Mail\StudentAdmissionAccepted;
+use App\Support\AfricanPhoneCountries;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\WithFileUploads;
@@ -58,6 +64,8 @@ class Index extends Component
     --------------------------*/
     public bool $showAddModal = false;
     public $applicant_name, $age, $gender, $parent_phone, $grade_id, $student_type = 'New', $last_school_attended;
+    public string $parentPhoneCountry = AfricanPhoneCountries::DEFAULT_COUNTRY;
+    public string $parentPhoneNational = '';
     public $image, $transcript, $recommendation_letter;
 
     public function openCreateModal()
@@ -65,7 +73,7 @@ class Index extends Component
         if (! auth()->user()->can('manage admissions')) abort(403);
         if (! $this->ensureSchoolContext()) return;
 
-        $this->reset(['applicant_name', 'age', 'gender', 'parent_phone', 'grade_id', 'last_school_attended', 'image', 'transcript', 'recommendation_letter']);
+        $this->reset(['applicant_name', 'age', 'gender', 'parent_phone', 'parentPhoneCountry', 'parentPhoneNational', 'grade_id', 'last_school_attended', 'image', 'transcript', 'recommendation_letter']);
         $this->student_type = 'New';
         $this->showAddModal = true;
     }
@@ -81,18 +89,33 @@ class Index extends Component
         if (! auth()->user()->can('manage admissions')) abort(403);
         if (! $this->ensureSchoolContext()) return;
 
-        $this->validate([
+        $africanPhoneCountries = $this->africanPhoneCountries();
+        $rules = [
             'applicant_name' => 'required|string|max:255',
             'age' => 'required|integer|min:3|max:25',
             'gender' => 'required|in:Male,Female,Other',
-            'parent_phone' => 'required|string|max:15',
             'grade_id' => 'required|exists:grades,id',
             'student_type' => 'required|in:New,Old,Transfer',
             'last_school_attended' => 'nullable|string|max:255',
             'image' => 'nullable|image|max:2048',
             'transcript' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
             'recommendation_letter' => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-        ]);
+        ];
+
+        if ($africanPhoneCountries) {
+            $rules['parentPhoneCountry'] = ['required', Rule::in(array_column($africanPhoneCountries, 'code'))];
+            $rules['parentPhoneNational'] = ['required', 'string', 'max:15', 'regex:/^\d+$/'];
+            $this->validate($rules);
+
+            $selectedCountry = collect($africanPhoneCountries)->firstWhere('code', $this->parentPhoneCountry);
+            $this->parent_phone = $selectedCountry['dial_code'] . ltrim($this->parentPhoneNational, '0');
+            $this->validate([
+                'parent_phone' => ['required', 'string', 'max:15', 'regex:/^\+[1-9]\d{6,13}$/'],
+            ]);
+        } else {
+            $rules['parent_phone'] = 'required|string|max:15';
+            $this->validate($rules);
+        }
 
         $service = new \App\Services\RegistrationIdService();
 
@@ -126,6 +149,7 @@ class Index extends Component
     public $admitEmail = '';
     public $admitPassword = '';
     public $admitPassword_confirmation = '';
+    public string $admitDate = '';
 
     public function confirmAdmit(int $id)
     {
@@ -142,7 +166,8 @@ class Index extends Component
         $this->admitAcademicYearId = AcademicYear::where('school_id', $this->currentSchoolId())->where('is_active', true)->value('id') ?? '';
         $this->admitEmail = '';
         $this->admitPassword = '';
-        $this->admitPasswordConfirmation = '';
+        $this->admitPassword_confirmation = '';
+        $this->admitDate = now()->toDateString();
         $this->showAdmitModal = true;
     }
 
@@ -154,15 +179,77 @@ class Index extends Component
             'admitAcademicYearId' => 'required|exists:academic_years,id',
             'admitEmail' => 'required|email|unique:users,email',
             'admitPassword' => 'required|confirmed',
+            'admitDate' => 'required|date|before_or_equal:today',
         ], [], [
             'admitPassword' => 'password',
         ]);
 
         $admission = Admission::findOrFail($this->admitAdmissionId);
-        $student = $admission->admit(auth()->user(), $this->admitAcademicYearId, $this->admitEmail, $this->admitPassword);
+        $temporaryPassword = $this->admitPassword;
+        $student = DB::transaction(function () use ($admission, $temporaryPassword) {
+            $student = $admission->admit(
+                auth()->user(),
+                $this->admitAcademicYearId,
+                $this->admitEmail,
+                $temporaryPassword,
+            );
+
+            $admission->date_of_admission = $this->admitDate;
+            $admission->save();
+
+            return $student;
+        });
 
         $this->showAdmitModal = false;
-        $this->dispatch('notify', message: "Applicant admitted. Student login: {$student->user->registration_id}.", type: 'success');
+
+        $emailFailed = false;
+
+        try {
+            $admission->refresh()->load(['school', 'grade']);
+            $student->load(['user', 'enrollment.academicYear', 'enrollment.grade']);
+
+            Mail::to($student->user->email)->send(new StudentAdmissionAccepted(
+                $admission,
+                $student->user,
+                $student->enrollment?->academicYear?->name ?? '',
+                $student->enrollment?->grade
+                    ? trim($student->enrollment->grade->level . ' ' . $student->enrollment->grade->section)
+                    : '',
+                $temporaryPassword,
+            ));
+        } catch (\Throwable $exception) {
+            $emailFailed = true;
+            $exceptionMessage = str_replace($temporaryPassword, '[redacted]', $exception->getMessage());
+
+            Log::error('Student admission acceptance email failed.', [
+                'admission_id' => $admission->id,
+                'student_id' => $student->id,
+                'exception' => $exceptionMessage,
+            ]);
+        }
+
+        $message = $emailFailed
+            ? "Applicant admitted, but the email could not be sent. Student login: {$student->user->registration_id}."
+            : "Applicant admitted. Student login: {$student->user->registration_id}.";
+
+        $this->dispatch('notify', message: $message, type: 'success');
+    }
+
+    public function useSystemDefaultPassword(): void
+    {
+        $password = config('app.default_student_password');
+        $this->admitPassword = $password;
+        $this->admitPassword_confirmation = $password;
+        $this->dispatch('admit-default-password-set', password: $password);
+    }
+
+    public function selectParentPhoneCountry(string $code): void
+    {
+        $country = collect($this->africanPhoneCountries())->firstWhere('code', $code);
+
+        if ($country) {
+            $this->parentPhoneCountry = $country['code'];
+        }
     }
 
     public function closeAdmitModal()
@@ -269,6 +356,10 @@ class Index extends Component
     }
     public function render()
     {
+        $africanPhoneCountries = $this->africanPhoneCountries();
+        $selectedPhoneCountry = collect($africanPhoneCountries)->firstWhere('code', $this->parentPhoneCountry)
+            ?? collect($africanPhoneCountries)->firstWhere('code', AfricanPhoneCountries::DEFAULT_COUNTRY);
+
         $admissions = Admission::where('school_id', $this->currentSchoolId())
             ->where('status', $this->status)
             ->when($this->academicYearId, function ($q) {
@@ -295,13 +386,26 @@ class Index extends Component
             ->groupBy('status')
             ->pluck('total', 'status');
 
+        $admitAdmission = $this->showAdmitModal && $this->admitAdmissionId
+            ? Admission::where('school_id', $this->currentSchoolId())->find($this->admitAdmissionId)
+            : null;
+
         return view('livewire.admin.admissions.index', [
             'admissions' => $admissions,
             'grades' => $grades,
             'academicYears' => $academicYears,
             'statusCounts' => $statusCounts,
+            'africanPhoneCountries' => $africanPhoneCountries,
+            'selectedPhoneCountry' => $selectedPhoneCountry,
+            'phoneCountryPickerAvailable' => (bool) $africanPhoneCountries && (bool) $selectedPhoneCountry,
+            'admitAdmission' => $admitAdmission,
             'canManage' => auth()->user()->can('manage admissions'),
             'canView' => auth()->user()->can('view admission details'),
         ]);
+    }
+
+    private function africanPhoneCountries(): array
+    {
+        return app(AfricanPhoneCountries::class)->all();
     }
 }

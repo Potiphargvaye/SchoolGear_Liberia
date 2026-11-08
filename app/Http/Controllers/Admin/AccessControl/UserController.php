@@ -3,9 +3,12 @@
 namespace App\Http\Controllers\Admin\AccessControl;
 
 use App\Http\Controllers\Controller;
+use App\Mail\StaffAccountCreated;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
@@ -252,18 +255,48 @@ class UserController extends Controller
 
         $user->assignRole($validated['role']);
 
+        $emailFailed = false;
+
+        if (! $user->hasRole('Student')) {
+            $temporaryPassword = $validated['password'];
+
+            try {
+                $user->loadMissing('school');
+
+                Mail::to($user->email)->send(new StaffAccountCreated(
+                    $user,
+                    Str::headline($validated['role']),
+                    $temporaryPassword,
+                ));
+            } catch (\Throwable $exception) {
+                $emailFailed = true;
+                $exceptionMessage = str_replace(
+                    $temporaryPassword,
+                    '[redacted]',
+                    $exception->getMessage(),
+                );
+
+                Log::error('Staff account welcome email failed.', [
+                    'user_id' => $user->id,
+                    'registration_id' => $user->registration_id,
+                    'exception' => $exceptionMessage,
+                ]);
+            }
+        }
+
         /*
     |--------------------------------------------------------------------------
     | Redirect
     |--------------------------------------------------------------------------
     */
 
+        $successMessage = $emailFailed
+            ? 'Staff account created successfully, but the welcome email could not be sent. Registration ID: ' . $registrationId
+            : 'Staff account created successfully. Registration ID: ' . $registrationId;
+
         return redirect()
             ->route('admin.access-control.users.index')
-            ->with(
-                'success',
-                'Staff account created successfully. Registration ID: ' . $registrationId
-            );
+            ->with('success', $successMessage);
     }
 
     /**
@@ -278,6 +311,7 @@ class UserController extends Controller
             $user->load([
                 'roles',
                 'creator',
+                'school',
             ]);
 
             return response()->json([
@@ -293,6 +327,8 @@ class UserController extends Controller
                     'name' => $user->name,
 
                     'email' => $user->email,
+
+                    'school_name' => optional($user->school)->school_name,
 
                     'status' => $user->status,
 

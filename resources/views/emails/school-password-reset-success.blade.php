@@ -1,90 +1,37 @@
-<!DOCTYPE html>
-<html>
+@extends('emails.layouts.base')
 
-<head>
-    <meta charset="UTF-8">
-    <title>Password Reset Successful</title>
-</head>
+@php
+    $schoolName = $school->school_name ?? 'SchoolGear Liberia';
+@endphp
 
-<body style="margin:0; padding:0; background:#F4F6FE; font-family:Arial, sans-serif;">
+@section('title', 'Password updated')
 
-    @php
-        $schoolName = $school->school_name ?? 'SchoolGear Liberia';
-        $tagline = $school ? 'Academic Management Portal' : 'School Management Platform';
+@section('content')
+    <p style="margin:0 0 12px; color:#1F2937; font-size:16px; line-height:1.6;">
+        Hello {{ $user->name }},
+    </p>
 
-        $logoUrl = asset('logo/schoolgear-logo.png');
+    <p style="margin:0 0 18px; color:#475467; font-size:15px; line-height:1.7;">
+        The password for your <strong style="color:#1F2937;">{{ $schoolName }}</strong> account was reset successfully.
+    </p>
 
-        if ($school && $school->logo && \Illuminate\Support\Facades\Storage::disk('public')->exists($school->logo)) {
-            $logoUrl = \Illuminate\Support\Facades\Storage::disk('public')->url($school->logo);
-        }
-    @endphp
+    <p style="margin:0; color:#475467; font-size:14px; line-height:1.7;">
+        If you did not make this change, contact your school's ICT department as soon as possible.
+    </p>
 
-    <!-- Container -->
-    <div
-        style="max-width:600px; margin:40px auto; background:#ffffff; border-radius:10px; overflow:hidden; border:1px solid #e5e7eb;">
-
-        <!-- Header -->
-        <div style="background:linear-gradient(135deg,#3A2A99,#5B3DE0); padding:28px 25px; text-align:center;">
-
-            <img src="{{ $logoUrl }}"
-                style="width:80px; height:80px; border-radius:50%; object-fit:cover; background:#ffffff; padding:4px; border:3px solid #ffffff;"
-                alt="{{ $schoolName }}">
-
-            <h2 style="color:#ffffff; margin:10px 0 0;">Password Reset Successful</h2>
-            <p style="color:#E4DEFB; margin:5px 0 0;">{{ $tagline }}</p>
-        </div>
-
-        <!-- Body -->
-        <div style="padding:30px; color:#111827;">
-
-            <p style="font-size:16px;">Hello {{ $user->name }},</p>
-
-            <p style="font-size:15px; line-height:1.6;">
-                Your password has been successfully reset for your
-                <strong>{{ $schoolName }}</strong> account.
-            </p>
-
-            <p style="font-size:15px; line-height:1.6;">
-                If you did NOT perform this action, please contact your school's ICT Department immediately.
-            </p>
-
-            <!-- Button -->
-            <div style="text-align:center; margin:30px 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center"
+        style="margin:26px auto 0; border-collapse:collapse;">
+        <tr>
+            <td align="center" bgcolor="#F2C14E" style="background-color:#F2C14E; border-radius:4px;">
                 <a href="{{ url('/login') }}"
-                    style="
-                    background:linear-gradient(135deg,#3A2A99,#5B3DE0);
-                    color:#ffffff;
-                    padding:12px 28px;
-                    text-decoration:none;
-                    border-radius:8px;
-                    display:inline-block;
-                    font-weight:bold;
-                    box-shadow:0 3px 10px rgba(91,61,224,0.25);
-               ">
-                    Login to Your Account
+                    style="display:inline-block; padding:13px 24px; color:#241A5B; font-size:14px; line-height:1.2; font-weight:700; text-decoration:none;">
+                    Log in to your account
                 </a>
-            </div>
+            </td>
+        </tr>
+    </table>
 
-            <p style="font-size:13px; color:#6b7280;">
-                For security reasons, never share your login details with anyone.
-            </p>
-
-            <p style="margin-top:20px; font-size:13px; color:#3A2A99;">
-                Regards,<br>
-                <strong>{{ $schoolName }}</strong>
-                @if ($school)
-                    <br><span style="color:#9c93d6;">Powered by SchoolGear Liberia</span>
-                @endif
-            </p>
-        </div>
-
-        <!-- Footer -->
-        <div style="background:#f3f4f6; padding:15px; text-align:center; font-size:12px; color:#6b7280;">
-            &copy; {{ date('Y') }} {{ $schoolName }}
-        </div>
-
-    </div>
-
-</body>
-
-</html>
+    <p style="margin:22px 0 0; color:#667085; font-size:13px; line-height:1.6;">
+        For your security, do not share your password with anyone.
+    </p>
+@endsection

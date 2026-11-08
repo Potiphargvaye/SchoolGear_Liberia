@@ -3,11 +3,15 @@
 
 namespace App\Livewire\Public;
 
+use App\Mail\NewSchoolRegistrationAlert;
+use App\Mail\SchoolRegistrationConfirmation;
 use App\Models\School;
 use App\Models\User;
 use App\Services\RegistrationIdService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\WithFileUploads;   // ← ADD THIS LINE
 
@@ -84,7 +88,7 @@ class SchoolRegistration extends Component
 
         $this->submitting = true;
 
-        DB::transaction(function () {
+        [$school, $owner] = DB::transaction(function () {
             $service = new RegistrationIdService();
 
             $school = School::create([
@@ -117,7 +121,33 @@ class SchoolRegistration extends Component
 
             $school->owner_user_id = $owner->id;
             $school->save();
+
+            return [$school, $owner];
         });
+
+        try {
+            Mail::to($owner->email)->send(new SchoolRegistrationConfirmation($school, $owner));
+        } catch (\Throwable $e) {
+            Log::error('School registration confirmation email failed', [
+                'school_registration_id' => $school->registration_id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            $notifyAddress = config('mail.school_registration_notify_address');
+
+            if (! $notifyAddress) {
+                throw new \RuntimeException('No school registration notification recipient is configured.');
+            }
+
+            Mail::to($notifyAddress)->send(new NewSchoolRegistrationAlert($school, $owner));
+        } catch (\Throwable $e) {
+            Log::error('New school registration alert email failed', [
+                'school_registration_id' => $school->registration_id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         // Reuses the login page's existing session('status') banner —
         // no changes needed to login.blade.php.

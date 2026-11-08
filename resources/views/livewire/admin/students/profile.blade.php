@@ -5,8 +5,9 @@
     {{-- ========================= HEADER — flat, matches Fee Categories / Academic Years pattern ========================= --}}
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div class="flex items-center gap-3">
-            @if ($student->image)
+            @if ($student->image && \Illuminate\Support\Facades\Storage::disk('public')->exists($student->image))
                 <img src="{{ asset('storage/' . $student->image) }}"
+                    alt="{{ $student->name }} photo"
                     class="h-12 w-12 rounded-lg object-cover border border-slate-200">
             @else
                 <div
@@ -104,7 +105,14 @@
                 </div>
                 <div>
                     <p class="text-gray-500">Parent / Guardian Phone</p>
-                    <p class="font-medium text-gray-800 mt-0.5">{{ $student->parent_phone }}</p>
+                    @if ($student->parent_phone)
+                        <a href="tel:{{ preg_replace('/[^0-9+]/', '', $student->parent_phone) }}"
+                            class="font-medium text-[#155E8A] hover:underline underline-offset-2 mt-0.5 inline-block">
+                            {{ $student->parent_phone }}
+                        </a>
+                    @else
+                        <p class="font-medium text-gray-800 mt-0.5">—</p>
+                    @endif
                 </div>
                 <div>
                     <p class="text-gray-500">Registration ID</p>
@@ -184,38 +192,49 @@
                 </div>
 
                 @php
-                    $documents = collect([
-                        $student->admission?->transcript
-                            ? [
+                    $documents = collect();
+                    if ($student->admission) {
+                        $documents = collect([
+                            [
                                 'label' => 'Transcript',
                                 'icon' => 'fa-file-lines',
                                 'path' => $student->admission->transcript,
-                            ]
-                            : null,
-                        $student->admission?->recommendation_letter
-                            ? [
+                            ],
+                            [
                                 'label' => 'Recommendation Letter',
                                 'icon' => 'fa-file-signature',
                                 'path' => $student->admission->recommendation_letter,
-                            ]
-                            : null,
-                        $student->admission?->image
-                            ? ['label' => 'Submitted Photo', 'icon' => 'fa-image', 'path' => $student->admission->image]
-                            : null,
-                    ])->filter();
+                            ],
+                        ]);
+                        if ($student->admission->image) {
+                            $documents->push([
+                                'label' => 'Submitted Photo',
+                                'icon' => 'fa-image',
+                                'path' => $student->admission->image,
+                            ]);
+                        }
+                    }
                 @endphp
 
                 @if ($documents->isNotEmpty())
                     <div class="divide-y divide-gray-100">
                         @foreach ($documents as $doc)
-                            <a href="{{ asset('storage/' . $doc['path']) }}" target="_blank" rel="noopener"
-                                class="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors group">
-                                <i class="fas {{ $doc['icon'] }} text-gray-400 text-sm w-4"></i>
-                                <span class="text-sm font-medium text-gray-700 flex-1">{{ $doc['label'] }}</span>
-                                <span
-                                    class="text-xs text-[#155E8A] font-medium opacity-0 group-hover:opacity-100 transition-opacity">View
-                                    →</span>
-                            </a>
+                            @if (!empty($doc['path']) && \Illuminate\Support\Facades\Storage::disk('public')->exists($doc['path']))
+                                <a href="{{ asset('storage/' . $doc['path']) }}" target="_blank" rel="noopener"
+                                    class="flex items-center gap-3 px-5 py-3 hover:bg-gray-50 transition-colors group">
+                                    <i class="fas {{ $doc['icon'] }} text-gray-400 text-sm w-4"></i>
+                                    <span class="text-sm font-medium text-gray-700 flex-1">{{ $doc['label'] }}</span>
+                                    <span
+                                        class="text-xs text-[#155E8A] font-medium opacity-0 group-hover:opacity-100 transition-opacity">View
+                                        →</span>
+                                </a>
+                            @else
+                                <div class="flex items-center gap-3 px-5 py-3">
+                                    <i class="fas {{ $doc['icon'] }} text-gray-300 text-sm w-4"></i>
+                                    <span class="text-sm text-gray-500 flex-1">{{ $doc['label'] }}</span>
+                                    <span class="text-xs text-gray-400">File not available</span>
+                                </div>
+                            @endif
                         @endforeach
                     </div>
                 @else
@@ -278,7 +297,14 @@
             <div class="p-5 grid grid-cols-1 sm:grid-cols-3 gap-x-6 gap-y-4 text-sm">
                 <div>
                     <p class="text-gray-500">Login Email</p>
-                    <p class="font-medium text-gray-800 mt-0.5">{{ $student->user->email }}</p>
+                    @if ($student->user->email)
+                        <a href="mailto:{{ $student->user->email }}"
+                            class="font-medium text-[#155E8A] hover:underline underline-offset-2 mt-0.5 inline-block">
+                            {{ $student->user->email }}
+                        </a>
+                    @else
+                        <p class="font-medium text-gray-800 mt-0.5">—</p>
+                    @endif
                 </div>
                 <div>
                     <p class="text-gray-500">Account Status</p>
@@ -345,8 +371,69 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Parent Phone</label>
-                            <input type="text" wire:model="parent_phone"
-                                class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
+                            @if ($parentPhoneUsesPicker && $phoneCountryPickerAvailable)
+                                <div class="flex gap-2">
+                                    <div class="relative w-40 shrink-0" x-data="{ open: false, search: '' }"
+                                        @click.outside="open = false">
+                                        @php
+                                            $selectedStudentPhoneCountry = collect($africanPhoneCountries)->firstWhere('code', $parentPhoneCountry);
+                                        @endphp
+                                        <button type="button" @click="open = !open"
+                                            aria-haspopup="listbox" :aria-expanded="open.toString()"
+                                            class="w-full h-full min-h-[38px] flex items-center justify-between gap-2 px-2.5 rounded-lg border border-slate-300 bg-white text-sm text-slate-700">
+                                            <span class="flex items-center gap-2 min-w-0">
+                                                <img src="{{ $selectedStudentPhoneCountry['flag'] ?? '' }}"
+                                                    alt="{{ $selectedStudentPhoneCountry['name'] ?? 'Selected country' }} flag"
+                                                    class="h-4 w-6 object-cover shrink-0">
+                                                <span class="truncate">{{ $selectedStudentPhoneCountry['dial_code'] ?? '' }}</span>
+                                            </span>
+                                            <i class="fas fa-chevron-down text-[10px] text-slate-400"></i>
+                                        </button>
+                                        <div x-cloak x-show="open" x-transition
+                                            class="absolute left-0 top-full z-30 mt-1 w-72 max-w-[85vw] rounded-lg border border-slate-200 bg-white shadow-lg">
+                                            <label class="sr-only" for="student-parent-phone-country-search">Search African countries</label>
+                                            <input id="student-parent-phone-country-search" type="search" x-model="search"
+                                                @keydown.escape="open = false" placeholder="Search countries or codes"
+                                                class="w-full rounded-t-lg border-0 border-b border-slate-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#155E8A]/30">
+                                            <div role="listbox" aria-label="African countries"
+                                                class="max-h-56 overflow-y-auto p-1">
+                                                @foreach ($africanPhoneCountries as $country)
+                                                    <button type="button" role="option"
+                                                        aria-selected="{{ $parentPhoneCountry === $country['code'] ? 'true' : 'false' }}"
+                                                        data-search="{{ mb_strtolower($country['name'] . ' ' . $country['dial_code']) }}"
+                                                        x-show="!search || $el.dataset.search.includes(search.toLowerCase())"
+                                                        x-on:click="open = false; search = ''"
+                                                        wire:click="selectParentPhoneCountry('{{ $country['code'] }}')"
+                                                        class="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-700 hover:bg-sky-50">
+                                                        <img src="{{ $country['flag'] }}" alt="{{ $country['name'] }} flag"
+                                                            loading="lazy" class="h-4 w-6 object-cover shrink-0">
+                                                        <span class="min-w-0 flex-1 truncate">{{ $country['name'] }}</span>
+                                                        <span class="font-mono text-xs text-slate-500">{{ $country['dial_code'] }}</span>
+                                                    </button>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="tel" inputmode="numeric" wire:model="parentPhoneNational"
+                                        aria-label="Parent phone national number" placeholder="National number"
+                                        class="min-w-0 flex-1 px-3 py-2 rounded-lg border border-slate-300 text-sm">
+                                </div>
+                                <button type="button" wire:click="useParentPhonePlainInput"
+                                    class="mt-1 text-xs text-[#155E8A] underline underline-offset-2">Use number as stored</button>
+                                @error('parentPhoneCountry')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                                @error('parentPhoneNational')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                            @else
+                                <input type="text" wire:model="parent_phone"
+                                    class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
+                                @if ($phoneCountryPickerAvailable)
+                                    <button type="button" wire:click="useParentPhoneCountryPicker"
+                                        class="mt-1 text-xs text-[#155E8A] underline underline-offset-2">Use African country picker</button>
+                                @endif
+                            @endif
                             @error('parent_phone')
                                 <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                             @enderror
@@ -354,7 +441,27 @@
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Replace Photo</label>
                             <input type="file" wire:model="image" class="w-full text-sm">
+                            @if ($student->image)
+                                <p class="mt-1 text-xs text-slate-500">
+                                    @if (\Illuminate\Support\Facades\Storage::disk('public')->exists($student->image))
+                                        Current photo is available.
+                                    @else
+                                        Current photo file not available.
+                                    @endif
+                                </p>
+                            @endif
                         </div>
+                        @if ($student->admission)
+                            <hr class="border-slate-200">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1.5">Admission Date</label>
+                                <input type="date" wire:model="dateOfAdmission"
+                                    class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
+                                @error('dateOfAdmission')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                        @endif
                         <hr class="border-slate-200">
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Login Email</label>
@@ -373,14 +480,32 @@
                                 <option value="suspended">Suspended</option>
                             </select>
                         </div>
-                        <div>
+                        <div x-data="{ pass: '', confirm: '' }"
+                            x-on:student-default-password-set.window="pass = $event.detail.password; confirm = $event.detail.password">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">New Password
                                 (optional)</label>
-                            <input type="password" wire:model="new_password"
-                                class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
-                            <input type="password" wire:model="new_password_confirmation"
-                                placeholder="Confirm new password"
-                                class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm mt-2">
+                                <button type="button" wire:click="useSystemDefaultPassword"
+                                    class="text-xs font-semibold text-[#155E8A] hover:text-[#0F4A6E] underline underline-offset-2">
+                                    Use system default password
+                                </button>
+                            </div>
+                            @include('livewire.admin.partials.password-input', [
+                                'inputId' => 'student-new-password',
+                                'field' => 'new_password',
+                                'alpineModel' => 'pass',
+                                'label' => 'New password',
+                            ])
+                            @include('livewire.admin.partials.password-input', [
+                                'inputId' => 'student-new-password-confirmation',
+                                'field' => 'new_password_confirmation',
+                                'alpineModel' => 'confirm',
+                                'label' => 'Confirm new password',
+                                'placeholder' => 'Confirm new password',
+                            ])
+                            <p class="mt-1 text-xs" x-show="confirm.length > 0"
+                                x-text="pass === confirm ? '✓ Passwords match' : '✕ Passwords do not match'"
+                                :class="pass === confirm ? 'text-green-600' : 'text-red-600'"></p>
                             @error('new_password')
                                 <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                             @enderror

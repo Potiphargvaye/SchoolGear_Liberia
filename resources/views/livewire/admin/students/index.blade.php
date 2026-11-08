@@ -151,7 +151,7 @@
                             <td class="px-4 sm:px-6 py-3">
                                 <div
                                     class="h-9 w-9 rounded-full bg-slate-100 border border-slate-200 overflow-hidden flex items-center justify-center">
-                                    @if ($student->image)
+                                    @if ($student->image && \Illuminate\Support\Facades\Storage::disk('public')->exists($student->image))
                                         <img src="{{ asset('storage/' . $student->image) }}"
                                             alt="{{ $student->name }}" class="h-full w-full object-cover">
                                     @else

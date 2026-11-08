@@ -352,7 +352,7 @@
 
         // ===================================================
         // LIVE SEARCH for the Roles Management table
-        // Same technique used on Permissions / Role-Permissions pages:
+        // Same technique used f on Permissions / Role-Permissions pages:
         // fetch the same full page for a given search/page URL, then
         // swap only the #rolesManagementTableWrapper content.
         // ===================================================

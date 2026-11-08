@@ -52,12 +52,13 @@
 
     <div class="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full min-w-[800px] text-sm">
+            <table class="w-full min-w-[900px] text-sm">
                 <thead class="bg-[#155E8A] text-white">
                     <tr>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold uppercase">Admission #</th>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold uppercase">Applicant</th>
                         <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold uppercase">Grade Applying</th>
+                        <th class="px-4 sm:px-6 py-3 text-left text-xs font-semibold uppercase">Admission Date</th>
                         <th class="px-4 sm:px-6 py-3 text-center text-xs font-semibold uppercase">Type</th>
                         <th class="px-4 sm:px-6 py-3 text-center text-xs font-semibold uppercase">Actions</th>
                     </tr>
@@ -71,6 +72,9 @@
                             </td>
                             <td class="px-4 sm:px-6 py-3 text-slate-600">{{ $admission->grade->level }}
                                 {{ $admission->grade->section }}</td>
+                            <td class="px-4 sm:px-6 py-3 text-slate-600">
+                                {{ $admission->date_of_admission?->format('d M Y') ?? '—' }}
+                            </td>
                             <td class="px-4 sm:px-6 py-3 text-center">
                                 <span
                                     class="px-2.5 py-1 rounded-full text-xs font-medium bg-sky-100 text-[#155E8A]">{{ $admission->student_type }}</span>
@@ -134,7 +138,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center py-14">
+                            <td colspan="6" class="text-center py-14">
                                 <i class="fas fa-file-alt text-4xl text-slate-300 mb-3"></i>
                                 <p class="text-slate-500 text-sm">No admissions found.</p>
                             </td>
@@ -198,11 +202,67 @@
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Parent Phone *</label>
-                            <input type="text" wire:model="parent_phone"
-                                class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
-                            @error('parent_phone')
-                                <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
-                            @enderror
+                            @if ($phoneCountryPickerAvailable)
+                                <div class="flex gap-2">
+                                    <div class="relative w-40 shrink-0" x-data="{ open: false, search: '' }"
+                                        @click.outside="open = false">
+                                        <button type="button" @click="open = !open"
+                                            aria-haspopup="listbox" :aria-expanded="open.toString()"
+                                            class="w-full h-full min-h-[38px] flex items-center justify-between gap-2 px-2.5 rounded-lg border border-slate-300 bg-white text-sm text-slate-700">
+                                            <span class="flex items-center gap-2 min-w-0">
+                                                <img src="{{ $selectedPhoneCountry['flag'] }}"
+                                                    alt="{{ $selectedPhoneCountry['name'] }} flag"
+                                                    class="h-4 w-6 object-cover shrink-0">
+                                                <span class="truncate">{{ $selectedPhoneCountry['dial_code'] }}</span>
+                                            </span>
+                                            <i class="fas fa-chevron-down text-[10px] text-slate-400"></i>
+                                        </button>
+                                        <div x-cloak x-show="open" x-transition
+                                            class="absolute left-0 top-full z-30 mt-1 w-72 max-w-[85vw] rounded-lg border border-slate-200 bg-white shadow-lg">
+                                            <label class="sr-only" for="parent-phone-country-search">Search African countries</label>
+                                            <input id="parent-phone-country-search" type="search" x-model="search"
+                                                @keydown.escape="open = false" placeholder="Search countries or codes"
+                                                class="w-full rounded-t-lg border-0 border-b border-slate-200 px-3 py-2 text-sm focus:ring-2 focus:ring-[#155E8A]/30">
+                                            <div role="listbox" aria-label="African countries"
+                                                class="max-h-56 overflow-y-auto p-1">
+                                                @foreach ($africanPhoneCountries as $country)
+                                                    <button type="button" role="option"
+                                                        aria-selected="{{ $parentPhoneCountry === $country['code'] ? 'true' : 'false' }}"
+                                                        data-search="{{ mb_strtolower($country['name'] . ' ' . $country['dial_code']) }}"
+                                                        x-show="!search || $el.dataset.search.includes(search.toLowerCase())"
+                                                        x-on:click="open = false; search = ''"
+                                                        wire:click="selectParentPhoneCountry('{{ $country['code'] }}')"
+                                                        class="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-700 hover:bg-sky-50">
+                                                        <img src="{{ $country['flag'] }}" alt="{{ $country['name'] }} flag"
+                                                            loading="lazy" class="h-4 w-6 object-cover shrink-0">
+                                                        <span class="min-w-0 flex-1 truncate">{{ $country['name'] }}</span>
+                                                        <span class="font-mono text-xs text-slate-500">{{ $country['dial_code'] }}</span>
+                                                    </button>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="tel" inputmode="numeric" wire:model="parentPhoneNational"
+                                        aria-label="Parent phone national number"
+                                        placeholder="National number"
+                                        class="min-w-0 flex-1 px-3 py-2 rounded-lg border border-slate-300 text-sm">
+                                </div>
+                                @error('parentPhoneCountry')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                                @error('parentPhoneNational')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                                @error('parent_phone')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                            @else
+                                <input type="text" wire:model="parent_phone"
+                                    class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
+                                @error('parent_phone')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                            @endif
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Grade Applying For
@@ -320,6 +380,34 @@
                             Admitting this applicant creates their student login account and enrolls them in the
                             selected academic year.
                         </p>
+                        @if ($admitAdmission)
+                            <div class="flex items-center gap-3 rounded-lg border border-slate-200 bg-white p-3">
+                                @if ($admitAdmission->image)
+                                    <img src="{{ asset('storage/' . $admitAdmission->image) }}"
+                                        alt="{{ $admitAdmission->applicant_name }} photo"
+                                        class="h-14 w-14 rounded-full object-cover border border-slate-200 shrink-0">
+                                @else
+                                    <div aria-hidden="true"
+                                        class="h-14 w-14 rounded-full bg-sky-100 text-[#155E8A] flex items-center justify-center font-semibold text-lg shrink-0">
+                                        {{ strtoupper(substr($admitAdmission->applicant_name, 0, 1)) }}
+                                    </div>
+                                @endif
+                                <div class="min-w-0">
+                                    <p class="text-sm font-semibold text-slate-800 truncate">
+                                        {{ $admitAdmission->applicant_name }}</p>
+                                    <p class="text-xs text-slate-500 font-mono truncate">
+                                        {{ $admitAdmission->admission_number }}</p>
+                                </div>
+                            </div>
+                        @endif
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Admission Date *</label>
+                            <input type="date" wire:model="admitDate"
+                                class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
+                            @error('admitDate')
+                                <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5">Academic Year *</label>
                             <select wire:model="admitAcademicYearId"
@@ -342,18 +430,33 @@
                                 <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                             @enderror
                         </div>
-                        <div x-data="{ pass: '', confirm: '' }">
-                            <label class="block text-xs font-semibold text-slate-600 mb-1.5">Password *</label>
-                            <input type="password" wire:model="admitPassword" x-model="pass"
-                                class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
+                        <div x-data="{ pass: '', confirm: '' }"
+                            x-on:admit-default-password-set.window="pass = $event.detail.password; confirm = $event.detail.password">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                                <label class="block text-xs font-semibold text-slate-600">Password *</label>
+                                <button type="button" wire:click="useSystemDefaultPassword"
+                                    class="text-xs font-semibold text-[#155E8A] hover:text-[#0F4A6E] underline underline-offset-2">
+                                    Use system default password
+                                </button>
+                            </div>
+                            @include('livewire.admin.partials.password-input', [
+                                'inputId' => 'admit-password',
+                                'field' => 'admitPassword',
+                                'alpineModel' => 'pass',
+                                'label' => 'Password',
+                            ])
                             @error('admitPassword')
                                 <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
                             @enderror
 
                             <label class="block text-xs font-semibold text-slate-600 mb-1.5 mt-3">Confirm Password
                                 *</label>
-                            <input type="password" wire:model="admitPassword_confirmation" x-model="confirm"
-                                class="w-full px-3 py-2 rounded-lg border border-slate-300 text-sm">
+                            @include('livewire.admin.partials.password-input', [
+                                'inputId' => 'admit-password-confirmation',
+                                'field' => 'admitPassword_confirmation',
+                                'alpineModel' => 'confirm',
+                                'label' => 'Confirm password',
+                            ])
                             <p class="mt-1 text-xs" x-show="confirm.length > 0"
                                 x-text="pass === confirm ? '✓ Passwords match' : '✕ Passwords do not match'"
                                 :class="pass === confirm ? 'text-green-600' : 'text-red-600'"></p>
