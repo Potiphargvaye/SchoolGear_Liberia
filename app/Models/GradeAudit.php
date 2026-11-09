@@ -11,6 +11,7 @@ class GradeAudit extends Model
         'school_id',
         'student_grade_id',
         'enrollment_id',
+        'grade_id',
         'academic_subject_id',
         'action',
         'changes',

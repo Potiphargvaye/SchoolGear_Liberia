@@ -68,7 +68,7 @@
     <header class="w-full px-4 sm:px-8 py-3 flex items-center justify-between border-b border-slate-200 bg-white">
         <!-- Brand Logo Container -->
         <a href="{{ route('home') }}" class="flex items-center shrink-0">
-            <img src="{{ asset('logo/logo1.jpeg') }}" alt="SchoolGear Liberia"
+            <img src="{{ asset('logo/download.png') }}" alt="SchoolGear Liberia"
                 class="h-10 sm:h-12 w-auto object-contain mix-blend-multiply">
         </a>
 

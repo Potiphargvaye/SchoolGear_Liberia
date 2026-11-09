@@ -218,7 +218,7 @@
                 class="dropdown-toggle flex items-center gap-2.5 py-1 pr-1.5 rounded-lg transition-colors duration-200 hover:bg-white/10">
                 <div class="flex-shrink-0 w-9 h-9 relative">
                     @auth
-                        @if (auth()->user()->image)
+                        @if (auth()->user()->image && \Illuminate\Support\Facades\Storage::disk('public')->exists(auth()->user()->image))
                             <div class="p-0.5 bg-white rounded-full ring-2 ring-white/20 focus:outline-none focus:ring">
                                 <img class="w-8 h-8 rounded-full object-cover"
                                     src="{{ asset('storage/' . auth()->user()->image) }}"
@@ -259,7 +259,7 @@
 
             <ul class="nav-dropdown dropdown-menu z-30 hidden py-1.5 w-full max-w-[160px]">
                 <li>
-                    <a href="#" class="nav-dropitem">
+                    <a href="{{ route('admin.profile') }}" class="nav-dropitem">
                         <i class="ri-user-line nav-dropicon"></i>
                         Profile
                     </a>
@@ -271,12 +271,13 @@
                     </a>
                 </li>
                 <li class="mt-1 pt-1 border-t border-gray-100">
-                    <form method="POST" action="">
-                        <a role="menuitem" class="nav-dropitem nav-dropitem-danger cursor-pointer"
-                            onclick="event.preventDefault(); this.closest('form').submit();">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" role="menuitem"
+                            class="nav-dropitem nav-dropitem-danger w-full cursor-pointer text-left">
                             <i class="ri-logout-box-r-line nav-dropicon"></i>
                             Log Out
-                        </a>
+                        </button>
                     </form>
                 </li>
             </ul>

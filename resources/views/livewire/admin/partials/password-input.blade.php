@@ -6,7 +6,7 @@
     <input id="{{ $inputId }}" type="password" :type="visible ? 'text' : 'password'" wire:model="{{ $field }}"
         @if (!empty($alpineModel)) x-model="{{ $alpineModel }}" @endif
         @if (!empty($placeholder)) placeholder="{{ $placeholder }}" @endif
-        autocomplete="new-password"
+        autocomplete="{{ $autocomplete ?? 'new-password' }}"
         class="w-full px-3 py-2 pr-11 rounded-lg border border-slate-300 text-sm">
     <button type="button" @click="visible = !visible"
         :aria-label="visible ? 'Hide {{ strtolower($label) }}' : 'Show {{ strtolower($label) }}'"

@@ -70,6 +70,7 @@ Route::get('/', function () {
 require __DIR__ . '/public-page.php'; // for my public page routes 
 require __DIR__ . '/admin/fees.php';
 require __DIR__ . '/admin/dashboard.php';
+require __DIR__ . '/admin/profile.php';
 require __DIR__ . '/admin/roles.php';
 require __DIR__ . '/admin/permissions.php';
 require __DIR__ . '/admin/role-permissions.php';
