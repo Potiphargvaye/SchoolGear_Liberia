@@ -46,7 +46,7 @@
         style="margin:24px auto 0; border-collapse:collapse;">
         <tr>
             <td align="center" bgcolor="#F2C14E" style="background-color:#F2C14E; border-radius:4px;">
-                <a href="https://wa.me/231777987113"
+                <a href="https://wa.me/231770123498"
                     style="display:inline-block; padding:13px 22px; color:#241A5B; font-size:14px; line-height:1.2; font-weight:700; text-decoration:none;">
                     Contact SchoolGear on WhatsApp
                 </a>

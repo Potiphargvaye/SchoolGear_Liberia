@@ -113,9 +113,62 @@
 
                 <div>
                     <label for="whatsapp_number" class="{{ $label }}">WhatsApp number</label>
-                    <input id="whatsapp_number" type="tel" wire:model.blur="whatsapp_number" autocomplete="tel"
-                        placeholder="+231 77 000 0000"
-                        class="{{ $input }} @error('whatsapp_number') border-red-400 @else border-slate-300 @enderror">
+                    @if ($phoneCountryPickerAvailable)
+                        <div class="flex gap-2">
+                            <div class="relative w-32 shrink-0" x-data="{ open: false, search: '' }"
+                                @click.outside="open = false">
+                                <button type="button" @click="open = !open"
+                                    aria-haspopup="listbox" :aria-expanded="open.toString()"
+                                    class="w-full h-full min-h-[42px] flex items-center justify-between gap-2 px-2.5 rounded-lg border border-slate-300 bg-white text-sm text-slate-700">
+                                    <span class="flex items-center gap-2 min-w-0">
+                                        <img src="{{ $selectedPhoneCountry['flag'] }}"
+                                            alt="{{ $selectedPhoneCountry['name'] }} flag"
+                                            class="h-4 w-6 object-cover shrink-0">
+                                        <span class="truncate">{{ $selectedPhoneCountry['dial_code'] }}</span>
+                                    </span>\
+                                    <i class="fas fa-chevron-down text-[10px] text-slate-400"></i>
+                                </button>
+                                <div x-cloak x-show="open" x-transition
+                                    class="absolute left-0 top-full z-30 mt-1 w-72 max-w-[85vw] rounded-lg border border-slate-200 bg-white shadow-lg">
+                                    <label class="sr-only" for="whatsapp-country-search">Search African countries</label>
+                                    <input id="whatsapp-country-search" type="search" x-model="search"
+                                        @keydown.escape="open = false" placeholder="Search countries or codes"
+                                        class="w-full rounded-t-lg border-0 border-b border-slate-200 px-3 py-2 text-sm focus:ring-2 focus:ring-sg-primary/30">
+                                    <div role="listbox" aria-label="African countries"
+                                        class="max-h-56 overflow-y-auto p-1">
+                                        @foreach ($africanPhoneCountries as $country)
+                                            <button type="button" role="option"
+                                                aria-selected="{{ $whatsappCountry === $country['code'] ? 'true' : 'false' }}"
+                                                data-search="{{ mb_strtolower($country['name'] . ' ' . $country['dial_code']) }}"
+                                                x-show="!search || $el.dataset.search.includes(search.toLowerCase())"
+                                                x-on:click="open = false; search = ''"
+                                                wire:click="selectWhatsAppCountry('{{ $country['code'] }}')"
+                                                class="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-sm text-slate-700 hover:bg-sky-50">
+                                                <img src="{{ $country['flag'] }}" alt="{{ $country['name'] }} flag"
+                                                    loading="lazy" class="h-4 w-6 object-cover shrink-0">
+                                                <span class="min-w-0 flex-1 truncate">{{ $country['name'] }}</span>
+                                                <span class="font-mono text-xs text-slate-500">{{ $country['dial_code'] }}</span>
+                                            </button>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                            <input id="whatsapp_number" type="tel" inputmode="numeric"
+                                wire:model.blur="whatsappNational" autocomplete="tel-national"
+                                placeholder="7700000"
+                                class="{{ $input }} min-w-0 flex-1 @error('whatsapp_number') border-red-400 @else border-slate-300 @enderror">
+                        </div>
+                        @error('whatsappCountry')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                        @error('whatsappNational')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    @else
+                        <input id="whatsapp_number" type="tel" wire:model.blur="whatsapp_number" autocomplete="tel"
+                            placeholder="+231 77 000 0000"
+                            class="{{ $input }} @error('whatsapp_number') border-red-400 @else border-slate-300 @enderror">
+                    @endif
                     @error('whatsapp_number')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                     @enderror

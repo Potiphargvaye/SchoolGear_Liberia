@@ -5,6 +5,7 @@ namespace App\Livewire\Public;
 use App\Mail\DemoRequestAdminAlert;
 use App\Mail\DemoRequestReceived;
 use App\Models\DemoRequest;
+use App\Support\AfricanPhoneCountries;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
@@ -17,6 +18,8 @@ class BookDemo extends Component
     public string $email = '';
     public string $school_name = '';
     public string $whatsapp_number = '';
+    public string $whatsappCountry = AfricanPhoneCountries::DEFAULT_COUNTRY;
+    public string $whatsappNational = '';
     public string $city = '';
     public string $school_category = '';
     public string $school_address = '';
@@ -33,11 +36,17 @@ class BookDemo extends Component
 
     protected function rules(): array
     {
-        return [
+        $phoneCountries = $this->africanPhoneCountries();
+
+        $rules = [
             'full_name'       => ['required', 'string', 'max:120'],
             'email'           => ['required', 'email:rfc', 'max:150'],
             'school_name'     => ['required', 'string', 'max:150'],
-            'whatsapp_number' => ['required', 'string', 'regex:/^\+?[0-9\s\-()]{7,20}$/'],
+            'whatsapp_number' => [
+                'required',
+                'string',
+                $phoneCountries ? 'regex:/^\+[1-9]\d{6,14}$/' : 'regex:/^\+?[0-9\s\-()]{7,20}$/',
+            ],
             'city'            => ['required', 'string', 'max:100'],
             'school_category' => ['required', Rule::in(array_keys(DemoRequest::CATEGORIES))],
             'school_address'  => ['required', 'string', 'max:255'],
@@ -50,6 +59,13 @@ class BookDemo extends Component
             'preferred_time'  => ['required', Rule::in(array_keys(DemoRequest::TIME_SLOTS))],
             'message'         => ['nullable', 'string', 'max:1000'],
         ];
+
+        if ($phoneCountries) {
+            $rules['whatsappCountry'] = ['required', Rule::in(array_column($phoneCountries, 'code'))];
+            $rules['whatsappNational'] = ['required', 'string', 'max:15', 'regex:/^\d+$/'];
+        }
+
+        return $rules;
     }
 
     protected function validationAttributes(): array
@@ -82,6 +98,18 @@ class BookDemo extends Component
         // Real visitors never see this field. Drop bot submissions silently.
         if ($this->website !== '') {
             return;
+        }
+
+        $phoneCountries = $this->africanPhoneCountries();
+
+        if ($phoneCountries) {
+            $this->validate([
+                'whatsappCountry' => ['required', Rule::in(array_column($phoneCountries, 'code'))],
+                'whatsappNational' => ['required', 'string', 'max:15', 'regex:/^\d+$/'],
+            ]);
+
+            $selectedCountry = collect($phoneCountries)->firstWhere('code', $this->whatsappCountry);
+            $this->whatsapp_number = $selectedCountry['dial_code'] . ltrim($this->whatsappNational, '0');
         }
 
         $this->validate();
@@ -131,6 +159,15 @@ class BookDemo extends Component
         $this->resetErrorBag();
     }
 
+    public function selectWhatsAppCountry(string $code): void
+    {
+        $country = collect($this->africanPhoneCountries())->firstWhere('code', $code);
+
+        if ($country) {
+            $this->whatsappCountry = $country['code'];
+        }
+    }
+
     private function sendMail(?string $to, $mailable): bool
     {
         if (! $to) {
@@ -150,9 +187,21 @@ class BookDemo extends Component
 
     public function render()
     {
+        $africanPhoneCountries = $this->africanPhoneCountries();
+        $selectedPhoneCountry = collect($africanPhoneCountries)->firstWhere('code', $this->whatsappCountry)
+            ?? collect($africanPhoneCountries)->firstWhere('code', AfricanPhoneCountries::DEFAULT_COUNTRY);
+
         return view('livewire.public.book-demo', [
             'timeSlots'  => DemoRequest::TIME_SLOTS,
             'categories' => DemoRequest::CATEGORIES,
+            'africanPhoneCountries' => $africanPhoneCountries,
+            'selectedPhoneCountry' => $selectedPhoneCountry,
+            'phoneCountryPickerAvailable' => (bool) $africanPhoneCountries && (bool) $selectedPhoneCountry,
         ]);
+    }
+
+    private function africanPhoneCountries(): array
+    {
+        return app(AfricanPhoneCountries::class)->all();
     }
 }

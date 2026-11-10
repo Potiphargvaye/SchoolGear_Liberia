@@ -61,7 +61,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $search = request('search');
+        $search = trim((string) request('search', ''));
 
         $users = $this->scopeToSchool(
             User::with('roles')
@@ -71,7 +71,7 @@ class UserController extends Controller
                     $query->where('name', 'Student');
                 })
         )
-            ->when($search, function ($query) use ($search) {
+            ->when($search !== '', function ($query) use ($search) {
 
                 $query->where(function ($q) use ($search) {
 
@@ -119,7 +119,8 @@ class UserController extends Controller
                 'totalUsers',
                 'totalStudents',
                 'totalStaff',
-                'activeUsers'
+                'activeUsers',
+                'search'
             )
         );
     }

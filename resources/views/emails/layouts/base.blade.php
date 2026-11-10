@@ -20,10 +20,10 @@
                                 style="width:100%; border-collapse:collapse;">
                                 <tr>
                                     <td width="78" valign="middle" style="width:78px; padding-right:18px;">
-                                        <img src="{{ asset('logo/schoolgear-logo.png') }}" width="68" height="68"
+                                        <img src="{{ asset('logo/schoolgear-logo1.png') }}" width="68" height="68"
                                             alt="SchoolGear Liberia logo"
                                             style="display:block; width:68px; height:68px; border:0; border-radius:50%; background-color:#FFFFFF;">
-                                    </td>
+                                    </td>  
                                     <td valign="middle" style="color:#FFFFFF;">
                                         <p style="margin:0; color:#FFFFFF; font-size:19px; line-height:1.3; font-weight:700;">
                                             SchoolGear Liberia

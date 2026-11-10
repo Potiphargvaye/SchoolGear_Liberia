@@ -177,15 +177,17 @@
 
                 <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
                     <!-- Search Bar -->
-                    <div class="search-bar flex items-center bg-gray-100 py-1.5 px-3 rounded-full w-full md:w-80">
+                    <form id="userSearchForm" method="GET" action="{{ route('admin.access-control.users.index') }}"
+                        class="search-bar flex items-center bg-gray-100 py-1.5 px-3 rounded-full w-full md:w-80">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
-                        <input type="text" id="searchInput" placeholder="Search users..."
+                        <input type="search" id="searchInput" name="search" value="{{ $search }}"
+                            placeholder="Search users..." autocomplete="off" aria-label="Search users"
                             class="bg-transparent py-1 px-2 w-full focus:outline-none text-sm search-input">
-                    </div>
+                    </form>
 
                     <!-- Add New User Button -->
                     <button onclick="openCreateUserModal()"
@@ -468,7 +470,7 @@
 
                 </div>
 
-                <div class="bg-gray-50 px-6 py-4 border-t">
+                <div id="usersPagination" class="bg-gray-50 px-6 py-4 border-t">
 
                     {{ $users->links() }}
 
@@ -1372,104 +1374,112 @@
         </div>
         </div>
         <script>
-            // Search functionality variables
+            const userSearchForm = document.getElementById('userSearchForm');
+            const searchInput = document.getElementById('searchInput');
             let searchTimeout;
+            let activeSearchRequest;
 
-            // ========== SEARCH FUNCTIONALITY ==========
-            function performSearch() {
-                const searchTerm = document.getElementById('searchInput').value.trim();
-                const userRows = document.querySelectorAll('#usersTable .user-row');
+            if (userSearchForm && searchInput) {
+                const loadUsers = async (url, updateHistory = 'replace') => {
+                    if (activeSearchRequest) {
+                        activeSearchRequest.abort();
+                    }
 
-                // Show loading spinner
-                showLoadingSpinner();
+                    const requestController = new AbortController();
+                    activeSearchRequest = requestController;
+                    const spinner = document.getElementById('loadingSpinner');
 
-                // Clear previous timeout
-                clearTimeout(searchTimeout);
+                    if (spinner) {
+                        spinner.style.display = 'block';
+                    }
 
-                // Set new timeout for search with debouncing
-                searchTimeout = setTimeout(() => {
-                    // Simulate search (you can replace this with actual AJAX call)
-                    userRows.forEach(row => {
-                        const textContent = row.textContent.toLowerCase();
-                        if (searchTerm === '' || textContent.includes(searchTerm)) {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
+                    try {
+                        const response = await fetch(url, {
+                            headers: {
+                                'Accept': 'text/html',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            signal: requestController.signal
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`User search failed with status ${response.status}`);
                         }
-                    });
 
-                    // Hide loading spinner after search completes
-                    setTimeout(() => {
-                        hideLoadingSpinner();
+                        const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+                        const nextUsers = page.getElementById('usersTable');
+                        const nextPagination = page.getElementById('usersPagination');
+                        const users = document.getElementById('usersTable');
+                        const pagination = document.getElementById('usersPagination');
 
-                        // Show search results info
-                        const visibleRows = document.querySelectorAll('#usersTable .user-row[style=""]').length;
-                        const totalRows = userRows.length;
-                        showSearchResultsInfo(visibleRows, totalRows, searchTerm);
-                    }, 300); // Small delay to show loading state
+                        if (!nextUsers || !nextPagination || !users || !pagination) {
+                            throw new Error('User search response did not contain the users table and pagination.');
+                        }
 
-                }, 500);
-            }
+                        users.innerHTML = nextUsers.innerHTML;
+                        pagination.innerHTML = nextPagination.innerHTML;
+                        searchInput.value = new URL(url, window.location.href).searchParams.get('search') || '';
 
-            // Loading spinner functions
-            function showLoadingSpinner() {
-                const spinner = document.getElementById('loadingSpinner');
-                const usersTable = document.getElementById('usersTable');
+                        if (updateHistory === 'push') {
+                            window.history.pushState({}, '', url);
+                        } else if (updateHistory === 'replace') {
+                            window.history.replaceState({}, '', url);
+                        }
+                    } catch (error) {
+                        if (error.name === 'AbortError') {
+                            return;
+                        }
 
-                // Create shimmer effect on existing rows
-                if (usersTable) {
-                    usersTable.querySelectorAll('.user-row').forEach(row => {
-                        row.style.opacity = '0.6';
-                        row.classList.add('shimmer');
-                    });
-                }
+                        console.error(error);
+                        window.location.assign(url);
+                    } finally {
+                        if (activeSearchRequest === requestController) {
+                            activeSearchRequest = null;
+                            if (spinner) {
+                                spinner.style.display = 'none';
+                            }
+                        }
+                    }
+                };
 
-                // Show spinner
-                spinner.style.display = 'block';
-            }
+                const searchUsers = () => {
+                    const url = new URL(window.location.href);
+                    const term = searchInput.value.trim();
 
-            function hideLoadingSpinner() {
-                const spinner = document.getElementById('loadingSpinner');
-                const usersTable = document.getElementById('usersTable');
+                    if (term) {
+                        url.searchParams.set('search', term);
+                    } else {
+                        url.searchParams.delete('search');
+                    }
 
-                // Remove shimmer effect
-                if (usersTable) {
-                    usersTable.querySelectorAll('.user-row').forEach(row => {
-                        row.style.opacity = '1';
-                        row.classList.remove('shimmer');
-                    });
-                }
+                    url.searchParams.delete('page');
+                    loadUsers(url, 'replace');
+                };
 
-                spinner.style.display = 'none';
-            }
+                searchInput.addEventListener('input', () => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(searchUsers, 250);
+                });
 
-            function showSearchResultsInfo(currentCount, totalCount, searchTerm) {
-                let resultsInfo = document.getElementById('searchResultsInfo');
+                userSearchForm.addEventListener('submit', event => {
+                    event.preventDefault();
+                    clearTimeout(searchTimeout);
+                    searchUsers();
+                });
 
-                if (!resultsInfo) {
-                    resultsInfo = document.createElement('div');
-                    resultsInfo.id = 'searchResultsInfo';
-                    resultsInfo.className = 'mb-4';
-                    const usersTable = document.querySelector('.bg-white.rounded-lg.shadow');
-                    usersTable.parentNode.insertBefore(resultsInfo, usersTable);
-                }
+                document.addEventListener('click', event => {
+                    const link = event.target.closest('#usersPagination a');
 
-                if (searchTerm) {
-                    resultsInfo.innerHTML = `
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                    Showing ${currentCount} of ${totalCount} users matching "${searchTerm}"
-                    <button onclick="clearSearch()" class="ml-2 text-blue-600 hover:text-blue-800 font-medium">Clear search</button>
-                </div>
-            `;
-                } else {
-                    resultsInfo.innerHTML = '';
-                }
-            }
+                    if (!link || link.origin !== window.location.origin) {
+                        return;
+                    }
 
-            function clearSearch() {
-                document.getElementById('searchInput').value = '';
-                performSearch();
+                    event.preventDefault();
+                    clearTimeout(searchTimeout);
+                    loadUsers(link.href, 'push');
+                });
+
+                window.addEventListener('popstate', () => loadUsers(window.location.href, 'none'));
             }
 
             // ========== MODAL FUNCTIONALITY ==========
@@ -1522,19 +1532,6 @@
                         const preview = document.getElementById('image-preview');
                         if (this.files && this.files[0]) {
                             preview.src = URL.createObjectURL(this.files[0]);
-                        }
-                    });
-                }
-
-                // Search input event listener
-                const searchInput = document.getElementById('searchInput');
-                if (searchInput) {
-                    searchInput.addEventListener('input', performSearch);
-
-                    // Clear search when escape key is pressed
-                    searchInput.addEventListener('keydown', function(e) {
-                        if (e.key === 'Escape') {
-                            clearSearch();
                         }
                     });
                 }
@@ -2369,8 +2366,6 @@
                     }, 100 * index);
                 });
 
-                // Hide loading spinner initially
-                hideLoadingSpinner();
             });
 
 
