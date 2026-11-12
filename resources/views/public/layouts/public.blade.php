@@ -254,7 +254,7 @@
 
 
         <!-- WhatsApp Floating Button -->
-        <a href="https://wa.me/+231777987113" target="_blank" class="whatsapp-float"
+        <a href="https://wa.me/+231770123498" target="_blank" class="whatsapp-float"
             aria-label="Message us on WhatsApp">
             <svg class="whatsapp-icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                 <path
