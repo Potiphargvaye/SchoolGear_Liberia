@@ -502,7 +502,7 @@
                                         <img src="{{ asset('storage/' . $sgModalSchool->logo) }}"
                                             alt="{{ $sgModalSchool->school_name }}" class="h-full w-full object-contain">
                                     @else
-                                        <img src="{{ asset('logo/schoolgearlogo.png') }}"
+                                        <img src="{{ asset('logo/Schoolgear1.jpeg') }}"
                                             alt="SchoolGear Logo" class="h-full w-full object-contain">
                                     @endif
                                 </div>
@@ -814,7 +814,7 @@
                                             alt="{{ $sgEditModalSchool->school_name }}"
                                             class="h-full w-full object-contain">
                                     @else
-                                        <img src="{{ asset('logo/schoolgearlogo.png') }}"
+                                        <img src="{{ asset('logo/Schoolgear1.jpeg') }}"
                                             alt="SchoolGear Logo" class="h-full w-full object-contain">
                                     @endif
 
@@ -1133,7 +1133,7 @@
                                     <img src="{{ asset('storage/' . $sgViewModalSchool->logo) }}"
                                         alt="{{ $sgViewModalSchool->school_name }}" class="h-full w-full object-contain">
                                 @else
-                                    <img src="{{ asset('logo/schoolgearlogo.png') }}"
+                                    <img src="{{ asset('logo/Schoolgear1.jpeg') }}"
                                         alt="SchoolGear Logo" class="h-full w-full object-contain">
                                 @endif
                             </div>

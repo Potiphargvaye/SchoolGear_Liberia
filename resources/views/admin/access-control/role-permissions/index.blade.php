@@ -146,8 +146,7 @@
 
                         <div
                             class="h-11 w-11 shrink-0 rounded-full bg-white/10 border border-white/25 flex items-center justify-center overflow-hidden p-1.5">
-                            <img src="{{ asset('logo/schoolgearlogo.png') }}"
-                                alt="SchoolGear Logo" class="h-full w-full object-contain">
+                            <img src="{{ asset('logo/Schoolgear1.jpeg') }}" alt="SchoolGear Logo" class="h-full w-full object-contain">
                         </div>
 
                         <div class="min-w-0">
