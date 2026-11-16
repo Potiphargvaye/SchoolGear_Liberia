@@ -4,12 +4,10 @@
 namespace App\Http\Controllers\Students;
 
 use App\Http\Controllers\Controller;
-
-
-
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Announcement;
+use App\Models\Enrollment;
+use App\Models\StudentGrade;
 use App\Models\TeacherMaterial;
 
 class StudentDashboardController extends Controller
@@ -19,16 +17,49 @@ class StudentDashboardController extends Controller
      */
     public function index()
     {
-        $user = Auth::user()->load('grade');
-        
-        $announcements = Announcement::where(function($query) {
-                $query->where('end_date', '>=', now())
-                      ->orWhereNull('end_date');
-            })
-            ->orderBy('created_at', 'desc')
-            ->get();
-        
-        return view('student.dashboard', compact('user', 'announcements'));
+        $user = Auth::user()->loadMissing(['school', 'student']);
+        $student = $user->school_id
+            && $user->student
+            && (int) $user->student->school_id === (int) $user->school_id
+            ? $user->student
+            : null;
+        $enrollment = null;
+        $grades = collect();
+
+        if ($student) {
+            $enrollment = Enrollment::query()
+                ->with(['grade', 'academicYear'])
+                ->where('school_id', $user->school_id)
+                ->where('student_id', $student->id)
+                ->where('status', 'active')
+                ->latest('updated_at')
+                ->first();
+
+            if ($enrollment) {
+                $grades = StudentGrade::query()
+                    ->where('school_id', $user->school_id)
+                    ->where('enrollment_id', $enrollment->id)
+                    ->whereHas('subject', fn ($query) => $query->where('school_id', $user->school_id))
+                    ->with(['subject' => fn ($query) => $query
+                        ->where('school_id', $user->school_id)
+                        ->select('id', 'name')])
+                    ->get(['id', 'academic_subject_id', 'updated_at']);
+            }
+        }
+
+        $latestGrade = $grades->sortByDesc('updated_at')->first();
+        $school = $user->school;
+        $academicYear = $enrollment?->academicYear;
+
+        return view('student.dashboard', compact(
+            'user',
+            'student',
+            'school',
+            'enrollment',
+            'academicYear',
+            'grades',
+            'latestGrade'
+        ));
     }
 
     /**

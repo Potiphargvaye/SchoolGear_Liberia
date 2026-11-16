@@ -3,9 +3,11 @@
 namespace App\Livewire\Admin\Students;
 
 use App\Models\Student;
+use App\Notifications\PasswordResetSuccessNotification;
 use App\Support\AfricanPhoneCountries;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
@@ -150,16 +152,20 @@ class Profile extends Component
 
         $this->validate($rules);
 
+        $this->student->loadMissing('user');
+        $passwordChanged = filled($this->new_password)
+            && $this->student->user
+            && ! Hash::check($this->new_password, $this->student->user->getAuthPassword());
         $newImagePath = $this->image ? $this->image->store('students/images', 'public') : null;
 
-        DB::transaction(function () use ($newImagePath) {
+        DB::transaction(function () use ($newImagePath, $passwordChanged) {
             $this->student->loadMissing('user', 'admission');
             $oldImagePath = $this->student->image;
 
             $this->student->user?->update([
                 'email' => $this->email,
                 'status' => $this->status,
-                'password' => $this->new_password ? Hash::make($this->new_password) : $this->student->user->password,
+                'password' => $passwordChanged ? Hash::make($this->new_password) : $this->student->user->password,
                 'image' => $newImagePath ?: $this->student->user->image,
             ]);
 
@@ -186,6 +192,19 @@ class Profile extends Component
         $this->showEditModal = false;
 
         $this->dispatch('notify', message: 'Student profile updated successfully.', type: 'success');
+
+        if ($passwordChanged) {
+            try {
+                $this->student->user->notify(new PasswordResetSuccessNotification($this->student->user));
+            } catch (\Throwable $exception) {
+                Log::warning('Student password confirmation email could not be sent after an admin update.', [
+                    'user_id' => $this->student->user->id,
+                    'exception' => $exception->getMessage(),
+                ]);
+
+                $this->dispatch('notify', message: 'The student password was changed, but the confirmation email could not be sent.', type: 'error');
+            }
+        }
     }
 
     public function render()

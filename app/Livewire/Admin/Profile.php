@@ -2,8 +2,10 @@
 
 namespace App\Livewire\Admin;
 
+use App\Notifications\PasswordResetSuccessNotification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -92,6 +94,20 @@ class Profile extends Component
 
         $this->reset(['currentPassword', 'password', 'password_confirmation']);
         $this->dispatch('profile-password-cleared');
+
+        try {
+            $user->notify(new PasswordResetSuccessNotification($user));
+        } catch (\Throwable $exception) {
+            Log::warning('Admin password confirmation email could not be sent.', [
+                'user_id' => $user->id,
+                'exception' => $exception->getMessage(),
+            ]);
+
+            $this->dispatch('notify', message: 'Your password was changed, but the confirmation email could not be sent.', type: 'error');
+
+            return;
+        }
+
         $this->dispatch('notify', message: 'Password updated successfully.', type: 'success');
     }
 

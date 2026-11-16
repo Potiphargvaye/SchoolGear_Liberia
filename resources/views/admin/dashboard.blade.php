@@ -612,36 +612,37 @@
                 </div>
             </div>
 
-            {{-- 3. Attendance Rate (SAMPLE data — attendance module not yet implemented) --}}
+            {{-- 3. Attendance Rate (real attendance marks for today) --}}
             <div class="sg-card">
                 <div style="padding: 20px;">
                     <div class="flex items-start justify-between mb-3.5">
                         <div>
                             <p class="sg-kicker">
                                 Attendance Rate
-                                <span class="sg-chip"
-                                    style="background: rgba(255,226,154,0.25); color: #92660A; padding: 1px 6px; font-size: 9px; margin-left: 4px;">SAMPLE</span>
                             </p>
-                            <p class="sg-big" style="margin-top: 6px;">93.4%</p>
-                            <p class="sg-text-secondary" style="font-size: 12px; margin: 5px 0 0;">1,166 of 1,248 present
+                            <p class="sg-big" style="margin-top: 6px;">{{ number_format($attendanceTodayRate, 1) }}%</p>
+                            <p class="sg-text-secondary" style="font-size: 12px; margin: 5px 0 0;">
+                                @if ($attendanceTodayTotalMarks > 0)
+                                    {{ number_format($attendanceTodayPresentMarks) }} of
+                                    {{ number_format($attendanceTodayTotalMarks) }} attendance marks present today
+                                @else
+                                    No attendance recorded today
+                                @endif
                             </p>
-                            <div style="margin-top: 8px; display: flex; align-items: center; gap: 4px;">
-                                <span class="sg-chip"
-                                    style="background: rgba(46,125,91,0.1); color: #2E7D5B; padding: 2px 6px;">&#9650;
-                                    1.1%</span>
-                                <span class="sg-text-secondary" style="font-size: 11px;">vs yesterday</span>
-                            </div>
                         </div>
                         <div class="sg-icon-box" style="background: rgba(56,189,248,0.1);">
                             <i class="ri-checkbox-circle-line" style="color: #38BDF8; font-size: 20px;"></i>
                         </div>
                     </div>
                     <div class="sg-bar-strip">
-                        <div class="sg-fill" style="width: 93.4%; background: #38BDF8;"></div>
+                        <div class="sg-fill"
+                            style="width: {{ $attendanceTodayRate }}%; background: #38BDF8;"></div>
                     </div>
                     <div class="flex justify-between" style="margin-top: 8px;">
                         <span class="sg-text-secondary" style="font-size: 11px;">Target: 95%</span>
-                        <span style="font-size: 11px; font-weight: 600; color: #F84525;">Absent: 82</span>
+                        <span style="font-size: 11px; font-weight: 600; color: #F84525;">
+                            Absent: {{ number_format($attendanceTodayCounts['absent']) }}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -677,14 +678,11 @@
             </div>
         </div>
 
-        {{-- C. Attendance Overview (SAMPLE data — module not yet implemented) --}}
+        {{-- C. Attendance Overview --}}
         <div class="sg-card" style="margin-bottom: 24px; overflow: hidden;">
             <div class="sg-card-head">
                 <div class="flex items-center gap-2">
                     <h2 class="sg-card-title">Attendance Overview</h2>
-                    <span class="sg-chip"
-                        style="background: rgba(56,189,248,0.15); color: #0284C7; font-size: 10px; padding: 3px 8px; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 700;">Sample
-                        data</span>
                 </div>
                 <div class="flex items-center gap-3 flex-wrap">
                     <div class="sg-tabs" id="sg-attendance-tabs">
@@ -699,11 +697,7 @@
                     <div class="flex gap-5 flex-wrap" style="margin-bottom: 16px;">
                         <span class="sg-text-secondary"
                             style="font-size: 12px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
-                            <span class="sg-dot-legend" style="background:#5B3DE0;"></span> Present
-                        </span>
-                        <span class="sg-text-secondary"
-                            style="font-size: 12px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
-                            <span class="sg-dot-legend" style="background:#38BDF8;"></span> Absent
+                            <span class="sg-dot-legend" style="background:#5B3DE0;"></span> Attendance rate
                         </span>
                         <span class="sg-text-secondary"
                             style="font-size: 12px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
@@ -713,27 +707,18 @@
                     </div>
                     <div style="height: 200px; position: relative;">
                         <canvas id="sg-attendance-chart"></canvas>
+                        <div id="sg-attendance-empty" role="status"
+                            style="display: none; position: absolute; inset: 0; align-items: center; justify-content: center;"
+                            class="sg-text-secondary">
+                            No attendance recorded yet.
+                        </div>
                     </div>
 
                     <div style="margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--sg-border);">
                         <p class="sg-kicker" style="font-size: 11px; letter-spacing: 0.06em; margin-bottom: 10px;">
                             Attendance by Grade Level
                         </p>
-                        <div class="flex flex-col" style="gap: 7px;">
-                            @foreach ([['label' => 'Kindergarten', 'pct' => 95, 'color' => '#5B3DE0'], ['label' => 'Elementary', 'pct' => 93, 'color' => '#38BDF8'], ['label' => 'Junior', 'pct' => 92, 'color' => '#A78BFF'], ['label' => 'Senior', 'pct' => 90, 'color' => '#2E7D5B']] as $sgLevel)
-                                <div class="flex items-center" style="gap: 10px;">
-                                    <span class="sg-text-secondary"
-                                        style="font-size: 11px; width: 88px; flex-shrink: 0;">{{ $sgLevel['label'] }}</span>
-                                    <div class="sg-bar-strip" style="flex: 1;">
-                                        <div class="sg-fill"
-                                            style="width: {{ $sgLevel['pct'] }}%; background: {{ $sgLevel['color'] }};">
-                                        </div>
-                                    </div>
-                                    <span class="sg-text-primary"
-                                        style="font-size: 11px; font-weight: 700; width: 34px; text-align: right;">{{ $sgLevel['pct'] }}%</span>
-                                </div>
-                            @endforeach
-                        </div>
+                        <div id="sg-attendance-grade-levels" class="flex flex-col" style="gap: 7px;"></div>
                     </div>
                 </div>
                 <div class="sg-rail">
@@ -746,7 +731,7 @@
                             <span class="sg-text-secondary" style="font-size: 12px; font-weight: 500;">Present
                                 Today</span>
                         </div>
-                        <p class="sg-rail-value">1,166</p>
+                        <p class="sg-rail-value">{{ number_format($attendanceTodayCounts['present']) }}</p>
                     </div>
                     <div class="sg-rail-stat">
                         <div class="flex items-center gap-2.5" style="margin-bottom: 8px;">
@@ -756,8 +741,10 @@
                             </div>
                             <span class="sg-text-secondary" style="font-size: 12px; font-weight: 500;">Absent Today</span>
                         </div>
-                        <p class="sg-rail-value">82</p>
-                        <span class="sg-text-secondary" style="font-size: 11px;">6.6% of enrollment</span>
+                        <p class="sg-rail-value">{{ number_format($attendanceTodayCounts['absent']) }}</p>
+                        <span class="sg-text-secondary" style="font-size: 11px;">
+                            {{ number_format($attendanceAbsentPct, 1) }}% of {{ number_format($attendanceEnrollmentCount) }} enrolled
+                        </span>
                     </div>
                     <div class="sg-rail-stat">
                         <div class="flex items-center gap-2.5" style="margin-bottom: 8px;">
@@ -768,7 +755,7 @@
                             <span class="sg-text-secondary" style="font-size: 12px; font-weight: 500;">Late
                                 Arrivals</span>
                         </div>
-                        <p class="sg-rail-value">37</p>
+                        <p class="sg-rail-value">{{ number_format($attendanceTodayCounts['late']) }}</p>
                     </div>
                 </div>
             </div>
@@ -1157,6 +1144,8 @@
                 var feeChart = @json($feeChart);
                 var feeStatus = @json($feeStatusDonut);
                 var studentsByLevel = @json($studentsByLevel->values());
+                var attendanceRanges = @json($attendanceRanges);
+                var activeAttendanceRange = 'today';
 
                 function baseTooltip(t) {
                     return {
@@ -1178,6 +1167,153 @@
                     };
                 }
 
+                function renderAttendanceGradeLevels() {
+                    var container = document.getElementById('sg-attendance-grade-levels');
+                    var range = attendanceRanges[activeAttendanceRange];
+                    if (!container || !range) return;
+
+                    container.replaceChildren();
+
+                    if (range.totalMarks === 0) {
+                        var empty = document.createElement('p');
+                        empty.className = 'sg-text-secondary';
+                        empty.style.fontSize = '12px';
+                        empty.textContent = 'No attendance recorded yet.';
+                        container.appendChild(empty);
+                        return;
+                    }
+
+                    var colors = ['#5B3DE0', '#38BDF8', '#A78BFF', '#2E7D5B', '#F84525'];
+                    range.grades.forEach(function(level, index) {
+                        var row = document.createElement('div');
+                        row.className = 'flex items-center';
+                        row.style.gap = '10px';
+
+                        var label = document.createElement('span');
+                        label.className = 'sg-text-secondary';
+                        label.style.cssText = 'font-size:11px;width:88px;flex-shrink:0;';
+                        label.textContent = level.label;
+
+                        var strip = document.createElement('div');
+                        strip.className = 'sg-bar-strip';
+                        strip.style.flex = '1';
+
+                        var fill = document.createElement('div');
+                        fill.className = 'sg-fill';
+                        fill.style.width = level.rate + '%';
+                        fill.style.background = colors[index % colors.length];
+                        strip.appendChild(fill);
+
+                        var percentage = document.createElement('span');
+                        percentage.className = 'sg-text-primary';
+                        percentage.style.cssText =
+                            'font-size:11px;font-weight:700;width:38px;text-align:right;';
+                        percentage.textContent = level.rate + '%';
+
+                        row.append(label, strip, percentage);
+                        container.appendChild(row);
+                    });
+                }
+
+                function renderAttendanceChart(t) {
+                    var canvas = document.getElementById('sg-attendance-chart');
+                    var empty = document.getElementById('sg-attendance-empty');
+                    var range = attendanceRanges[activeAttendanceRange];
+                    if (!canvas || !range) return;
+
+                    if (charts.attendance) {
+                        charts.attendance.destroy();
+                        delete charts.attendance;
+                    }
+
+                    canvas.style.display = range.totalMarks > 0 ? '' : 'none';
+                    if (empty) {
+                        empty.style.display = range.totalMarks > 0 ? 'none' : 'flex';
+                    }
+
+                    charts.attendance = new Chart(canvas, {
+                        type: 'line',
+                        data: {
+                            labels: range.labels,
+                            datasets: [{
+                                label: 'Attendance rate',
+                                data: range.rates,
+                                borderColor: '#5B3DE0',
+                                borderWidth: 2.5,
+                                pointBackgroundColor: '#5B3DE0',
+                                pointRadius: 4,
+                                pointHoverRadius: 6,
+                                fill: true,
+                                backgroundColor: function(ctx) {
+                                    var gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 200);
+                                    gradient.addColorStop(0, 'rgba(91,61,224,0.25)');
+                                    gradient.addColorStop(1, 'rgba(91,61,224,0.0)');
+                                    return gradient;
+                                },
+                                tension: 0.4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: { display: false },
+                                tooltip: Object.assign(baseTooltip(t), {
+                                    callbacks: {
+                                        label: function(ctx) {
+                                            return ' Attendance rate: ' + ctx.parsed.y + '%';
+                                        }
+                                    }
+                                })
+                            },
+                            scales: {
+                                x: {
+                                    grid: { display: false },
+                                    ticks: {
+                                        color: t.text,
+                                        font: { family: 'Figtree, sans-serif', size: 11 }
+                                    },
+                                    border: { display: false }
+                                },
+                                y: {
+                                    min: 0,
+                                    max: 100,
+                                    grid: { color: t.grid },
+                                    ticks: {
+                                        color: t.text,
+                                        font: { family: 'Figtree, sans-serif', size: 11 },
+                                        callback: function(v) { return v + '%'; }
+                                    },
+                                    border: { display: false }
+                                }
+                            }
+                        },
+                        plugins: [{
+                            id: 'sgTargetLine',
+                            afterDraw: function(chart) {
+                                var ctx = chart.ctx,
+                                    chartArea = chart.chartArea,
+                                    scales = chart.scales;
+                                if (!chartArea) return;
+                                var y = scales.y.getPixelForValue(95);
+                                ctx.save();
+                                ctx.setLineDash([5, 4]);
+                                ctx.strokeStyle = '#F84525';
+                                ctx.lineWidth = 1.5;
+                                ctx.beginPath();
+                                ctx.moveTo(chartArea.left, y);
+                                ctx.lineTo(chartArea.right, y);
+                                ctx.stroke();
+                                ctx.setLineDash([]);
+                                ctx.fillStyle = '#F84525';
+                                ctx.font = '10px Figtree, sans-serif';
+                                ctx.fillText('Target 95%', chartArea.right - 58, y - 4);
+                                ctx.restore();
+                            }
+                        }]
+                    });
+                }
+
                 function renderCharts() {
                     var t = themeColors();
                     Object.values(charts).forEach(function(c) {
@@ -1185,126 +1321,7 @@
                     });
                     charts = {};
 
-                    // ── Attendance area chart (SAMPLE data — mock, per design) ──
-                    var attCtx = document.getElementById('sg-attendance-chart');
-                    if (attCtx) {
-                        charts.attendance = new Chart(attCtx, {
-                            type: 'line',
-                            data: {
-                                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-                                datasets: [{
-                                        label: 'Present',
-                                        data: [92.1, 94.0, 91.5, 93.4, 93.4],
-                                        borderColor: '#5B3DE0',
-                                        borderWidth: 2.5,
-                                        pointBackgroundColor: '#5B3DE0',
-                                        pointRadius: 4,
-                                        pointHoverRadius: 6,
-                                        fill: true,
-                                        backgroundColor: function(ctx) {
-                                            var gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 200);
-                                            gradient.addColorStop(0, 'rgba(91,61,224,0.25)');
-                                            gradient.addColorStop(1, 'rgba(91,61,224,0.0)');
-                                            return gradient;
-                                        },
-                                        tension: 0.4
-                                    },
-                                    {
-                                        label: 'Absent',
-                                        data: [7.9, 6.0, 8.5, 6.6, 6.6],
-                                        borderColor: '#38BDF8',
-                                        borderWidth: 2,
-                                        pointRadius: 0,
-                                        fill: true,
-                                        backgroundColor: function(ctx) {
-                                            var gradient = ctx.chart.ctx.createLinearGradient(0, 0, 0, 200);
-                                            gradient.addColorStop(0, 'rgba(56,189,248,0.15)');
-                                            gradient.addColorStop(1, 'rgba(56,189,248,0.0)');
-                                            return gradient;
-                                        },
-                                        tension: 0.4
-                                    }
-                                ]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        display: false
-                                    },
-                                    tooltip: Object.assign(baseTooltip(t), {
-                                        callbacks: {
-                                            label: function(ctx) {
-                                                return ' ' + ctx.dataset.label + ': ' + ctx.parsed.y +
-                                                    '%';
-                                            }
-                                        }
-                                    })
-                                },
-                                scales: {
-                                    x: {
-                                        grid: {
-                                            display: false
-                                        },
-                                        ticks: {
-                                            color: t.text,
-                                            font: {
-                                                family: 'Figtree, sans-serif',
-                                                size: 11
-                                            }
-                                        },
-                                        border: {
-                                            display: false
-                                        }
-                                    },
-                                    y: {
-                                        min: 85,
-                                        max: 100,
-                                        grid: {
-                                            color: t.grid
-                                        },
-                                        ticks: {
-                                            color: t.text,
-                                            font: {
-                                                family: 'Figtree, sans-serif',
-                                                size: 11
-                                            },
-                                            callback: function(v) {
-                                                return v + '%';
-                                            }
-                                        },
-                                        border: {
-                                            display: false
-                                        }
-                                    }
-                                }
-                            },
-                            plugins: [{
-                                id: 'sgTargetLine',
-                                afterDraw: function(chart) {
-                                    var ctx = chart.ctx,
-                                        chartArea = chart.chartArea,
-                                        scales = chart.scales;
-                                    if (!chartArea) return;
-                                    var y = scales.y.getPixelForValue(95);
-                                    ctx.save();
-                                    ctx.setLineDash([5, 4]);
-                                    ctx.strokeStyle = '#F84525';
-                                    ctx.lineWidth = 1.5;
-                                    ctx.beginPath();
-                                    ctx.moveTo(chartArea.left, y);
-                                    ctx.lineTo(chartArea.right, y);
-                                    ctx.stroke();
-                                    ctx.setLineDash([]);
-                                    ctx.fillStyle = '#F84525';
-                                    ctx.font = '10px Figtree, sans-serif';
-                                    ctx.fillText('Target 95%', chartArea.right - 58, y - 4);
-                                    ctx.restore();
-                                }
-                            }]
-                        });
-                    }
+                    renderAttendanceChart(t);
 
                     // ── Fees: Collection vs Assigned (real data) ──
                     var barCtx = document.getElementById('sg-fee-bar-chart');
@@ -1511,6 +1528,7 @@
                     }
                 }
 
+                renderAttendanceGradeLevels();
                 renderCharts();
                 document.addEventListener('sg-theme-changed', renderCharts);
 
@@ -1532,13 +1550,16 @@
                     });
                 });
 
-                // Attendance tabs (SAMPLE data — cosmetic only, per design)
+                // Attendance range tabs
                 document.querySelectorAll('#sg-attendance-tabs button').forEach(function(btn) {
                     btn.addEventListener('click', function() {
                         document.querySelectorAll('#sg-attendance-tabs button').forEach(function(b) {
                             b.classList.remove('sg-active');
                         });
                         btn.classList.add('sg-active');
+                        activeAttendanceRange = btn.dataset.tab;
+                        renderAttendanceGradeLevels();
+                        renderAttendanceChart(themeColors());
                     });
                 });
             })();
