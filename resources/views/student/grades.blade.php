@@ -373,7 +373,7 @@
                     <span class="legend-item" role="listitem"><span class="score score--fair">70-79</span>Fair</span>
                     <span class="legend-item" role="listitem"><span class="score score--good">80-89</span>Good</span>
                     <span class="legend-item" role="listitem"><span class="score score--excellent">90-100</span>Excellent</span>
-                    <span class="legend-item" role="listitem"><span class="score score--none">N/B</span>Not recorded</span>
+                    <span class="legend-item" role="listitem"><span class="score score--none">N/R</span>Not recorded</span>
                 </div>
 
                 <div class="grades-table-wrap">
@@ -395,7 +395,7 @@
                                         @php($score = data_get($grade, $column['field']))
                                         @php($band = $scoreBand($score))
                                         <td class="{{ !empty($column['average']) ? 'is-average' : '' }}">
-                                            <span class="score score--{{ $band }}">{{ $score === null ? 'N/B' : $score }}<span class="sr-only"> ({{ $bandHint[$band] }})</span></span>
+                                            <span class="score score--{{ $band }}">{{ $score === null ? 'N/R' : $score }}<span class="sr-only"> ({{ $bandHint[$band] }})</span></span>
                                         </td>
                                     @endforeach
                                 </tr>
@@ -411,7 +411,7 @@
                         <article class="grade-card {{ $focusBand === 'poor' ? 'is-poor' : '' }}">
                             <div class="grade-card-head">
                                 <h3 class="grade-card-name">{{ $grade->subject->name ?? '—' }}</h3>
-                                <span class="score score--{{ $focusBand }}">{{ $focusScore === null ? 'N/B' : $focusScore }}<span class="sr-only"> ({{ $bandHint[$focusBand] }})</span></span>
+                                <span class="score score--{{ $focusBand }}">{{ $focusScore === null ? 'N/R' : $focusScore }}<span class="sr-only"> ({{ $bandHint[$focusBand] }})</span></span>
                             </div>
                             <div class="grade-tiles">
                                 @foreach($scoreColumns as $column)
@@ -419,7 +419,7 @@
                                     @php($band = $scoreBand($score))
                                     <div class="grade-tile grade-tile--{{ $band }} {{ !empty($column['average']) ? 'is-average' : '' }}">
                                         <span class="grade-tile-label">{{ $column['label'] }}</span>
-                                        <span class="grade-tile-value">{{ $score === null ? 'N/B' : $score }}<span class="sr-only"> ({{ $bandHint[$band] }})</span></span>
+                                        <span class="grade-tile-value">{{ $score === null ? 'N/R' : $score }}<span class="sr-only"> ({{ $bandHint[$band] }})</span></span>
                                     </div>
                                 @endforeach
                             </div>
