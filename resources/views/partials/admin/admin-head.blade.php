@@ -1,5 +1,23 @@
 
+    <script>
+        (function () {
+            var theme = 'light';
+            try {
+                if (window.sessionStorage.getItem('sg-admin-session') === null) {
+                    window.localStorage.removeItem('sg-admin-theme');
+                    window.sessionStorage.setItem('sg-admin-session', '1');
+                } else {
+                    theme = window.localStorage.getItem('sg-admin-theme') === 'dark' ? 'dark' : 'light';
+                }
+            } catch (error) {
+                theme = 'light';
+            }
 
+            var dark = theme === 'dark';
+            document.documentElement.classList.toggle('dark', dark);
+            document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        })();
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">

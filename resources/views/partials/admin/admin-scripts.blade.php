@@ -31,6 +31,14 @@
                 return true;
             }
 
+            function readTheme() {
+                try {
+                    return window.localStorage.getItem(themeKey) === 'dark' ? 'dark' : 'light';
+                } catch (error) {
+                    return 'light';
+                }
+            }
+
             function applyTheme(theme) {
                 const dark = theme === 'dark';
                 const normalizedTheme = dark ? 'dark' : 'light';
@@ -70,7 +78,7 @@
                 }
             }
 
-            applyTheme(readStorage(themeKey, 'light'));
+            applyTheme(readTheme());
             applyRailPreference();
 
             if (themeToggle) {
@@ -134,7 +142,7 @@
 
             window.addEventListener('storage', function (event) {
                 if (event.key === themeKey) {
-                    const normalizedTheme = applyTheme(event.newValue);
+                    const normalizedTheme = applyTheme(event.newValue === 'dark' ? 'dark' : 'light');
                     document.dispatchEvent(new CustomEvent('sg-theme-changed', {
                         detail: { theme: normalizedTheme }
                     }));
@@ -144,7 +152,7 @@
             });
 
             document.addEventListener('livewire:navigated', function () {
-                applyTheme(readStorage(themeKey, 'light'));
+                applyTheme(readTheme());
                 applyRailPreference();
                 hideRailTooltip();
             });

@@ -39,18 +39,6 @@
     </script>
     @livewireStyles
 
-    <script>
-        (function () {
-            var dark = false;
-            try {
-                dark = window.localStorage.getItem('sg-admin-theme') === 'dark';
-            } catch (error) {
-                dark = false;
-            }
-            document.documentElement.classList.toggle('dark', dark);
-            document.documentElement.dataset.theme = dark ? 'dark' : 'light';
-        })();
-    </script>
     @vite('resources/css/admin-shell.css')
 </head>
 
