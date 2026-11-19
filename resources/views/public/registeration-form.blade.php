@@ -48,18 +48,17 @@ Submit a student's details online through SchoolGear Liberia for registration an
                             <div class="col-md-5 pr-4 d-flex topper align-items-center">
                                 <div class="icon bg-fifth mr-2 d-flex justify-content-center align-items-center"><span
                                         class="icon-map"></span></div>
-                                <span class="text">New Matadi, Opposite Don-Bossco Youth-Center Monrovia, Liberia West
-                                    Africa </span>
+                                <span class="text">New Matadi, Opposite Don Bosco Youth Center, Monrovia, Liberia, West Africa</span>
                             </div>
                             <div class="col-md pr-4 d-flex topper align-items-center">
                                 <div class="icon bg-secondary mr-2 d-flex justify-content-center align-items-center"><span
                                         class="icon-paper-plane"></span></div>
-                                <span class="text">emmmbhs@gmail.com</span>
+                                <span class="text">info@schoolgearliberia.com</span>
                             </div>
                             <div class="col-md pr-4 d-flex topper align-items-center">
                                 <div class="icon bg-tertiary mr-2 d-flex justify-content-center align-items-center"><span
                                         class="icon-phone2"></span></div>
-                                <span class="text">+231555472972 / +231776597201</span>
+                                <span class="text">+231 77 012 3498</span>
                             </div>
                         </div>
                     </div>
@@ -500,12 +499,11 @@ Submit a student's details online through SchoolGear Liberia for registration an
                                 <h2 class="ftco-heading-2">Have a Questions?</h2>
                                 <div class="block-23 mb-3">
                                     <ul>
-                                        <li><span class="icon icon-map-marker"></span><span class="text">New Matadi,
-                                                Opposite Don-Bossco Youth-Center Monrovia, Liberia </span></li>
+                                        <li><span class="icon icon-map-marker"></span><span class="text">New Matadi, Opposite Don Bosco Youth Center, Monrovia, Liberia, West Africa</span></li>
                                         <li><a href="#"><span class="icon icon-phone"></span><span
-                                                    class="text">+231555472972 / +231776597201</span></a></li>
+                                                    class="text">+231 77 012 3498</span></a></li>
                                         <li><a href="#"><span class="icon icon-envelope"></span><span
-                                                    class="text">emmmbhs@gmail.com</span></a></li>
+                                                    class="text">info@schoolgearliberia.com</span></a></li>
                                     </ul>
                                 </div>
                             </div>

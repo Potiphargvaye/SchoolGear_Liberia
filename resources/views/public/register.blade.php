@@ -85,7 +85,7 @@
                 {{-- Left column: context + trust --}}
                 <div class="lg:pt-8">
                     <h1 class="text-3xl sm:text-4xl font-bold text-sg-primaryDark leading-tight">
-                        Start a 3-month free trial
+                        Start a 31-day free trial
                     </h1>
                     <p class="text-slate-500 mt-3 text-base">
                         Join Liberian schools using SchoolGear to manage admissions, academics, fees, and daily
@@ -103,7 +103,7 @@
                         </li>
                         <li class="flex items-start gap-2.5 text-sm text-slate-700">
                             <i class="fas fa-check text-sg-primary mt-0.5"></i>
-                            Real 3-month implementation window, not a limited demo
+                            Real 31-day implementation window, not a limited demo
                         </li>
                     </ul>
 

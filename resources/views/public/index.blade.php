@@ -17,7 +17,9 @@
             'name' => 'SchoolGear Liberia',
             'url' => $structuredUrl,
             'telephone' => '+231 77 012 3498',
-            'address' => 'Airfield, Sinkor, Monrovia, Liberia',
+            'address' => 'New Matadi, Opposite Don Bosco Youth Center, Monrovia, Liberia, West Africa',
+            'email' => 'info@schoolgearliberia.com',
+            'sameAs' => ['https://www.facebook.com/profile.php?id=61595077418489'],
         ];
         if (file_exists(public_path('logo/download.png'))) {
             $organizationData['logo'] = $structuredUrl . '/logo/download.png';
@@ -238,8 +240,8 @@
             <div class="container">
                 <div class="row sg-home-stats-card">
                     <div class="col-6 col-lg-3">
-                        <div class="sg-home-stat"><span class="counter sg-home-stat-number">3</span>
-                            <p class="sg-home-stat-label">Months Free Trial</p>
+                        <div class="sg-home-stat"><span class="counter sg-home-stat-number">31</span>
+                            <p class="sg-home-stat-label">Days Free Trial</p>
                         </div>
                     </div>
                     <div class="col-6 col-lg-3">

@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class School extends Model
 {
+    public const FREE_TRIAL_DAYS = 31;
+
     use HasFactory, SoftDeletes;
 
     protected $fillable = [

@@ -62,6 +62,8 @@
     <link rel="stylesheet" href="{{ asset('schoolGear_liberia_public_site/css/whatsapp-widget.css') }}">
 
     @stack('styles')
+    <link rel="stylesheet"
+        href="{{ asset('schoolGear_liberia_public_site/css/sg-nav.css') }}?v={{ @filemtime(public_path('schoolGear_liberia_public_site/css/sg-nav.css')) }}">
     <link rel="stylesheet" href="{{ asset('schoolGear_liberia_public_site/css/sg-cursor.css') }}">
     <script src="{{ asset('schoolGear_liberia_public_site/js/sg-cursor.js') }}" defer></script>
 
@@ -114,58 +116,131 @@
                 </div>
             </div>
         </div>
+        <header class="main_menu home_menu sg-nav" data-sg-nav>
+            <div class="sg-nav-bar">
+                <div class="container">
+                    <div class="sg-nav-inner">
+                        <a class="sg-nav-brand" href="{{ url('/') }}" aria-label="SchoolGear Liberia home">
+                            <img src="{{ asset('logo/download.png') }}" alt="SchoolGear Liberia logo"
+                                class="sg-nav-logo">
+                        </a>
 
-
-
-
-        <!--::header part start::-->
-        <header class="main_menu home_menu">
-            <div class="container">
-                <div class="row align-items-center">
-                    <div class="col-lg-12">
-                        <nav class="navbar navbar-expand-lg navbar-light">
-                            <a class="navbar-brand" href="{{ url('/') }}">
-                                <img src="{{ asset('logo/download.png') }}" alt="SchoolGear Liberia logo"
-                                    class="sg-header-logo">
-                            </a>
-                            <button class="navbar-toggler" type="button" data-toggle="collapse"
-                                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                                aria-expanded="false" aria-label="Toggle navigation">
-                                <span class="navbar-toggler-icon"></span>
-                            </button>
-
-                            <div class="collapse navbar-collapse main-menu-item justify-content-end"
-                                id="navbarSupportedContent">
-                                <ul class="navbar-nav align-items-center">
-                                    <li class="nav-item {{ request()->routeIs('home') ? 'active' : '' }}">
-                                        <a class="nav-link" href="{{ url('/') }}">Home</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ url('/about-us') }}">About</a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="{{ url('/contact-us') }}">Contact</a>
-                                    </li>
-
-                                    <li class="nav-item header_cta_item">
-                                        <a class="btn_2 header_signin_btn" href="{{ route('login') }}"
-                                            id="signInBtn">
-                                            <span class="signin_btn_text">Sign In</span>
-                                            <span class="signin_btn_spinner"></span>
-                                        </a>
-                                    </li>
-                                    <li class="nav-item header_cta_item">
-                                        <a class="btn_1" href="{{ route('public.register') }}">Get Started</a>
-                                    </li>
-                                </ul>
-                            </div>
+                        <nav class="sg-nav-desktop-links" aria-label="Primary navigation">
+                            <a class="sg-nav-link {{ request()->routeIs('home') ? 'is-active' : '' }}"
+                                href="{{ url('/') }}">Home</a>
+                            <a class="sg-nav-link {{ request()->is('about-us') ? 'is-active' : '' }}"
+                                href="{{ url('/about-us') }}">About</a>
+                            <a class="sg-nav-link {{ request()->routeIs('public.pricing') ? 'is-active' : '' }}"
+                                href="{{ url('/pricing') }}">Pricing</a>
+                            <a class="sg-nav-link {{ request()->is('contact-us') ? 'is-active' : '' }}"
+                                href="{{ url('/contact-us') }}">Contact</a>
                         </nav>
+
+                        <div class="sg-nav-desktop-actions">
+                            <button type="button" class="sg-nav-search-trigger" data-sg-search-open hidden>
+                                <i class="ti-search" aria-hidden="true"></i><span>Find your school</span>
+                            </button>
+                            <div class="sg-nav-signin-wrap" data-sg-signin-wrap>
+                                <button type="button" class="sg-nav-signin-trigger" data-sg-signin-toggle
+                                    aria-haspopup="true" aria-expanded="false">
+                                    <span>Sign in</span><i class="ti-angle-down" aria-hidden="true"></i>
+                                </button>
+                                <div class="sg-nav-signin-panel" data-sg-signin-panel hidden>
+                                    <a class="sg-nav-role-link"
+                                        href="{{ route('login', ['role' => 'staff']) }}"><span
+                                            class="sg-nav-role-icon"><i class="ti-briefcase"
+                                                aria-hidden="true"></i></span><span><strong>Staff &amp;
+                                                admins</strong><small>Manage your school</small></span></a>
+                                    <a class="sg-nav-role-link"
+                                        href="{{ route('login', ['role' => 'student']) }}"><span
+                                            class="sg-nav-role-icon"><i class="ti-book"
+                                                aria-hidden="true"></i></span><span><strong>Students</strong><small>Grades
+                                                and attendance</small></span></a>
+                                    <a class="sg-nav-role-link"
+                                        href="{{ route('login', ['role' => 'parent']) }}"><span
+                                            class="sg-nav-role-icon"><i class="ti-user"
+                                                aria-hidden="true"></i></span><span><strong>Parents &amp;
+                                                guardians</strong><small>Guardian access</small></span></a>
+                                </div>
+                            </div>
+                            <a class="sg-nav-get-started" href="{{ route('public.register') }}">Get Started</a>
+                        </div>
+
+                        <div class="sg-nav-mobile-actions">
+                            <button type="button" class="sg-nav-icon-button" data-sg-search-open hidden
+                                aria-label="Find your school"><i class="ti-search" aria-hidden="true"></i></button>
+                            <button type="button" class="sg-nav-menu-toggle" data-sg-menu-toggle
+                                aria-controls="sg-nav-mobile-panel" aria-expanded="false"
+                                aria-label="Open menu"><span></span><span></span><span></span></button>
+                        </div>
                     </div>
                 </div>
             </div>
+
+            <div class="sg-nav-mobile-panel" id="sg-nav-mobile-panel" data-sg-mobile-panel hidden>
+                <nav class="sg-nav-mobile-links" aria-label="Mobile navigation">
+                    <a class="sg-nav-mobile-link {{ request()->routeIs('home') ? 'is-active' : '' }}"
+                        href="{{ url('/') }}">Home</a>
+                    <a class="sg-nav-mobile-link {{ request()->is('about-us') ? 'is-active' : '' }}"
+                        href="{{ url('/about-us') }}">About</a>
+                    <a class="sg-nav-mobile-link {{ request()->routeIs('public.pricing') ? 'is-active' : '' }}"
+                        href="{{ url('/pricing') }}">Pricing</a>
+                    <a class="sg-nav-mobile-link {{ request()->is('contact-us') ? 'is-active' : '' }}"
+                        href="{{ url('/contact-us') }}">Contact</a>
+                </nav>
+                <p class="sg-nav-mobile-label">Sign in</p>
+                <div class="sg-nav-mobile-roles">
+                    <a class="sg-nav-role-link" href="{{ route('login', ['role' => 'staff']) }}"><span
+                            class="sg-nav-role-icon"><i class="ti-briefcase"
+                                aria-hidden="true"></i></span><span><strong>Staff &amp; admins</strong><small>Manage
+                                your school</small></span></a>
+                    <a class="sg-nav-role-link" href="{{ route('login', ['role' => 'student']) }}"><span
+                            class="sg-nav-role-icon"><i class="ti-book"
+                                aria-hidden="true"></i></span><span><strong>Students</strong><small>Grades and
+                                attendance</small></span></a>
+                    <a class="sg-nav-role-link" href="{{ route('login', ['role' => 'parent']) }}"><span
+                            class="sg-nav-role-icon"><i class="ti-user"
+                                aria-hidden="true"></i></span><span><strong>Parents &amp;
+                                guardians</strong><small>Guardian access</small></span></a>
+                </div>
+                <a class="sg-nav-mobile-start" href="{{ route('public.register') }}">Get started</a>
+            </div>
+
         </header>
         <!-- Header part end-->
+
+        <div class="sg-nav sg-nav-modal-root">
+            <div class="sg-nav-modal" data-sg-modal data-sg-search-endpoint="{{ route('public.schools.search') }}"
+                hidden>
+                <div class="sg-nav-modal-panel" role="dialog" aria-modal="true"
+                    aria-labelledby="sg-nav-modal-title">
+                    <div class="sg-nav-modal-header">
+                        <h2 class="sg-nav-modal-title" id="sg-nav-modal-title">Find your school</h2>
+                        <span class="sg-nav-modal-esc">ESC</span>
+                        <button type="button" class="sg-nav-modal-close" data-sg-search-close
+                            aria-label="Close school search"><i class="ti-close" aria-hidden="true"></i></button>
+                    </div>
+                    <div class="sg-nav-modal-body">
+                        <label class="sr-only" for="sg-nav-search-input">Search for your school</label>
+                        <div class="sg-nav-search-field">
+                            <i class="ti-search" aria-hidden="true"></i>
+                            <input class="sg-nav-search-input" id="sg-nav-search-input" data-sg-search-input
+                                type="search" autocomplete="organization" maxlength="60"
+                                placeholder="Search by school name">
+                        </div>
+                        <p class="sg-nav-search-state" data-sg-search-state="idle">Type your school's name</p>
+                        <p class="sg-nav-search-state" data-sg-search-state="loading" hidden>Searching...</p>
+                        <p class="sg-nav-search-state" data-sg-search-state="empty" hidden>No school found. Check the
+                            spelling, or <a href="{{ url('/contact-us') }}">contact us</a> or <a
+                                href="{{ url('/school-registration') }}">register your school</a>.</p>
+                        <p class="sg-nav-search-state" data-sg-search-state="error" hidden>Search is unavailable.
+                            Please try again.</p>
+                        <div class="sg-nav-results" data-sg-results role="listbox"
+                            aria-label="School search results"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         @yield('content')
 
@@ -223,12 +298,24 @@
                         <div class="single-footer-widget footer_2">
                             <h4>Contact Us</h4>
                             <div class="contact_info">
-                                <p><span>Address :</span> Airfield, Sinkor, Monrovia, Liberia</p>
+                                <p><span>Address :</span> New Matadi, Opposite Don Bosco Youth Center, Monrovia, Liberia, West Africa</p>
                                 <p><span>Phone :</span> <a href="tel:+231770123498">+231 77 012 3498</a></p>
                                 <p><span>Email :</span> <a
-                                        href="mailto:potiphargvaye@gmail.com">potiphargvaye@gmail.com</a>
+                                        href="mailto:info@schoolgearliberia.com">info@schoolgearliberia.com</a>
                                 </p>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-2 col-sm-6 col-md-4">
+                        <div class="single-footer-widget footer_2">
+                            <h4>Pages</h4>
+                            <ul>
+                                <li><a href="{{ url('/') }}">Home</a></li>
+                                <li><a href="{{ url('/about-us') }}">About</a></li>
+                                <li><a href="{{ url('/pricing') }}">Pricing</a></li>
+                                <li><a href="{{ url('/contact-us') }}">Contact</a></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -319,6 +406,9 @@
         </script>
 
         @stack('scripts')
+        <script
+            src="{{ asset('schoolGear_liberia_public_site/js/sg-nav.js') }}?v={{ @filemtime(public_path('schoolGear_liberia_public_site/js/sg-nav.js')) }}"
+            defer></script>
 </body>
 
 </html>

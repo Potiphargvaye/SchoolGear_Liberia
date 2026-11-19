@@ -32,7 +32,7 @@
         [
             'question' => 'How does the free trial work?',
             'answer' =>
-                'The school registration page offers a 3-month free trial. It says no credit card is required, full setup and training support are included, and describes it as a real 3-month implementation window, not a limited demo.',
+                'The school registration page offers a 31-day free trial. It says no credit card is required, full setup and training support are included, and describes it as a real 31-day implementation window, not a limited demo.',
         ],
         [
             'question' => 'How can I see SchoolGear before signing up?',
@@ -96,8 +96,8 @@
             <div class="container">
                 <div class="row sg-about-stats-card">
                     <div class="col-6 col-lg-3">
-                        <div class="sg-about-stat"><span class="counter sg-about-counter">3</span><span
-                                class="sg-about-stat-label">Months Free Trial</span></div>
+                        <div class="sg-about-stat"><span class="counter sg-about-counter">31</span><span
+                                class="sg-about-stat-label">Days Free Trial</span></div>
                     </div>
                     <div class="col-6 col-lg-3">
                         <div class="sg-about-stat"><span class="counter">1</span><span class="sg-about-stat-label">Connected
@@ -450,7 +450,7 @@
                                 <article class="sg-about-contact-card"><span class="sg-about-icon"><i class="ti-plus"
                                             aria-hidden="true"></i></span>
                                     <h3>Register Your School</h3>
-                                    <p>Start a 3-month free trial with SchoolGear and set up your school account.</p><a
+                                    <p>Start a 31-day free trial with SchoolGear and set up your school account.</p><a
                                         class="sg-about-button sg-about-button-primary"
                                         href="{{ url('/school-registration') }}">Start free trial</a>
                                 </article>

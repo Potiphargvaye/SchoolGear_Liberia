@@ -98,7 +98,7 @@ class SchoolRegistration extends Component
                 'city' => $this->city,
                 'logo' => $this->logo ? $this->logo->store('schools/logos', 'public') : null,
                 'trial_start_date' => now()->toDateString(),
-                'trial_end_date' => now()->addMonths(3)->toDateString(),
+                'trial_end_date' => now()->addDays(School::FREE_TRIAL_DAYS)->toDateString(),
                 'subscription_status' => 'trial',
                 'status' => 'active',
             ]);

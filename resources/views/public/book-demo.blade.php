@@ -111,7 +111,7 @@
                         <p class="text-sm font-semibold text-sg-primaryDark">Ready to start instead?</p>
                         <p class="text-sm text-slate-600 mt-1 leading-relaxed">
                             This form is only for booking a demo or consultation. To set up your school on SchoolGear,
-                            register for the 3-month free trial.
+                            register for the 31-day free trial.
                         </p>
                         <a href="{{ route('public.register') }}"
                             class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-sg-primary hover:text-sg-primaryDark transition">

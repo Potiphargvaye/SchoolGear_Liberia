@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Public\PublicStudentController;
 use App\Http\Controllers\Public\SchoolRegistrationController;
 use App\Http\Controllers\Public\DemoRequestController;
+use App\Http\Controllers\Public\SchoolSearchController;
 
 Route::get('/', function () {
     return view('public.index'); // <- note the dot notation for subfolders,
@@ -17,6 +18,14 @@ Route::get('/contact-us', function () {
     return view('public.contact-us');
 });
 
+Route::get('/pricing', function () {
+    return view('public.pricing');
+})->name('public.pricing');
+
+Route::get('/schools/search', SchoolSearchController::class)
+    ->middleware('throttle:30,1')
+    ->name('public.schools.search');
+
 Route::get('/sitemap.xml', function () {
     $host = parse_url(config('app.url'), PHP_URL_HOST) ?: 'schoolgearliberia.com';
     $host = preg_replace('/^www\./i', '', $host);
@@ -24,6 +33,7 @@ Route::get('/sitemap.xml', function () {
     $pages = [
         '/' => resource_path('views/public/index.blade.php'),
         '/about-us' => resource_path('views/public/about-us.blade.php'),
+        '/pricing' => resource_path('views/public/pricing.blade.php'),
         '/contact-us' => resource_path('views/public/contact-us.blade.php'),
         '/book-demo' => resource_path('views/public/book-demo.blade.php'),
         '/school-registration' => resource_path('views/public/register.blade.php'),

@@ -145,7 +145,7 @@ class Index extends Component
                 'country' => $this->country ?: 'Liberia',
                 'city' => $this->city,
                 'trial_start_date' => now()->toDateString(),
-                'trial_end_date' => now()->addMonths(3)->toDateString(),
+                'trial_end_date' => now()->addDays(School::FREE_TRIAL_DAYS)->toDateString(),
                 'subscription_status' => 'trial',
                 'status' => 'active',
             ]);

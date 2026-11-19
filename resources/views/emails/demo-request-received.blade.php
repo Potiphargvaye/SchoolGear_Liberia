@@ -98,7 +98,7 @@
 
         <!-- Footer -->
         <div style="background:#f3f4f6; padding:15px; text-align:center; font-size:12px; color:#6b7280;">
-            &copy; {{ date('Y') }} SchoolGear Liberia &middot; Airfield, Sinkor, Monrovia, Liberia
+            &copy; {{ date('Y') }} SchoolGear Liberia &middot; New Matadi, Opposite Don Bosco Youth Center, Monrovia, Liberia, West Africa
         </div>
 
     </div>

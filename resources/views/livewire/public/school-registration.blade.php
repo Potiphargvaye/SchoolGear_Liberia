@@ -280,7 +280,7 @@
                 </dl>
             </div>
 
-            <p class="text-xs text-slate-400">By creating an account, you'll get a 3-month free trial with full setup
+            <p class="text-xs text-slate-400">By creating an account, you'll get a 31-day free trial with full setup
                 and training support.</p>
 
             <div class="pt-2 flex justify-between">
