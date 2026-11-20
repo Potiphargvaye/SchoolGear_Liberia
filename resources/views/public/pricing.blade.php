@@ -2,7 +2,7 @@
 
 @section('title', 'Pricing for School Software in Liberia | SchoolGear Liberia')
 
-@section('description', 'SchoolGear Liberia pricing: $2.00 per junior and senior high student, $1.50 per elementary student, $2.00 per staff user. All features and a 31-day free trial.')
+@section('description', 'SchoolGear Liberia pricing: $1.50 per junior and senior high student, $1.50 per elementary student, $1.50 per staff user. All features and a 31-day free trial.')
 
 @php
     $pricingPlans = [
@@ -26,8 +26,8 @@
         ],
         [
             'name' => 'Junior & Senior High',
-            'price' => '$2.00 per student / year',
-            'staff' => '$2.00 per active staff user / year',
+            'price' => '$1.50 per student / year',
+            'staff' => '$1.50 per active staff user / year',
             'unit' => 'For students enrolled in the current academic year.',
             'features' => [
                 'Every SchoolGear feature included',
@@ -43,7 +43,7 @@
         [
             'name' => 'Elementary & Kindergarten',
             'price' => '$1.50 per student / year',
-            'staff' => '$2.00 per active staff user / year',
+            'staff' => '$1.50 per active staff user / year',
             'unit' => 'For students enrolled in the current academic year.',
             'features' => [
                 'Every SchoolGear feature included',
@@ -147,7 +147,7 @@
                         <h2 id="sg-pricing-billing-title">How billing works</h2>
                         <ul class="sg-pricing-billing-list">
                             <li><strong>Students:</strong> every student enrolled in the current academic year, billed at their own level's rate.</li>
-                            <li><strong>Staff:</strong> every active staff account, including owners and administrators, at $2.00 each per year.</li>
+                            <li><strong>Staff:</strong> every active staff account, including owners and administrators, at $1.50 each per year.</li>
                             <li><strong>When we count:</strong> once per academic year, at the end of the enrollment period.</li>
                             <li><strong>How you pay:</strong> in two installments, one at the start of each semester, using the payment method that suits your school.</li>
                             <li><strong>Minimum:</strong> $100 per school per year.</li>
@@ -193,7 +193,7 @@
             const read = field => Math.max(0, Number.isFinite(Number(field.value)) ? Math.floor(Number(field.value)) : 0);
             const update = () => {
                 const jhs = read(fields.jhs), elementary = read(fields.elementary), staff = read(fields.staff);
-                const students = (jhs * 2) + (elementary * 1.5), staffTotal = staff * 2, subtotal = students + staffTotal, total = Math.max(100, subtotal);
+                const students = (jhs * 1.5) + (elementary * 1.5), staffTotal = staff * 1.5, subtotal = students + staffTotal, total = Math.max(100, subtotal);
                 root.querySelector('[data-result="students"]').textContent = money(students);
                 root.querySelector('[data-result="staff"]').textContent = money(staffTotal);
                 root.querySelector('[data-result="total"]').textContent = money(total);
