@@ -7,44 +7,12 @@
 
     <style>
         /* Statistics Cards Styles */
-        .stats-cards {
-            animation: fadeInUp 0.6s ease-out;
-        }
-
         .stat-card {
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(transparent, rgba(255, 255, 255, 0.1), transparent);
-            transform: rotate(30deg);
-            transition: all 0.6s ease;
-        }
-
-        .stat-card:hover::before {
-            animation: shimmer 1.5s ease-in-out;
+            transition: border-color 0.2s ease;
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        }
-
-        .stat-icon {
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover .stat-icon {
-            transform: scale(1.1);
-            background: rgba(255, 255, 255, 0.3) !important;
+            border-color: #CBD5E1;
         }
 
         /* Modal Styles */
@@ -124,13 +92,6 @@
                 gap: 1rem;
             }
 
-            .stat-card {
-                padding: 1.5rem;
-            }
-
-            .stat-card .text-3xl {
-                font-size: 1.875rem;
-            }
         }
 
         .search-input:focus {
@@ -155,50 +116,54 @@
             <div class="stats-cards grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-6">
                 <!-- Total Users Card -->
                 <div
-                    class="stat-card bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg p-4 shadow-md flex items-center">
-                    <div class="stat-icon bg-white/20 p-2 rounded-full text-white mr-3 flex-shrink-0">
-                        <i class="fas fa-users text-sm sm:text-base"></i>
+                    class="stat-card min-h-24 bg-white border border-slate-200 border-l-4 border-l-[#155E8A] rounded-lg p-4 sm:p-5 flex items-center justify-between gap-4">
+                    <div class="min-w-0">
+                        <p class="text-sm font-medium text-slate-500">Total Users</p>
+                        <h3 class="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 tabular-nums">{{ $totalUsers }}</h3>
                     </div>
-                    <div class="flex-1">
-                        <p class="text-xs sm:text-sm font-medium text-white">Total Users</p>
-                        <h3 class="text-lg sm:text-xl font-bold text-white">{{ $totalUsers }}</h3>
-                    </div>
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-[#155E8A]"
+                        aria-hidden="true">
+                        <i class="fas fa-users text-lg"></i>
+                    </span>
                 </div>
 
                 <!-- Teachers Card -->
                 <div
-                    class="stat-card bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg p-4 shadow-md flex items-center">
-                    <div class="stat-icon bg-white/20 p-2 rounded-full text-white mr-3 flex-shrink-0">
-                        <i class="fas fa-chalkboard-teacher text-sm sm:text-base"></i>
+                    class="stat-card min-h-24 bg-white border border-slate-200 border-l-4 border-l-[#155E8A] rounded-lg p-4 sm:p-5 flex items-center justify-between gap-4">
+                    <div class="min-w-0">
+                        <p class="text-sm font-medium text-slate-500">Staff</p>
+                        <h3 class="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 tabular-nums">{{ $totalStaff }}</h3>
                     </div>
-                    <div class="flex-1">
-                        <p class="text-xs sm:text-sm font-medium text-white">Staff</p>
-                        <h3 class="text-lg sm:text-xl font-bold text-white">{{ $totalStaff }}</h3>
-                    </div>
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-[#155E8A]"
+                        aria-hidden="true">
+                        <i class="fas fa-user-tie text-lg"></i>
+                    </span>
                 </div>
 
                 <!-- Students Card -->
                 <div
-                    class="stat-card bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg p-4 shadow-md flex items-center">
-                    <div class="stat-icon bg-white/20 p-2 rounded-full text-white mr-3 flex-shrink-0">
-                        <i class="fas fa-user-graduate text-sm sm:text-base"></i>
+                    class="stat-card min-h-24 bg-white border border-slate-200 border-l-4 border-l-[#155E8A] rounded-lg p-4 sm:p-5 flex items-center justify-between gap-4">
+                    <div class="min-w-0">
+                        <p class="text-sm font-medium text-slate-500">Students</p>
+                        <h3 class="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 tabular-nums">{{ $totalStudents }}</h3>
                     </div>
-                    <div class="flex-1">
-                        <p class="text-xs sm:text-sm font-medium text-white">Students</p>
-                        <h3 class="text-lg sm:text-xl font-bold text-white">{{ $totalStudents }}</h3>
-                    </div>
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-50 text-[#155E8A]"
+                        aria-hidden="true">
+                        <i class="fas fa-user-graduate text-lg"></i>
+                    </span>
                 </div>
 
                 <!-- Administrators Card -->
                 <div
-                    class="stat-card bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg p-4 shadow-md flex items-center">
-                    <div class="stat-icon bg-white/20 p-2 rounded-full text-white mr-3 flex-shrink-0">
-                        <i class="fas fa-user-shield text-sm sm:text-base"></i>
+                    class="stat-card min-h-24 bg-white border border-slate-200 border-l-4 border-l-[#B91C1C] rounded-lg p-4 sm:p-5 flex items-center justify-between gap-4">
+                    <div class="min-w-0">
+                        <p class="text-sm font-medium text-slate-500">Active Users</p>
+                        <h3 class="mt-1 text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 tabular-nums">{{ $activeUsers }}</h3>
                     </div>
-                    <div class="flex-1">
-                        <p class="text-xs sm:text-sm font-medium text-white">Active Users</p>
-                        <h3 class="text-lg sm:text-xl font-bold text-white">{{ $activeUsers }}</h3>
-                    </div>
+                    <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-red-50 text-[#B91C1C]"
+                        aria-hidden="true">
+                        <i class="fas fa-user-check text-lg"></i>
+                    </span>
                 </div>
             </div>
 
@@ -212,15 +177,17 @@
 
                 <div class="flex flex-col md:flex-row items-start md:items-center gap-3 w-full md:w-auto">
                     <!-- Search Bar -->
-                    <div class="search-bar flex items-center bg-gray-100 py-1.5 px-3 rounded-full w-full md:w-80">
+                    <form id="userSearchForm" method="GET" action="{{ route('admin.access-control.users.index') }}"
+                        class="search-bar flex items-center bg-gray-100 py-1.5 px-3 rounded-full w-full md:w-80">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
-                        <input type="text" id="searchInput" placeholder="Search users..."
+                        <input type="search" id="searchInput" name="search" value="{{ $search }}"
+                            placeholder="Search users..." autocomplete="off" aria-label="Search users"
                             class="bg-transparent py-1 px-2 w-full focus:outline-none text-sm search-input">
-                    </div>
+                    </form>
 
                     <!-- Add New User Button -->
                     <button onclick="openCreateUserModal()"
@@ -503,7 +470,7 @@
 
                 </div>
 
-                <div class="bg-gray-50 px-6 py-4 border-t">
+                <div id="usersPagination" class="bg-gray-50 px-6 py-4 border-t">
 
                     {{ $users->links() }}
 
@@ -535,13 +502,13 @@
                                         <img src="{{ asset('storage/' . $sgModalSchool->logo) }}"
                                             alt="{{ $sgModalSchool->school_name }}" class="h-full w-full object-contain">
                                     @else
-                                        <img src="{{ asset('lipa-liberia-public-site/assets/img/logo/logo_header.png') }}"
-                                            alt="LIPA Logo" class="h-full w-full object-contain">
+                                        <img src="{{ asset('logo/Schoolgear1.jpeg') }}"
+                                            alt="SchoolGear Logo" class="h-full w-full object-contain">
                                     @endif
                                 </div>
                                 <div>
                                     <p class="text-[11px] uppercase tracking-[0.14em] text-sky-200 font-semibold">
-                                        {{ $sgModalSchool->school_name ?? 'Liberia Institute of Public Administration' }}
+                                        {{ $sgModalSchool->school_name ?? 'SchoolGear Liberia Software' }}
                                     </p>
                                     <h3 class="text-white text-lg font-bold leading-tight mt-0.5">
                                         Staff Account Registration
@@ -847,8 +814,8 @@
                                             alt="{{ $sgEditModalSchool->school_name }}"
                                             class="h-full w-full object-contain">
                                     @else
-                                        <img src="{{ asset('lipa-liberia-public-site/assets/img/logo/logo_header.png') }}"
-                                            alt="LIPA Logo" class="h-full w-full object-contain">
+                                        <img src="{{ asset('logo/Schoolgear1.jpeg') }}"
+                                            alt="SchoolGear Logo" class="h-full w-full object-contain">
                                     @endif
 
                                 </div>
@@ -858,7 +825,7 @@
                                     <p
                                         class="text-[11px] uppercase tracking-[0.14em] text-blue-100 font-semibold truncate">
 
-                                        {{ $sgEditModalSchool->school_name ?? 'Liberia Institute of Public Administration' }}
+                                        {{ $sgEditModalSchool->school_name ?? 'SchoolGear Liberia Software' }}
 
                                     </p>
 
@@ -1166,14 +1133,14 @@
                                     <img src="{{ asset('storage/' . $sgViewModalSchool->logo) }}"
                                         alt="{{ $sgViewModalSchool->school_name }}" class="h-full w-full object-contain">
                                 @else
-                                    <img src="{{ asset('lipa-liberia-public-site/assets/img/logo/logo_header.png') }}"
-                                        alt="LIPA Logo" class="h-full w-full object-contain">
+                                    <img src="{{ asset('logo/Schoolgear1.jpeg') }}"
+                                        alt="SchoolGear Logo" class="h-full w-full object-contain">
                                 @endif
                             </div>
 
                             <div class="min-w-0">
                                 <p class="text-[11px] uppercase tracking-[0.14em] text-sky-200 font-semibold truncate">
-                                    {{ $sgViewModalSchool->school_name ?? 'Liberia Institute of Public Administration' }}
+                                    {{ $sgViewModalSchool->school_name ?? 'SchoolGear Liberia Software' }}
                                 </p>
                                 <h2 class="text-white text-base sm:text-xl font-bold leading-tight mt-0.5">
                                     Staff Account Details
@@ -1192,31 +1159,26 @@
                 </div>
 
                 <!-- Body -->
-                <div class="p-4 sm:p-6 bg-[#F8FAFC] max-h-[80vh] overflow-y-auto">
+                <div class="p-4 sm:p-6 bg-slate-50 max-h-[80vh] overflow-y-auto">
 
-                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5 sm:gap-6">
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
 
                         <!-- ================================= -->
                         <!-- PROFILE -->
                         <!-- ================================= -->
 
-                        <div class="bg-white rounded-xl border border-[#E2E8F0] p-6 text-center h-fit">
+                        <div class="lg:col-span-4 bg-white border border-slate-200 rounded-xl p-5 sm:p-6 text-center h-fit">
 
                             <img id="view_image" src="{{ asset('images/default-avatar.png') }}"
-                                class="h-28 w-28 rounded-full object-cover border-4 border-sky-100 shadow-sm mx-auto">
+                                class="h-24 w-24 rounded-full object-cover border-2 border-slate-200 mx-auto">
 
-                            <h3 id="view_name" class="mt-4 text-lg font-bold text-slate-800"></h3>
+                            <h3 id="view_name" class="mt-4 text-lg font-semibold text-slate-900 break-words"></h3>
 
-                            <p id="view_registration_id" class="text-sm text-slate-500 mt-1 font-mono"></p>
+                            <p id="view_registration_id" class="text-sm text-slate-500 mt-1 font-mono break-all"></p>
 
                             <div class="mt-4 flex items-center justify-center">
                                 <span id="view_role_badge"
-                                    class="inline-flex px-3 py-1 rounded-full text-xs font-semibold bg-sky-100 text-sky-700">
-                                </span>
-                            </div>
-
-                            <div class="mt-3 flex items-center justify-center">
-                                <span id="view_status" class="inline-flex px-3 py-1 rounded-full text-xs font-semibold">
+                                    class="inline-flex px-3 py-1 rounded-md text-xs font-semibold bg-sky-100 text-sky-700">
                                 </span>
                             </div>
 
@@ -1226,67 +1188,107 @@
                         <!-- DETAILS -->
                         <!-- ================================= -->
 
-                        <div class="lg:col-span-2 space-y-5">
+                        <div class="lg:col-span-8 space-y-4">
 
                             <!-- Personal -->
 
-                            <div class="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden">
+                            <section class="bg-white border border-slate-200 rounded-xl overflow-hidden">
 
                                 <div class="px-4 sm:px-5 pt-4 pb-1 flex items-center gap-2">
                                     <span class="h-4 w-1 rounded-full bg-[#155E8A]"></span>
                                     <h4 class="text-xs font-bold uppercase tracking-wide text-[#155E8A]">
-                                        Personal Information
+                                        Profile
                                     </h4>
                                 </div>
 
-                                <div class="p-4 sm:p-5 pt-3 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                                <div class="p-4 sm:p-5 pt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
 
-                                    <div>
+                                    <div class="min-w-0">
                                         <label class="text-xs text-slate-500">Full Name</label>
-                                        <p id="view_name2" class="font-semibold text-slate-800 mt-0.5"></p>
+                                        <p id="view_name2" class="font-semibold text-slate-800 mt-0.5 break-words"></p>
                                     </div>
 
-                                    <div>
+                                    <div class="min-w-0">
                                         <label class="text-xs text-slate-500">Email Address</label>
                                         <p id="view_email" class="font-semibold text-slate-800 break-all mt-0.5"></p>
                                     </div>
 
-                                    <div>
+                                    <div class="min-w-0">
                                         <label class="text-xs text-slate-500">Registration ID</label>
                                         <p id="view_registration_id2"
-                                            class="font-semibold text-slate-800 font-mono mt-0.5"></p>
+                                            class="font-semibold text-slate-800 font-mono mt-0.5 break-all"></p>
                                     </div>
+
+                                </div>
+
+                            </section>
+
+                            <!-- Role and access -->
+
+                            <section class="bg-white border border-slate-200 rounded-xl overflow-hidden">
+
+                                <div class="px-4 sm:px-5 pt-4 pb-1 flex items-center gap-2">
+                                    <span class="h-4 w-1 rounded-full bg-[#155E8A]"></span>
+                                    <h4 class="text-xs font-bold uppercase tracking-wide text-[#155E8A]">
+                                        Role and Access
+                                    </h4>
+                                </div>
+
+                                <div class="p-4 sm:p-5 pt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                                     <div>
                                         <label class="text-xs text-slate-500">Assigned Role</label>
                                         <p id="view_role" class="font-semibold text-slate-800 mt-0.5"></p>
                                     </div>
 
+                                    <div>
+                                        <label class="text-xs text-slate-500">Email Verified</label>
+                                        <p id="view_email_verified" class="font-semibold text-slate-800 mt-1"></p>
+                                    </div>
+
                                 </div>
 
-                            </div>
+                            </section>
 
-                            <!-- Account -->
+                            <!-- School -->
 
-                            <div class="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden">
+                            <section class="bg-white border border-slate-200 rounded-xl overflow-hidden">
 
                                 <div class="px-4 sm:px-5 pt-4 pb-1 flex items-center gap-2">
                                     <span class="h-4 w-1 rounded-full bg-[#155E8A]"></span>
                                     <h4 class="text-xs font-bold uppercase tracking-wide text-[#155E8A]">
-                                        Account Information
+                                        School
                                     </h4>
                                 </div>
 
-                                <div class="p-4 sm:p-5 pt-3 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                                <div class="p-4 sm:p-5 pt-3">
+                                    <label class="text-xs text-slate-500">School Name</label>
+                                    <p id="view_school" class="font-semibold text-slate-800 mt-0.5 break-words"></p>
+                                </div>
+
+                            </section>
+
+                            <!-- Account -->
+
+                            <section class="bg-white border border-slate-200 rounded-xl overflow-hidden">
+
+                                <div class="px-4 sm:px-5 pt-4 pb-1 flex items-center gap-2">
+                                    <span class="h-4 w-1 rounded-full bg-[#155E8A]"></span>
+                                    <h4 class="text-xs font-bold uppercase tracking-wide text-[#155E8A]">
+                                        Account Status and Dates
+                                    </h4>
+                                </div>
+
+                                <div class="p-4 sm:p-5 pt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                                    <div>
+                                        <label class="text-xs text-slate-500">Account Status</label>
+                                        <p class="mt-1"><span id="view_status"></span></p>
+                                    </div>
 
                                     <div>
                                         <label class="text-xs text-slate-500">User ID</label>
                                         <p id="view_user_id" class="font-semibold text-slate-800 mt-0.5"></p>
-                                    </div>
-
-                                    <div>
-                                        <label class="text-xs text-slate-500">Email Verified</label>
-                                        <p id="view_email_verified" class="font-semibold text-slate-800 mt-0.5"></p>
                                     </div>
 
                                     <div>
@@ -1306,11 +1308,11 @@
 
                                 </div>
 
-                            </div>
+                            </section>
 
                             <!-- Audit -->
 
-                            <div class="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden">
+                            <section class="bg-white border border-slate-200 rounded-xl overflow-hidden">
 
                                 <div class="px-4 sm:px-5 pt-4 pb-1 flex items-center gap-2">
                                     <span class="h-4 w-1 rounded-full bg-[#B91C1C]"></span>
@@ -1319,7 +1321,7 @@
                                     </h4>
                                 </div>
 
-                                <div class="p-4 sm:p-5 pt-3 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                                <div class="p-4 sm:p-5 pt-3 grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                                     <div>
                                         <label class="text-xs text-slate-500">Created By</label>
@@ -1328,7 +1330,7 @@
 
                                     <div>
                                         <label class="text-xs text-slate-500">Creator Registration ID</label>
-                                        <p id="view_created_by_id" class="font-semibold text-slate-800 font-mono mt-0.5">
+                                        <p id="view_created_by_id" class="font-semibold text-slate-800 font-mono mt-0.5 break-all">
                                         </p>
                                     </div>
 
@@ -1339,11 +1341,11 @@
 
                                 </div>
 
-                            </div>
+                            </section>
 
                             <!-- Buttons -->
 
-                            <div class="flex flex-col sm:flex-row justify-end gap-2 pt-2">
+                            <div class="flex flex-col sm:flex-row justify-end gap-2 pt-1">
 
                                 <button onclick="switchToEditFromView()"
                                     class="px-5 py-2.5 rounded-lg bg-[#155E8A] hover:bg-[#0F4A6E] text-white font-semibold text-sm transition-colors flex items-center justify-center gap-2">
@@ -1372,104 +1374,112 @@
         </div>
         </div>
         <script>
-            // Search functionality variables
+            const userSearchForm = document.getElementById('userSearchForm');
+            const searchInput = document.getElementById('searchInput');
             let searchTimeout;
+            let activeSearchRequest;
 
-            // ========== SEARCH FUNCTIONALITY ==========
-            function performSearch() {
-                const searchTerm = document.getElementById('searchInput').value.trim();
-                const userRows = document.querySelectorAll('#usersTable .user-row');
+            if (userSearchForm && searchInput) {
+                const loadUsers = async (url, updateHistory = 'replace') => {
+                    if (activeSearchRequest) {
+                        activeSearchRequest.abort();
+                    }
 
-                // Show loading spinner
-                showLoadingSpinner();
+                    const requestController = new AbortController();
+                    activeSearchRequest = requestController;
+                    const spinner = document.getElementById('loadingSpinner');
 
-                // Clear previous timeout
-                clearTimeout(searchTimeout);
+                    if (spinner) {
+                        spinner.style.display = 'block';
+                    }
 
-                // Set new timeout for search with debouncing
-                searchTimeout = setTimeout(() => {
-                    // Simulate search (you can replace this with actual AJAX call)
-                    userRows.forEach(row => {
-                        const textContent = row.textContent.toLowerCase();
-                        if (searchTerm === '' || textContent.includes(searchTerm)) {
-                            row.style.display = '';
-                        } else {
-                            row.style.display = 'none';
+                    try {
+                        const response = await fetch(url, {
+                            headers: {
+                                'Accept': 'text/html',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            signal: requestController.signal
+                        });
+
+                        if (!response.ok) {
+                            throw new Error(`User search failed with status ${response.status}`);
                         }
-                    });
 
-                    // Hide loading spinner after search completes
-                    setTimeout(() => {
-                        hideLoadingSpinner();
+                        const page = new DOMParser().parseFromString(await response.text(), 'text/html');
+                        const nextUsers = page.getElementById('usersTable');
+                        const nextPagination = page.getElementById('usersPagination');
+                        const users = document.getElementById('usersTable');
+                        const pagination = document.getElementById('usersPagination');
 
-                        // Show search results info
-                        const visibleRows = document.querySelectorAll('#usersTable .user-row[style=""]').length;
-                        const totalRows = userRows.length;
-                        showSearchResultsInfo(visibleRows, totalRows, searchTerm);
-                    }, 300); // Small delay to show loading state
+                        if (!nextUsers || !nextPagination || !users || !pagination) {
+                            throw new Error('User search response did not contain the users table and pagination.');
+                        }
 
-                }, 500);
-            }
+                        users.innerHTML = nextUsers.innerHTML;
+                        pagination.innerHTML = nextPagination.innerHTML;
+                        searchInput.value = new URL(url, window.location.href).searchParams.get('search') || '';
 
-            // Loading spinner functions
-            function showLoadingSpinner() {
-                const spinner = document.getElementById('loadingSpinner');
-                const usersTable = document.getElementById('usersTable');
+                        if (updateHistory === 'push') {
+                            window.history.pushState({}, '', url);
+                        } else if (updateHistory === 'replace') {
+                            window.history.replaceState({}, '', url);
+                        }
+                    } catch (error) {
+                        if (error.name === 'AbortError') {
+                            return;
+                        }
 
-                // Create shimmer effect on existing rows
-                if (usersTable) {
-                    usersTable.querySelectorAll('.user-row').forEach(row => {
-                        row.style.opacity = '0.6';
-                        row.classList.add('shimmer');
-                    });
-                }
+                        console.error(error);
+                        window.location.assign(url);
+                    } finally {
+                        if (activeSearchRequest === requestController) {
+                            activeSearchRequest = null;
+                            if (spinner) {
+                                spinner.style.display = 'none';
+                            }
+                        }
+                    }
+                };
 
-                // Show spinner
-                spinner.style.display = 'block';
-            }
+                const searchUsers = () => {
+                    const url = new URL(window.location.href);
+                    const term = searchInput.value.trim();
 
-            function hideLoadingSpinner() {
-                const spinner = document.getElementById('loadingSpinner');
-                const usersTable = document.getElementById('usersTable');
+                    if (term) {
+                        url.searchParams.set('search', term);
+                    } else {
+                        url.searchParams.delete('search');
+                    }
 
-                // Remove shimmer effect
-                if (usersTable) {
-                    usersTable.querySelectorAll('.user-row').forEach(row => {
-                        row.style.opacity = '1';
-                        row.classList.remove('shimmer');
-                    });
-                }
+                    url.searchParams.delete('page');
+                    loadUsers(url, 'replace');
+                };
 
-                spinner.style.display = 'none';
-            }
+                searchInput.addEventListener('input', () => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(searchUsers, 250);
+                });
 
-            function showSearchResultsInfo(currentCount, totalCount, searchTerm) {
-                let resultsInfo = document.getElementById('searchResultsInfo');
+                userSearchForm.addEventListener('submit', event => {
+                    event.preventDefault();
+                    clearTimeout(searchTimeout);
+                    searchUsers();
+                });
 
-                if (!resultsInfo) {
-                    resultsInfo = document.createElement('div');
-                    resultsInfo.id = 'searchResultsInfo';
-                    resultsInfo.className = 'mb-4';
-                    const usersTable = document.querySelector('.bg-white.rounded-lg.shadow');
-                    usersTable.parentNode.insertBefore(resultsInfo, usersTable);
-                }
+                document.addEventListener('click', event => {
+                    const link = event.target.closest('#usersPagination a');
 
-                if (searchTerm) {
-                    resultsInfo.innerHTML = `
-                <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                    Showing ${currentCount} of ${totalCount} users matching "${searchTerm}"
-                    <button onclick="clearSearch()" class="ml-2 text-blue-600 hover:text-blue-800 font-medium">Clear search</button>
-                </div>
-            `;
-                } else {
-                    resultsInfo.innerHTML = '';
-                }
-            }
+                    if (!link || link.origin !== window.location.origin) {
+                        return;
+                    }
 
-            function clearSearch() {
-                document.getElementById('searchInput').value = '';
-                performSearch();
+                    event.preventDefault();
+                    clearTimeout(searchTimeout);
+                    loadUsers(link.href, 'push');
+                });
+
+                window.addEventListener('popstate', () => loadUsers(window.location.href, 'none'));
             }
 
             // ========== MODAL FUNCTIONALITY ==========
@@ -1522,19 +1532,6 @@
                         const preview = document.getElementById('image-preview');
                         if (this.files && this.files[0]) {
                             preview.src = URL.createObjectURL(this.files[0]);
-                        }
-                    });
-                }
-
-                // Search input event listener
-                const searchInput = document.getElementById('searchInput');
-                if (searchInput) {
-                    searchInput.addEventListener('input', performSearch);
-
-                    // Clear search when escape key is pressed
-                    searchInput.addEventListener('keydown', function(e) {
-                        if (e.key === 'Escape') {
-                            clearSearch();
                         }
                     });
                 }
@@ -2052,6 +2049,9 @@
 
                 document.getElementById('view_email').textContent = user.email ?? '-';
 
+                document.getElementById('view_school').textContent =
+                    user.school_name ?? 'SchoolGear Platform';
+
                 document.getElementById('view_registration_id').textContent = user.registration_id ?? '-';
 
                 document.getElementById('view_registration_id2').textContent = user.registration_id ?? '-';
@@ -2154,7 +2154,7 @@
                     user.updated_at ?? '-';
 
                 document.getElementById('view_last_login').textContent =
-                    user.last_login ?? 'Never';
+                    user.last_login_at ?? 'Never';
 
 
 
@@ -2366,8 +2366,6 @@
                     }, 100 * index);
                 });
 
-                // Hide loading spinner initially
-                hideLoadingSpinner();
             });
 
 

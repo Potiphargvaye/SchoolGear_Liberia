@@ -27,29 +27,35 @@
     <meta name="msapplication-TileImage" content="{{ asset('ms-icon-144x144.png') }}">
     <meta name="theme-color" content="#ffffff">
 
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = Object.assign({}, window.tailwind.config || {}, { darkMode: 'class' });
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('kiddos-school-master/css/templatemo-glass-admin-style.css') }}">
-    <script src="{{ asset('kiddos-school-master/js/templatemo-glass-admin-script.js') }}"></script>
 
     @include('partials.admin.admin-head')
+    <script>
+        tailwind.config = Object.assign({}, tailwind.config || {}, { darkMode: 'class' });
+    </script>
     @livewireStyles
 
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class'
-        };
-    </script>
+    @vite('resources/css/admin-shell.css')
 </head>
 
-<body class="text-gray-800 bg-[#F8FAFC] min-h-screen">
+<body class="admin-shell text-gray-800 bg-[#F8FAFC] min-h-screen">
+    <script>
+        (function () {
+            var dark = document.documentElement.dataset.theme === 'dark';
+            document.body.classList.toggle('sg-theme-dark', dark);
+            document.body.classList.toggle('sg-theme-light', !dark);
+        })();
+    </script>
 
     {{-- Sidebar --}}
     @include('partials.admin.admin-sidebar')
 
-    {{-- Mobile overlay --}}
-    <div class="fixed top-0 left-0 w-full h-full bg-black/50 z-40 md:hidden sidebar-overlay hidden"></div>
+    {{-- Mobile drawer overlay --}}
+    <div class="fixed inset-0 bg-black/50 z-40 sidebar-overlay" aria-hidden="true"></div>
 
     {{-- Main 
    <main class="w-full md:w-[calc(100%-256px)] md:ml-64 bg-white min-h-screen transition-all main"> --}}

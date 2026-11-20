@@ -6,11 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
 use App\Models\Admission;
 use App\Models\Announcement;
+use App\Models\Attendance;
 use App\Models\Enrollment;
 use App\Models\FeeAssignment;
 use App\Models\FeePayment;
 use App\Models\Grade;
 use App\Models\Student;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -21,8 +23,7 @@ class DashboardController extends Controller
      *
      * Everything shown here is scoped to the authenticated admin's school
      * (users.school_id) and, where a school year is selected, to that
-     * academic year. Attendance is not implemented in the system yet, so
-     * that card intentionally shows the design's sample data.
+     * academic year.
      */
     public function index()
     {
@@ -60,12 +61,122 @@ class DashboardController extends Controller
 
         $totalStudents = $activeEnrollments->count();
 
+        /*
+        |--------------------------------------------------------------------------
+        | Attendance overview — counts attendance marks for active
+        | enrollments in the selected year, grouped by date, grade level,
+        | and the attendance module's present/absent/late statuses.
+        |--------------------------------------------------------------------------
+        */
+        $attendanceToday = now()->startOfDay();
+        $attendanceRangeStarts = [
+            'today' => $attendanceToday->copy(),
+            'week' => $attendanceToday->copy()->startOfWeek(),
+            'month' => $attendanceToday->copy()->startOfMonth(),
+        ];
+
+        $attendanceMarks = Attendance::query()
+            ->join('enrollments', 'attendances.enrollment_id', '=', 'enrollments.id')
+            ->join('grades', 'enrollments.grade_id', '=', 'grades.id')
+            ->where('attendances.school_id', $schoolId)
+            ->where('enrollments.school_id', $schoolId)
+            ->where('enrollments.academic_year_id', $selectedYearId)
+            ->where('enrollments.status', 'active')
+            ->whereBetween('attendances.date', [
+                $attendanceRangeStarts['month']->toDateString(),
+                $attendanceToday->toDateString(),
+            ])
+            ->select([
+                'attendances.date as attendance_date',
+                'grades.level as grade_level',
+                'attendances.status',
+            ])
+            ->selectRaw('COUNT(*) as total, COUNT(DISTINCT attendances.enrollment_id) as students')
+            ->groupBy('attendances.date', 'grades.level', 'attendances.status')
+            ->orderBy('grades.level')
+            ->get();
+
+        $attendanceByDate = [];
+        $attendanceTodayCounts = ['present' => 0, 'absent' => 0, 'late' => 0];
+        $attendanceTodayTotalMarks = 0;
+        $attendanceTodayPresentMarks = 0;
+
+        foreach ($attendanceMarks as $mark) {
+            $date = (string) $mark->attendance_date;
+            $status = $mark->status;
+            $count = (int) $mark->total;
+
+            $attendanceByDate[$date][$status] = ($attendanceByDate[$date][$status] ?? 0) + $count;
+
+            if ($date === $attendanceToday->toDateString()) {
+                $attendanceTodayCounts[$status] += (int) $mark->students;
+                $attendanceTodayTotalMarks += $count;
+                if ($status === 'present') {
+                    $attendanceTodayPresentMarks += $count;
+                }
+            }
+        }
+
+        $attendanceTodayRate = $attendanceTodayTotalMarks > 0
+            ? round($attendanceTodayPresentMarks / $attendanceTodayTotalMarks * 100, 1)
+            : 0;
+        $attendanceEnrollmentCount = $selectedYearId
+            ? $activeEnrollments->count()
+            : 0;
+        $attendanceAbsentPct = $attendanceEnrollmentCount > 0
+            ? round($attendanceTodayCounts['absent'] / $attendanceEnrollmentCount * 100, 1)
+            : 0;
+
+        $attendanceRanges = [];
+        foreach ($attendanceRangeStarts as $range => $rangeStart) {
+            $rangeMarks = $attendanceMarks->filter(
+                fn ($mark) => (string) $mark->attendance_date >= $rangeStart->toDateString()
+            );
+            $totalMarks = (int) $rangeMarks->sum('total');
+            $labels = [];
+            $rates = [];
+
+            for ($date = $rangeStart->copy(); $date->lte($attendanceToday); $date->addDay()) {
+                if ($date->isWeekend()) {
+                    continue;
+                }
+
+                $dateKey = $date->toDateString();
+                $dayMarks = $attendanceByDate[$dateKey] ?? [];
+                $dayTotal = array_sum($dayMarks);
+                $labels[] = $date->format($range === 'today' ? 'D' : 'M j');
+                $rates[] = $dayTotal > 0
+                    ? round(($dayMarks['present'] ?? 0) / $dayTotal * 100, 1)
+                    : 0;
+            }
+
+            $gradeMarks = $rangeMarks
+                ->groupBy('grade_level')
+                ->map(function ($marks, $level) {
+                    $total = (int) $marks->sum('total');
+                    $present = (int) $marks->where('status', 'present')->sum('total');
+
+                    return [
+                        'label' => $level,
+                        'rate' => $total > 0 ? round($present / $total * 100, 1) : 0,
+                    ];
+                })
+                ->values();
+
+            $attendanceRanges[$range] = [
+                'labels' => $labels,
+                'rates' => $rates,
+                'totalMarks' => $totalMarks,
+                'grades' => $gradeMarks,
+            ];
+        }
+
         // Gender split (real data) — feeds the "Total Students" KPI card.
         $studentsOfEnrollments = Student::query()
             ->whereIn('id', $activeEnrollments->pluck('student_id')->filter())
             ->get(['id', 'gender']);
-        $maleCount = $studentsOfEnrollments->where('gender', 'male')->count();
-        $femaleCount = $studentsOfEnrollments->where('gender', 'female')->count();
+        $maleCount = $studentsOfEnrollments->where('gender', 'Male')->count();
+        $femaleCount = $studentsOfEnrollments->where('gender', 'Female')->count();
 
         /*
         |----------------------------------------------------------------------
@@ -228,6 +339,13 @@ class DashboardController extends Controller
             'selectedYear',
             'selectedYearId',
             'totalStudents',
+            'attendanceTodayCounts',
+            'attendanceEnrollmentCount',
+            'attendanceAbsentPct',
+            'attendanceTodayRate',
+            'attendanceTodayPresentMarks',
+            'attendanceTodayTotalMarks',
+            'attendanceRanges',
             'maleCount',
             'femaleCount',
             'activeEnrollments',

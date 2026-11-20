@@ -11,7 +11,7 @@
                 </h1>
 
                 <p class="text-slate-500 text-sm mt-1">
-                    Create and manage user roles for the LIPA Learning Management System.
+                    Create and manage user roles for  SchoolGear Liberia Software.
                 </p>
             </div>
 
@@ -192,13 +192,13 @@
 
                     <div
                         class="h-11 w-11 shrink-0 rounded-full bg-white/10 border border-white/25 flex items-center justify-center overflow-hidden p-1.5">
-                        <img src="{{ asset('lipa-liberia-public-site/assets/img/logo/logo_header.png') }}" alt="LIPA Logo"
+                        <img src="{{ asset('logo/Schoolgear1.jpeg') }}" alt="SchoolGear Logo"
                             class="h-full w-full object-contain">
                     </div>
 
                     <div>
                         <p class="text-[11px] uppercase tracking-[0.14em] text-sky-200 font-semibold">
-                            Liberia Institute of Public Administration
+                            SchoolGear Liberia Software
                         </p>
                         <h2 class="text-white text-lg font-bold leading-tight mt-0.5">
                             Create New Role
@@ -262,13 +262,13 @@
 
                     <div
                         class="h-11 w-11 shrink-0 rounded-full bg-white/10 border border-white/25 flex items-center justify-center overflow-hidden p-1.5">
-                        <img src="{{ asset('lipa-liberia-public-site/assets/img/logo/logo_header.png') }}" alt="LIPA Logo"
+                        <img src="{{ asset('logo/Schoolgear1.jpeg') }}" alt="SchoolGear Logo"
                             class="h-full w-full object-contain">
                     </div>
 
                     <div>
                         <p class="text-[11px] uppercase tracking-[0.14em] text-sky-200 font-semibold">
-                            Liberia Institute of Public Administration
+                            SchoolGear Liberia Software
                         </p>
                         <h2 class="text-white text-lg font-bold leading-tight mt-0.5">
                             Edit Role
@@ -352,7 +352,7 @@
 
         // ===================================================
         // LIVE SEARCH for the Roles Management table
-        // Same technique used on Permissions / Role-Permissions pages:
+        // Same technique used f on Permissions / Role-Permissions pages:
         // fetch the same full page for a given search/page URL, then
         // swap only the #rolesManagementTableWrapper content.
         // ===================================================

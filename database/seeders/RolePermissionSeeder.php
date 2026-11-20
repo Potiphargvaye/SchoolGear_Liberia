@@ -64,7 +64,7 @@ class RolePermissionSeeder extends Seeder
 
             // Assignments, Quizzes & Grades
             'create assignments',
-            'grade assignments',
+           'manage grades',
             'create quizzes',
             'manage quizzes',
             'assign grades',
@@ -125,7 +125,7 @@ class RolePermissionSeeder extends Seeder
             'edit lessons',
             'view enrollments',
             'create assignments',
-            'grade assignments',
+           'manage grades',
             'create quizzes',
             'manage announcements',
             'view reports',

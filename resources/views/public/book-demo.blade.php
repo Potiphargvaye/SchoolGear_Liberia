@@ -67,7 +67,7 @@
 <body class="bg-white min-h-screen flex flex-col">
     <header class="w-full px-4 sm:px-8 py-3 flex items-center justify-between border-b border-slate-200 bg-white">
         <a href="{{ route('home') }}" class="flex items-center shrink-0">
-            <img src="{{ asset('logo/logo1.jpeg') }}" alt="SchoolGear Liberia"
+            <img src="{{ asset('logo/download.png') }}" alt="SchoolGear Liberia"
                 class="h-10 sm:h-12 w-auto object-contain mix-blend-multiply">
         </a>
 
@@ -148,7 +148,7 @@
 
     @livewireScripts
 
-    <!-- WhatsApp Floating Button -->
+    <!-- WhatsApp Floating Button  -->
     <a href="https://wa.me/+231777987113" target="_blank" class="whatsapp-float" aria-label="Message us on WhatsApp">
         <svg class="whatsapp-icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path

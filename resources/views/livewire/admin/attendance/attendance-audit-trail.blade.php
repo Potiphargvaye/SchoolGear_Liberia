@@ -1,21 +1,21 @@
-<div class="px-2 py-2 space-y-5">
+<div class="min-w-0 max-w-full space-y-5 overflow-x-clip px-2 py-2 text-slate-800 dark:text-slate-200">
     @include('livewire.admin.attendance.partials.nav-tabs')
 
     @include('partials.notifications')
 
     <div>
-        <h1 class="text-2xl font-bold text-slate-800">Attendance Audit Trail</h1>
-        <p class="text-slate-500 text-sm mt-1">Every create and edit of a student's attendance mark, with who and when.
+        <h1 class="text-xl font-bold text-slate-800 dark:text-slate-100 sm:text-2xl">Attendance Audit Trail</h1>
+        <p class="mt-1 text-sm text-slate-600 dark:text-slate-300">Every create and edit of a student's attendance mark, with who and when.
         </p>
     </div>
 
     {{-- Filters --}}
     <div
-        class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+        class="grid min-w-0 grid-cols-1 gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900 sm:grid-cols-2 sm:p-4 lg:grid-cols-6">
 
         <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Grade</label>
-            <select wire:model.live="gradeFilter" class="w-full text-sm py-2 px-2.5 border border-slate-300 rounded-lg">
+            <label class="mb-1 block text-xs font-semibold text-slate-700 dark:text-slate-300">Grade</label>
+            <select wire:model.live="gradeFilter" class="min-h-11 w-full min-w-0 rounded-lg border border-slate-300 px-2.5 py-2 text-base dark:border-slate-600 dark:bg-slate-800">
                 <option value="">All</option>
                 @foreach ($gradeOptions as $g)
                     <option value="{{ $g->id }}">{{ $g->level }}{{ $g->section ? ' - ' . $g->section : '' }}
@@ -25,9 +25,9 @@
         </div>
 
         <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Subject</label>
+            <label class="mb-1 block text-xs font-semibold text-slate-700 dark:text-slate-300">Subject</label>
             <select wire:model.live="subjectFilter"
-                class="w-full text-sm py-2 px-2.5 border border-slate-300 rounded-lg">
+                class="min-h-11 w-full min-w-0 rounded-lg border border-slate-300 px-2.5 py-2 text-base dark:border-slate-600 dark:bg-slate-800">
                 <option value="">All</option>
                 @foreach ($subjectOptions as $s)
                     <option value="{{ $s->id }}">{{ $s->name }}</option>
@@ -36,9 +36,9 @@
         </div>
 
         <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Period</label>
+            <label class="mb-1 block text-xs font-semibold text-slate-700 dark:text-slate-300">Period</label>
             <select wire:model.live="periodFilter"
-                class="w-full text-sm py-2 px-2.5 border border-slate-300 rounded-lg">
+                class="min-h-11 w-full min-w-0 rounded-lg border border-slate-300 px-2.5 py-2 text-base dark:border-slate-600 dark:bg-slate-800">
                 <option value="">All</option>
                 @foreach ($periodOptions as $p)
                     <option value="{{ $p->id }}">{{ $p->name }}</option>
@@ -47,9 +47,9 @@
         </div>
 
         <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">Action</label>
+            <label class="mb-1 block text-xs font-semibold text-slate-700 dark:text-slate-300">Action</label>
             <select wire:model.live="actionFilter"
-                class="w-full text-sm py-2 px-2.5 border border-slate-300 rounded-lg">
+                class="min-h-11 w-full min-w-0 rounded-lg border border-slate-300 px-2.5 py-2 text-base dark:border-slate-600 dark:bg-slate-800">
                 <option value="">All</option>
                 <option value="created">Created</option>
                 <option value="updated">Updated</option>
@@ -58,19 +58,19 @@
         </div>
 
         <div>
-            <label class="block text-xs font-semibold text-slate-600 mb-1">From</label>
+            <label class="mb-1 block text-xs font-semibold text-slate-700 dark:text-slate-300">From</label>
             <input type="date" wire:model.live="dateFrom"
-                class="w-full text-sm py-2 px-2.5 border border-slate-300 rounded-lg">
+                class="min-h-11 w-full min-w-0 rounded-lg border border-slate-300 px-2.5 py-2 text-base dark:border-slate-600 dark:bg-slate-800">
         </div>
 
         <div class="flex items-end gap-2">
             <div class="flex-1">
-                <label class="block text-xs font-semibold text-slate-600 mb-1">To</label>
+                <label class="mb-1 block text-xs font-semibold text-slate-700 dark:text-slate-300">To</label>
                 <input type="date" wire:model.live="dateTo"
-                    class="w-full text-sm py-2 px-2.5 border border-slate-300 rounded-lg">
+                    class="min-h-11 w-full min-w-0 rounded-lg border border-slate-300 px-2.5 py-2 text-base dark:border-slate-600 dark:bg-slate-800">
             </div>
             <button wire:click="resetFilters" type="button"
-                class="h-[38px] px-3 rounded-lg border border-slate-300 text-slate-600 text-xs font-semibold hover:bg-slate-100">
+                class="min-h-11 shrink-0 rounded-lg border border-slate-300 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-600 dark:border-slate-600 dark:text-slate-200 dark:hover:bg-slate-800">
                 Clear
             </button>
         </div>
@@ -78,12 +78,59 @@
     </div>
 
     {{-- Table --}}
-    <div class="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden">
-        <div class="overflow-x-auto">
+    <div class="min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+        <div class="space-y-3 p-3 md:hidden">
+            @forelse ($audits as $audit)
+                @php
+                    $cardBadge = match ($audit->action) {
+                        'created' => 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200',
+                        'updated' => 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200',
+                        'deleted' => 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-200',
+                        default => 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200',
+                    };
+                @endphp
+                <article class="min-w-0 rounded-xl border border-slate-200 p-3 dark:border-slate-700">
+                    <div class="flex min-w-0 items-start justify-between gap-2">
+                        <div class="min-w-0">
+                            <h2 class="break-words font-semibold text-slate-800 dark:text-slate-100">{{ $audit->enrollment->student->name ?? '—' }}</h2>
+                            <p class="mt-1 break-words text-xs text-slate-600 dark:text-slate-300">
+                                {{ $audit->enrollment->grade->level ?? '—' }}{{ $audit->enrollment->grade->section ?? '' ? ' - ' . $audit->enrollment->grade->section : '' }}
+                            </p>
+                        </div>
+                        <span class="shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold capitalize {{ $cardBadge }}">{{ $audit->action }}</span>
+                    </div>
+                    <dl class="mt-3 grid min-w-0 grid-cols-1 gap-2 text-xs">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="min-w-0"><dt class="font-semibold text-slate-500 dark:text-slate-300">When</dt><dd class="break-words text-slate-700 dark:text-slate-200">{{ $audit->performed_at?->format('M j, Y g:i A') }}</dd></div>
+                            <div class="min-w-0"><dt class="font-semibold text-slate-500 dark:text-slate-300">Period</dt><dd class="break-words text-slate-700 dark:text-slate-200">{{ $audit->period->name ?? '—' }}</dd></div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div class="min-w-0"><dt class="font-semibold text-slate-500 dark:text-slate-300">Subject</dt><dd class="break-words text-slate-700 dark:text-slate-200">{{ $audit->subject->name ?? '—' }}</dd></div>
+                            <div class="min-w-0"><dt class="font-semibold text-slate-500 dark:text-slate-300">By</dt><dd class="break-words text-slate-700 dark:text-slate-200">{{ $audit->performedBy->name ?? 'Unknown' }}</dd></div>
+                        </div>
+                        <div class="min-w-0">
+                            <dt class="font-semibold text-slate-500 dark:text-slate-300">Changes (before → after)</dt>
+                            <dd class="mt-1 break-words text-slate-700 dark:text-slate-200">
+                                @if ($audit->changes)
+                                    @foreach ($audit->changes as $field => $vals)
+                                        <div><span class="font-semibold">{{ $field }}:</span> {{ $vals[0] ?? '—' }} → {{ $vals[1] ?? '—' }}</div>
+                                    @endforeach
+                                @else
+                                    —
+                                @endif
+                            </dd>
+                        </div>
+                    </dl>
+                </article>
+            @empty
+                <p class="py-8 text-center text-sm text-slate-600 dark:text-slate-300">No audit records match these filters.</p>
+            @endforelse
+        </div>
+        <div class="hidden max-w-full overflow-x-auto md:block">
             <table class="w-full min-w-[950px] text-sm">
                 <thead class="bg-[#155E8A] text-white">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Date / Time</th>
+                        <th class="sticky left-0 bg-[#155E8A] px-4 py-3 text-left text-xs font-semibold uppercase">Date / Time</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Student</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Grade</th>
                         <th class="px-4 py-3 text-left text-xs font-semibold uppercase">Period</th>
@@ -96,28 +143,28 @@
                 <tbody class="divide-y divide-slate-100">
                     @forelse ($audits as $audit)
                         <tr class="hover:bg-sky-50/60">
-                            <td class="px-4 py-3 text-slate-500 whitespace-nowrap">
+                            <td class="sticky left-0 max-w-[150px] bg-white px-4 py-3 text-slate-700 dark:bg-slate-900 dark:text-slate-200">
                                 {{ $audit->performed_at?->format('M j, Y g:i A') }}</td>
-                            <td class="px-4 py-3 font-medium text-slate-800">
+                            <td class="px-4 py-3 font-medium text-slate-800 dark:text-slate-100">
                                 {{ $audit->enrollment->student->name ?? '—' }}</td>
-                            <td class="px-4 py-3 text-slate-500">
+                            <td class="px-4 py-3 text-slate-700 dark:text-slate-200">
                                 {{ $audit->enrollment->grade->level ?? '—' }}{{ $audit->enrollment->grade->section ?? '' ? ' - ' . $audit->enrollment->grade->section : '' }}
                             </td>
-                            <td class="px-4 py-3 text-slate-500">{{ $audit->period->name ?? '—' }}</td>
-                            <td class="px-4 py-3 text-slate-500">{{ $audit->subject->name ?? '—' }}</td>
+                            <td class="px-4 py-3 text-slate-700 dark:text-slate-200">{{ $audit->period->name ?? '—' }}</td>
+                            <td class="px-4 py-3 text-slate-700 dark:text-slate-200">{{ $audit->subject->name ?? '—' }}</td>
                             <td class="px-4 py-3">
                                 @php
                                     $badge = match ($audit->action) {
-                                        'created' => 'bg-green-100 text-green-700',
-                                        'updated' => 'bg-amber-100 text-amber-700',
-                                        'deleted' => 'bg-red-100 text-red-700',
-                                        default => 'bg-slate-100 text-slate-700',
+                                        'created' => 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-200',
+                                        'updated' => 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200',
+                                        'deleted' => 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-200',
+                                        default => 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200',
                                     };
                                 @endphp
                                 <span
                                     class="px-2.5 py-1 rounded-full text-xs font-medium {{ $badge }} capitalize">{{ $audit->action }}</span>
                             </td>
-                            <td class="px-4 py-3 text-slate-600">
+                            <td class="max-w-[360px] break-words px-4 py-3 text-slate-700 dark:text-slate-200">
                                 @if ($audit->changes)
                                     <div class="space-y-0.5">
                                         @foreach ($audit->changes as $field => $vals)
@@ -128,16 +175,16 @@
                                         @endforeach
                                     </div>
                                 @else
-                                    <span class="text-slate-400 text-xs">—</span>
+                                    <span class="text-xs text-slate-600 dark:text-slate-300">—</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-slate-500">{{ $audit->performedBy->name ?? 'Unknown' }}</td>
+                            <td class="px-4 py-3 text-slate-700 dark:text-slate-200">{{ $audit->performedBy->name ?? 'Unknown' }}</td>
                         </tr>
                     @empty
                         <tr>
                             <td colspan="8" class="text-center py-14">
-                                <i class="fas fa-clock-rotate-left text-4xl text-slate-300 mb-3"></i>
-                                <p class="text-slate-500 text-sm">No audit records match these filters.</p>
+                                <i class="fas fa-clock-rotate-left mb-3 text-4xl text-slate-400"></i>
+                                <p class="text-sm text-slate-600 dark:text-slate-300">No audit records match these filters.</p>
                             </td>
                         </tr>
                     @endforelse
@@ -146,6 +193,6 @@
         </div>
     </div>
 
-    <div>{{ $audits->links() }}</div>
+    <div class="max-w-full overflow-x-auto">{{ $audits->links() }}</div>
 
 </div>

@@ -118,4 +118,10 @@ return [
     // Where "new demo request" alerts are sent.
     'demo_notify_address' => env('DEMO_REQUEST_NOTIFY_EMAIL', env('MAIL_FROM_ADDRESS')),
 
+    // Where new school registration alerts are sent.
+    'school_registration_notify_address' => env(
+        'SCHOOL_REGISTRATION_NOTIFY_EMAIL',
+        env('MAIL_FROM_ADDRESS')
+    ),
+
 ];

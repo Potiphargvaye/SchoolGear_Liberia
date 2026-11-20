@@ -6,21 +6,21 @@
         $sidebarSchool = auth()->user()->school;
         $sidebarRole = auth()->user()->getRoleNames()->first();
     @endphp
-    <a href="#"
-        class="flex items-center gap-3 min-h-[76px] px-4 py-3 shrink-0 relative hover:bg-[#002966] rounded-md text-white">
+    <a href="#" data-rail-tooltip="{{ $sidebarSchool->display_short_name ?? 'SchoolGear Liberia' }}"
+        class="flex min-w-0 items-center gap-3 min-h-[76px] px-4 py-3 shrink-0 relative text-white">
         <div
-            class="h-10 w-10 shrink-0 rounded-md bg-white/10 border border-white/20 flex items-center justify-center overflow-hidden">
+            class="h-[42px] w-[42px] shrink-0 rounded-[11px] bg-white p-1 flex items-center justify-center overflow-hidden">
             @if ($sidebarSchool && $sidebarSchool->logo)
                 <img src="{{ asset('storage/' . $sidebarSchool->logo) }}" alt="{{ $sidebarSchool->school_name }}"
                     class="h-full w-full object-cover">
             @else
-                <span class="font-bold text-sm">
-                    {{ $sidebarSchool->display_short_name ?? 'SG' }}
-                </span>
+                <img src="{{ asset('logo/Schoolgear1.jpeg') }}" alt="SchoolGear Liberia"
+                    class="h-full w-full object-contain"
+                    onerror="this.onerror=null;this.style.display='none';">
             @endif
         </div>
         <div class="min-w-0">
-            <h2 class="font-bold text-base leading-tight truncate"
+            <h2 class="min-w-0 font-bold text-base leading-tight truncate"
                 title="{{ $sidebarSchool->school_name ?? 'SchoolGear Liberia' }}">
                 {{ $sidebarSchool->display_short_name ?? 'SchoolGear Liberia' }}
             </h2>
@@ -33,16 +33,16 @@
         <span class="absolute bottom-0 left-4 right-4 h-px bg-white/10"></span>
     </a>
     <!-- SCROLLABLE MENU AREA -->
-    <div class="flex-1 overflow-y-auto nav-scroll px-3 pt-5 pb-6">
+    <div class="nav-scroll min-h-0 flex-1 overflow-y-auto overflow-x-hidden px-3 pt-5 pb-6"
+        tabindex="0" aria-label="Admin navigation links">
 
         <ul class="space-y-0.5">
-            <li class="nav-section text-teal-500 font-bold">ADMIN</li>
+            <li class="nav-section text-teal-500 font-bold" data-rail-short="ADM" data-rail-tooltip="Admin" tabindex="0">ADMIN</li>
 
             @php
-                $usersActive =
-                    request()->routeIs('admin.users.index') || request()->routeIs('admin.users.permissions.edit');
+                $usersActive = request()->routeIs('admin.access-control.users.*');
                 $reportCardsActive = request()->routeIs('report.cards.index');
-                $reportCardType = optional(request()->route())->parameter('type');
+                $reportCardType = optional(request()->route())->parameter('level');
             @endphp
 
             @can('view dashboard')
@@ -91,7 +91,7 @@
 
                         <li>
                             <a href="{{ route('admin.access-control.users.index') }}"
-                                class="nav-sublink {{ request()->routeIs('admin.users.index') ? 'nav-sublink-active' : '' }}">
+                                class="nav-sublink {{ request()->routeIs('admin.access-control.users.*') ? 'nav-sublink-active' : '' }}">
                                 <span class="nav-dot"></span>
                                 All
                             </a>
@@ -132,7 +132,7 @@
             </li>
 
 
-            <li class="nav-section text-teal-500 font-bold">ACCESS CONTROL</li>
+            <li class="nav-section text-teal-500 font-bold" data-rail-short="ACL" data-rail-tooltip="Access Control" tabindex="0">ACCESS CONTROL</li>
 
             @php
                 $accessControlActive =
@@ -194,7 +194,7 @@
             </li>
 
 
-            <li class="nav-section text-teal-500 font-bold">STUDENT MANAGEMENT</li>
+            <li class="nav-section text-teal-500 font-bold" data-rail-short="STU" data-rail-tooltip="Student Management" tabindex="0">STUDENT MANAGEMENT</li>
 
             @php
                 $studentMgmtActive =
@@ -261,7 +261,7 @@
                 </ul>
 
             </li>
-            <li class="nav-section text-gray-400 font-bold">Finance</li>
+            <li class="nav-section text-gray-400 font-bold" data-rail-short="FIN" data-rail-tooltip="Finance" tabindex="0">Finance</li>
 
             @can('manage fees')
                 <li class="mb-0.5 group">
@@ -275,7 +275,7 @@
 
 
 
-            <li class="nav-section text-orange-500 hover:text-orange-700 font-bold">Report-Card</li>
+            <li class="nav-section text-orange-500 hover:text-orange-700 font-bold" data-rail-short="RPT" data-rail-tooltip="Report Card" tabindex="0">Report-Card</li>
 
             @can('enter student grades')
                 <li class="mb-0.5 group">
@@ -372,7 +372,7 @@
             @endcan
 
 
-            <li class="nav-section text-orange-500 hover:text-orange-700 font-bold">Attendance Management</li>
+            <li class="nav-section text-orange-500 hover:text-orange-700 font-bold" data-rail-short="ATT" data-rail-tooltip="Attendance Management" tabindex="0">Attendance Management</li>
 
             <li class="mb-0.5 group">
                 <a href="{{ route('attendance.entry') }}"
@@ -402,7 +402,7 @@
                 </li>
             @endcan
 
-            <li class="nav-section text-teal-500 font-bold">PERSONAL</li>
+            <li class="nav-section text-teal-500 font-bold" data-rail-short="PER" data-rail-tooltip="Personal" tabindex="0">PERSONAL</li>
 
             <li class="mb-0.5 group">
                 <a href="" class="nav-link">
@@ -433,8 +433,8 @@
 
                 <!-- Logout List Item -->
                 <li class="mb-0.5 group mt-2 pt-2 border-t border-white/10">
-                    <button type="button" @click="showLogoutModal = true"
-                        class="flex font-bold items-center gap-3 py-2.5 px-3 w-full text-sm text-[#f84525] rounded-lg transition-all duration-200 hover:text-white hover:bg-[#002966]">
+                    <button type="button" @click="showLogoutModal = true" data-rail-tooltip="Logout"
+                        class="logout-button flex font-bold items-center gap-3 py-2.5 px-3 w-full text-sm text-[#f84525] rounded-lg transition-all duration-200 hover:text-white hover:bg-[#002966]">
                         <i class="ri-shut-down-line nav-icon text-[#f84525]"></i>
                         <span>Logout</span>
                     </button>
@@ -500,9 +500,28 @@
         </ul>
 
     </div>
-</div>
 
-<div class="fixed top-0 left-0 w-full h-full bg-black/50 z-40 md:hidden sidebar-overlay"></div>
+    @php
+        $sidebarUser = auth()->user();
+        $sidebarUserInitial = strtoupper(substr($sidebarUser->name ?? 'U', 0, 1));
+        $sidebarUserRole = $sidebarUser->getRoleNames()->first() ?? ucfirst($sidebarUser->role ?? 'User');
+    @endphp
+    <a href="{{ route('admin.profile') }}" class="admin-sidebar-profile"
+        data-rail-tooltip="{{ $sidebarUser->name }} · {{ $sidebarUserRole }}">
+        <span class="admin-sidebar-profile-photo" aria-hidden="true">
+            {{ $sidebarUserInitial }}
+            @if ($sidebarUser->image)
+                <img src="{{ asset('storage/' . $sidebarUser->image) }}" alt=""
+                    onerror="this.onerror=null;this.style.display='none';">
+            @endif
+        </span>
+        <span class="admin-sidebar-profile-copy">
+            <span class="admin-sidebar-profile-name">{{ $sidebarUser->name }}</span>
+            <span class="admin-sidebar-profile-role">{{ $sidebarUserRole }}</span>
+        </span>
+    </a>
+    <div class="admin-sidebar-powered">Powered by SchoolGear Software</div>
+</div>
 
 <!-- Sidebar-specific styles: spacing, hover, active states, scrollbar.
      Brand color (#001f4d), hover color (#002966), accent (#f84525) and all

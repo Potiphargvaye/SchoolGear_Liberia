@@ -6,21 +6,12 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Students\StudentDashboardController;
 use App\Http\Controllers\TeacherDashboardController;
 
 use App\Http\Controllers\Admin\GradeAssignmentController;
 use App\Http\Controllers\TeacherMaterialController; // Correct import for the teacher controller 
 
 use App\Http\Controllers\Admin\UserPermissionController;
-
-use App\Http\Controllers\Students\StudentPortalGradeController;
-
-
-
-
-
-
 
 // Debugging routes (added at the top for easy access)
 Route::get('/user-avatar/{user}', function ($user) {
@@ -70,6 +61,7 @@ Route::get('/', function () {
 require __DIR__ . '/public-page.php'; // for my public page routes 
 require __DIR__ . '/admin/fees.php';
 require __DIR__ . '/admin/dashboard.php';
+require __DIR__ . '/admin/profile.php';
 require __DIR__ . '/admin/roles.php';
 require __DIR__ . '/admin/permissions.php';
 require __DIR__ . '/admin/role-permissions.php';
@@ -102,12 +94,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Role-specific dashboards
-    Route::get('/student/dashboard', [StudentDashboardController::class, 'index'])
-        ->middleware('can:is-student')
-        ->name('student.dashboard');
 });
-
 
 // Admin routes (keep exactly as is)
 Route::prefix('admin')->middleware(['auth', 'can:is-admin'])->group(function () {
@@ -116,7 +103,6 @@ Route::prefix('admin')->middleware(['auth', 'can:is-admin'])->group(function () 
     // `admin.dashboard`. Do NOT add another /admin/dashboard GET route
     // here: an identical URI registered later in this file would shadow
     // the one defined in routes/admin/dashboard.php.
-
 
     // Grade Assignments
     Route::prefix('grade-assignments')->group(function () {
@@ -187,28 +173,14 @@ Route::prefix('admin')->middleware(['auth', 'can:is-admin'])->group(function () 
 });
 
 
-
-
-
-
 // routes/web.php 
 
-
-
-
-
-// ======Rout for student information  displaying  and  students  materials 
-
-Route::middleware(['auth'])->group(function () {
-    // Student routes
-    Route::prefix('student')->name('student.')->group(function () {
-        Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
-        Route::get('/materials', [StudentDashboardController::class, 'materials'])->name('materials');
-        Route::get('/grades', [StudentPortalGradeController::class, 'index'])
-
-            ->name('grades');
-    });
-});
+// Student portal routes, required in the original registration order.
+require __DIR__ . '/students/dashboard.php';
+require __DIR__ . '/students/profile.php';
+require __DIR__ . '/students/materials.php';
+require __DIR__ . '/students/grades.php';
+require __DIR__ . '/students/attendance.php';
 
 // routes for subjects 
 Route::get('/subjects', [GradeAssignmentController::class, 'getSubjects'])->name('subjects.get');

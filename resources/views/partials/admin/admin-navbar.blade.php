@@ -10,17 +10,17 @@
     @php
         $navbarSchool = auth()->user()->school;
     @endphp
-    <div class="flex items-center gap-2.5">
+    <div class="navbar-brand flex items-center gap-2.5 min-w-0">
         @if ($navbarSchool && $navbarSchool->logo)
             <img src="{{ asset('storage/' . $navbarSchool->logo) }}" alt="{{ $navbarSchool->school_name }}"
                 class="h-8 w-8 object-contain rounded-md bg-white/10 p-0.5">
         @else
-            <img src="{{ asset('logo/download (1).png') }}" alt="SchoolGear Liberia"
+            <img src="{{ asset('logo/Schoolgear1.jpeg') }}" alt="SchoolGear Liberia"
                 class="h-8 w-8 object-contain rounded-md bg-white/10 p-0.5">
         @endif
 
-        <span class="hidden sm:inline text-white/70 italic font-light text-xs tracking-wide">
-            Powered by SchoolGear Liberia SaaS
+        <span class="navbar-powered hidden sm:inline text-white/70 italic font-light text-xs tracking-wide">
+            Powered by SchoolGear Liberia Software
         </span>
     </div>
 
@@ -144,85 +144,34 @@
         <!-- Light / Dark theme toggle -->
         <li>
             <button type="button" id="admin-theme-toggle" class="nav-icon-btn relative" title="Toggle Light/Dark Mode"
-                aria-label="Toggle Light/Dark Mode">
+                aria-label="Toggle Light/Dark Mode" aria-pressed="false">
                 <i class="ri-moon-line text-lg" data-theme-icon="moon"></i>
                 <i class="ri-sun-line text-lg" data-theme-icon="sun" style="display: none;"></i>
             </button>
         </li>
 
         <!-- Fullscreen button -->
-        <button id="fullscreen-button" class="nav-icon-btn">
+        <button id="fullscreen-button" class="nav-icon-btn" type="button" aria-label="Toggle fullscreen">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
                 fill="currentColor">
                 <path d="M5 5h5V3H3v7h2zm5 14H5v-5H3v7h7zm11-5h-2v5h-5v2h7zm-2-4h2V3h-7v2h5z"></path>
             </svg>
         </button>
-        <script>
-            const fullscreenButton = document.getElementById('fullscreen-button');
-            fullscreenButton.addEventListener('click', toggleFullscreen);
-
-            function toggleFullscreen() {
-                if (document.fullscreenElement) {
-                    document.exitFullscreen();
-                } else {
-                    document.documentElement.requestFullscreen();
-                }
-            }
-        </script>
-
-        <!-- Admin theme (Light/Dark) toggle — persists in localStorage and drives
-             the CSS variables used by the dashboard and theme-aware partials.
-             Also mirrors the state onto <html class="dark"> so any Tailwind
-             dark: utility classes elsewhere in the app stay in sync — purely
-             additive, does not change how this toggle already works. -->
-        <script>
-            (function() {
-                var body = document.body;
-                var html = document.documentElement;
-                var toggle = document.getElementById('admin-theme-toggle');
-                var KEY = 'sg-admin-theme';
-
-                function applyTheme(theme) {
-                    var dark = theme === 'dark';
-                    body.classList.toggle('sg-theme-dark', dark);
-                    body.classList.toggle('sg-theme-light', !dark);
-                    html.classList.toggle('dark', dark);
-                    if (toggle) {
-                        toggle.querySelectorAll('[data-theme-icon]').forEach(function(icon) {
-                            icon.style.display = (icon.getAttribute('data-theme-icon') === (dark ? 'sun' :
-                                'moon')) ? '' : 'none';
-                        });
-                    }
-                }
-
-                applyTheme(localStorage.getItem(KEY) || 'light');
-
-                if (toggle) {
-                    toggle.addEventListener('click', function() {
-                        var next = body.classList.contains('sg-theme-dark') ? 'light' : 'dark';
-                        localStorage.setItem(KEY, next);
-                        applyTheme(next);
-                        document.dispatchEvent(new CustomEvent('sg-theme-changed', {
-                            detail: {
-                                theme: next
-                            }
-                        }));
-                    });
-                }
-            })();
-        </script>
-
         <!-- Admin image & name section -->
         <li class="dropdown ml-2 pl-3 border-l border-white/10">
             <button type="button"
                 class="dropdown-toggle flex items-center gap-2.5 py-1 pr-1.5 rounded-lg transition-colors duration-200 hover:bg-white/10">
                 <div class="flex-shrink-0 w-9 h-9 relative">
                     @auth
-                        @if (auth()->user()->image)
-                            <div class="p-0.5 bg-white rounded-full ring-2 ring-white/20 focus:outline-none focus:ring">
+                        @if (auth()->user()->image && \Illuminate\Support\Facades\Storage::disk('public')->exists(auth()->user()->image))
+                            <div class="relative p-0.5 bg-white rounded-full ring-2 ring-white/20 focus:outline-none focus:ring">
+                                <span class="navbar-avatar-initial" aria-hidden="true">
+                                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                                </span>
                                 <img class="w-8 h-8 rounded-full object-cover"
                                     src="{{ asset('storage/' . auth()->user()->image) }}"
-                                    alt="{{ auth()->user()->name }}" />
+                                    alt="{{ auth()->user()->name }}"
+                                    onerror="this.onerror=null;this.style.display='none';" />
                                 <div
                                     class="top-0 left-7 absolute w-3 h-3 bg-lime-400 border-2 border-white rounded-full animate-ping">
                                 </div>
@@ -249,8 +198,8 @@
                     @endauth
                 </div>
 
-                <div class="hidden md:block text-left">
-                    <h2 class="text-sm font-semibold text-white leading-tight">{{ Auth::user()->name }}</h2>
+                <div class="navbar-user-copy hidden md:block text-left min-w-0">
+                    <h2 class="navbar-user-name text-sm font-semibold text-white leading-tight">{{ Auth::user()->name }}</h2>
                     <p class="text-[11px] text-white/60 leading-tight">{{ ucfirst(Auth::user()->role) }}</p>
                 </div>
 
@@ -259,7 +208,7 @@
 
             <ul class="nav-dropdown dropdown-menu z-30 hidden py-1.5 w-full max-w-[160px]">
                 <li>
-                    <a href="#" class="nav-dropitem">
+                    <a href="{{ route('admin.profile') }}" class="nav-dropitem">
                         <i class="ri-user-line nav-dropicon"></i>
                         Profile
                     </a>
@@ -271,12 +220,13 @@
                     </a>
                 </li>
                 <li class="mt-1 pt-1 border-t border-gray-100">
-                    <form method="POST" action="">
-                        <a role="menuitem" class="nav-dropitem nav-dropitem-danger cursor-pointer"
-                            onclick="event.preventDefault(); this.closest('form').submit();">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" role="menuitem"
+                            class="nav-dropitem nav-dropitem-danger w-full cursor-pointer text-left">
                             <i class="ri-logout-box-r-line nav-dropicon"></i>
                             Log Out
-                        </a>
+                        </button>
                     </form>
                 </li>
             </ul>

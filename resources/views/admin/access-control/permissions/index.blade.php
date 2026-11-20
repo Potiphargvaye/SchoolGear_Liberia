@@ -11,7 +11,7 @@
                     Permission Management
                 </h1>
                 <p class="text-slate-500 text-sm mt-1">
-                    Manage system permissions for LIPA LMS.
+                    Manage system permissions for SchoolGear Liberia Software.
                 </p>
             </div>
 

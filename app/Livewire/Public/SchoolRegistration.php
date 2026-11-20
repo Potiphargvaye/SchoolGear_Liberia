@@ -3,11 +3,17 @@
 
 namespace App\Livewire\Public;
 
+use App\Mail\NewSchoolRegistrationAlert;
+use App\Mail\SchoolRegistrationConfirmation;
 use App\Models\School;
 use App\Models\User;
 use App\Services\RegistrationIdService;
+use App\Support\AfricanPhoneCountries;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithFileUploads;   // ← ADD THIS LINE
 
@@ -23,6 +29,8 @@ class SchoolRegistration extends Component
     public $short_name;
     public $school_email;
     public $phone;
+    public string $phoneCountry = AfricanPhoneCountries::DEFAULT_COUNTRY;
+    public string $phoneNational = '';
     public $address;
     public $country = 'Liberia';
     public $city;
@@ -39,12 +47,16 @@ class SchoolRegistration extends Component
 
     protected function rulesForStep(int $step): array
     {
-        return match ($step) {
+        $phoneCountries = $step === 1 ? $this->africanPhoneCountries() : [];
+
+        $rules = match ($step) {
             1 => [
                 'school_name' => 'required|string|max:255',
                 'short_name' => 'nullable|string|max:20',
                 'school_email' => 'required|email|unique:schools,email',
-                'phone' => 'nullable|string|max:30',
+                'phone' => $phoneCountries
+                    ? ['nullable', 'string', 'max:30', 'regex:/^\+[1-9]\d{6,14}$/']
+                    : 'nullable|string|max:30',
                 'address' => 'nullable|string|max:255',
                 'country' => 'nullable|string|max:100',
                 'city' => 'nullable|string|max:100',
@@ -57,11 +69,23 @@ class SchoolRegistration extends Component
             ],
             default => [],
         };
+
+        if ($phoneCountries) {
+            $rules['phoneCountry'] = ['required', Rule::in(array_column($phoneCountries, 'code'))];
+            $rules['phoneNational'] = ['nullable', 'string', 'max:15', 'regex:/^\d+$/'];
+        }
+
+        return $rules;
     }
 
     public function nextStep(): void
     {
         $this->validate($this->rulesForStep($this->step));
+
+        if ($this->step === 1) {
+            $this->updatePhoneFromPicker();
+        }
+
         $this->step++;
     }
 
@@ -81,10 +105,11 @@ class SchoolRegistration extends Component
         // Re-validate everything on final submit, in case of tampering
         // or the user navigating steps out of order.
         $this->validate(array_merge($this->rulesForStep(1), $this->rulesForStep(2)));
+        $this->updatePhoneFromPicker();
 
         $this->submitting = true;
 
-        DB::transaction(function () {
+        [$school, $owner] = DB::transaction(function () {
             $service = new RegistrationIdService();
 
             $school = School::create([
@@ -117,7 +142,33 @@ class SchoolRegistration extends Component
 
             $school->owner_user_id = $owner->id;
             $school->save();
+
+            return [$school, $owner];
         });
+
+        try {
+            Mail::to($owner->email)->send(new SchoolRegistrationConfirmation($school, $owner));
+        } catch (\Throwable $e) {
+            Log::error('School registration confirmation email failed', [
+                'school_registration_id' => $school->registration_id,
+                'error' => $e->getMessage(),
+            ]);
+        }
+
+        try {
+            $notifyAddress = config('mail.school_registration_notify_address');
+
+            if (! $notifyAddress) {
+                throw new \RuntimeException('No school registration notification recipient is configured.');
+            }
+
+            Mail::to($notifyAddress)->send(new NewSchoolRegistrationAlert($school, $owner));
+        } catch (\Throwable $e) {
+            Log::error('New school registration alert email failed', [
+                'school_registration_id' => $school->registration_id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         // Reuses the login page's existing session('status') banner —
         // no changes needed to login.blade.php.
@@ -128,6 +179,47 @@ class SchoolRegistration extends Component
 
     public function render()
     {
-        return view('livewire.public.school-registration');
+        $africanPhoneCountries = $this->africanPhoneCountries();
+        $selectedPhoneCountry = collect($africanPhoneCountries)->firstWhere('code', $this->phoneCountry)
+            ?? collect($africanPhoneCountries)->firstWhere('code', AfricanPhoneCountries::DEFAULT_COUNTRY);
+
+        return view('livewire.public.school-registration', [
+            'africanPhoneCountries' => $africanPhoneCountries,
+            'selectedPhoneCountry' => $selectedPhoneCountry,
+            'phoneCountryPickerAvailable' => (bool) $africanPhoneCountries && (bool) $selectedPhoneCountry,
+        ]);
+    }
+
+    public function selectPhoneCountry(string $code): void
+    {
+        $country = collect($this->africanPhoneCountries())->firstWhere('code', $code);
+
+        if ($country) {
+            $this->phoneCountry = $country['code'];
+        }
+    }
+
+    private function updatePhoneFromPicker(): void
+    {
+        $phoneCountries = $this->africanPhoneCountries();
+
+        if (! $phoneCountries || $this->phoneNational === '') {
+            if ($phoneCountries) {
+                $this->phone = null;
+            }
+
+            return;
+        }
+
+        $selectedCountry = collect($phoneCountries)->firstWhere('code', $this->phoneCountry);
+        $this->phone = $selectedCountry['dial_code'] . ltrim($this->phoneNational, '0');
+        $this->validate([
+            'phone' => ['nullable', 'string', 'max:30', 'regex:/^\+[1-9]\d{6,14}$/'],
+        ]);
+    }
+
+    private function africanPhoneCountries(): array
+    {
+        return app(AfricanPhoneCountries::class)->all();
     }
 }

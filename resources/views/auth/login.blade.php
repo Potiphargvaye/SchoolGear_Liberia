@@ -210,10 +210,10 @@
                     <div
                         class="h-24 w-24 rounded-full bg-white shadow-lg ring-4 ring-white/30 flex items-center justify-center mb-5 overflow-hidden p-1">
 
-                        <img src="{{ asset('logo/hello1.png') }}" alt="SchoolGear Logo"
+                        <img src="{{ asset('logo/Schoolgear1.jpeg') }}" alt="SchoolGear Logo"
                             class="h-full w-full object-contain">
 
-                    </div>
+                    </div> 
                     <h1 class="text-white text-2xl lg:text-[26px] font-bold tracking-tight">Welcome to SchoolGear
                         Liberia</h1>
                     <p class="text-white/70 text-sm mt-1 font-medium tracking-wide">School Management System</p>
