@@ -293,7 +293,7 @@
                         <span class="glance-label">Latest grade update</span>
                         @if($latestGrade)
                             <span class="glance-value">{{ $latestGrade->subject->name ?? 'Recorded grade' }}</span>
-                            <span class="glance-detail">{{ $latestGrade->updated_at->format('M j, Y') }}</span>
+                            <span class="glance-detail">Published {{ $latestGradePublishedAt?->format('M j, Y') }}</span>
                         @else
                             <span class="glance-value">No grades yet</span>
                             <span class="glance-detail">Grade updates will appear here when recorded.</span>

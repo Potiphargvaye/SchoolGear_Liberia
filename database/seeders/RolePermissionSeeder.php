@@ -109,6 +109,15 @@ class RolePermissionSeeder extends Seeder
             'delete permissions',
             'manage permissions',
         ]);
+        $admin->givePermissionTo([
+            'publish student grades',
+            'unpublish student grades',
+        ]);
+
+        $superAdmin->givePermissionTo([
+            'publish student grades',
+            'unpublish student grades',
+        ]);
 
         /*
         |--------------------------------------------------------------------------

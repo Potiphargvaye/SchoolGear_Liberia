@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Enrollment;
+use App\Models\GradePublication;
 use App\Models\StudentGrade;
 use App\Models\TeacherMaterial;
 
@@ -25,6 +26,7 @@ class StudentDashboardController extends Controller
             : null;
         $enrollment = null;
         $grades = collect();
+        $latestGradePublishedAt = null;
 
         if ($student) {
             $enrollment = Enrollment::query()
@@ -36,14 +38,26 @@ class StudentDashboardController extends Controller
                 ->first();
 
             if ($enrollment) {
-                $grades = StudentGrade::query()
-                    ->where('school_id', $user->school_id)
-                    ->where('enrollment_id', $enrollment->id)
-                    ->whereHas('subject', fn ($query) => $query->where('school_id', $user->school_id))
-                    ->with(['subject' => fn ($query) => $query
-                        ->where('school_id', $user->school_id)
-                        ->select('id', 'name')])
-                    ->get(['id', 'academic_subject_id', 'updated_at']);
+                $publishedSlots = GradePublication::publishedForEnrollment($enrollment);
+                $publishedSlotKeys = $publishedSlots->pluck('slot')->all();
+
+                if ($publishedSlotKeys !== []) {
+                    $grades = StudentGrade::query()
+                        ->where('school_id', $enrollment->school_id)
+                        ->where('enrollment_id', $enrollment->id)
+                        ->whereHas('subject', fn ($query) => $query->where('school_id', $enrollment->school_id))
+                        ->where(function ($query) use ($publishedSlotKeys) {
+                            foreach ($publishedSlotKeys as $slot) {
+                                $query->orWhereNotNull(GradePublication::SLOT_COLUMNS[$slot]);
+                            }
+                        })
+                        ->with(['subject' => fn ($query) => $query
+                            ->where('school_id', $enrollment->school_id)
+                            ->select('id', 'name')])
+                        ->get(['id', 'academic_subject_id', 'updated_at']);
+
+                    $latestGradePublishedAt = $publishedSlots->max('published_at');
+                }
             }
         }
 
@@ -58,7 +72,8 @@ class StudentDashboardController extends Controller
             'enrollment',
             'academicYear',
             'grades',
-            'latestGrade'
+            'latestGrade',
+            'latestGradePublishedAt'
         ));
     }
 

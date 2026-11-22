@@ -37,13 +37,20 @@
             --font: 'Poppins', Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
 
-        * { box-sizing: border-box; }
-        [x-cloak] { display: none !important; }
+        * {
+            box-sizing: border-box;
+        }
+
+        [x-cloak] {
+            display: none !important;
+        }
+
         html {
             max-width: 100%;
             overflow-x: clip;
             -webkit-text-size-adjust: 100%;
         }
+
         body {
             margin: 0;
             max-width: 100%;
@@ -55,18 +62,40 @@
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
         }
-        button, a { font: inherit; }
-        img { max-width: 100%; }
-        button:focus-visible, a:focus-visible, summary:focus-visible {
+
+        button,
+        a {
+            font: inherit;
+        }
+
+        img {
+            max-width: 100%;
+        }
+
+        button:focus-visible,
+        a:focus-visible,
+        summary:focus-visible {
             outline: 3px solid var(--cyan);
             outline-offset: 3px;
         }
+
         .sr-only {
-            position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
-            overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
 
-        .portal-shell { width: 100%; max-width: 100%; min-height: 100vh; }
+        .portal-shell {
+            width: 100%;
+            max-width: 100%;
+            min-height: 100vh;
+        }
 
         /* ---------- Sidebar ---------- */
         .portal-sidebar {
@@ -80,6 +109,7 @@
             color: #fff;
             transition: width .2s ease, transform .2s ease;
         }
+
         .portal-brand {
             display: flex;
             height: var(--topbar-height);
@@ -89,6 +119,7 @@
             padding: 0 20px;
             border-bottom: 1px solid rgba(255, 255, 255, .12);
         }
+
         .portal-brand-link {
             display: flex;
             min-width: 0;
@@ -98,27 +129,64 @@
             color: #fff;
             text-decoration: none;
         }
+
         .portal-brand-link img {
-            width: 42px; height: 42px; flex: 0 0 42px;
-            padding: 4px; object-fit: cover;
-            border-radius: 11px; background: #fff;
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            padding: 4px;
+            object-fit: cover;
+            border-radius: 11px;
+            background: #fff;
         }
-        .portal-brand-copy { min-width: 0; }
+
+        .portal-brand-copy {
+            min-width: 0;
+        }
+
         .portal-brand-name {
-            display: block; max-width: 100%; overflow: hidden;
-            font-size: 16px; font-weight: 600; line-height: 1.2;
-            text-overflow: ellipsis; white-space: nowrap;
+            display: block;
+            max-width: 100%;
+            overflow: hidden;
+            font-size: 16px;
+            font-weight: 600;
+            line-height: 1.2;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        .portal-brand-caption { display: block; margin-top: 2px; color: #D9D4F5; font-size: 11.5px; }
+
+        .portal-brand-caption {
+            display: block;
+            margin-top: 2px;
+            color: #D9D4F5;
+            font-size: 11.5px;
+        }
+
         .portal-close {
             display: none;
-            width: 36px; height: 36px; flex: 0 0 36px;
-            align-items: center; justify-content: center;
-            border: 0; border-radius: 9px;
-            background: rgba(255, 255, 255, .1); color: #fff; cursor: pointer;
+            width: 36px;
+            height: 36px;
+            flex: 0 0 36px;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            border-radius: 9px;
+            background: rgba(255, 255, 255, .1);
+            color: #fff;
+            cursor: pointer;
         }
-        .portal-nav { display: grid; flex: 1 1 auto; align-content: start; gap: 4px; padding: 18px 12px; overflow-y: auto; }
-        .portal-nav-link, .portal-nav-disabled {
+
+        .portal-nav {
+            display: grid;
+            flex: 1 1 auto;
+            align-content: start;
+            gap: 4px;
+            padding: 18px 12px;
+            overflow-y: auto;
+        }
+
+        .portal-nav-link,
+        .portal-nav-disabled {
             position: relative;
             display: flex;
             width: 100%;
@@ -135,18 +203,51 @@
             text-decoration: none;
             transition: background .15s ease, color .15s ease;
         }
-        .portal-nav-link i, .portal-nav-disabled i { width: 22px; flex: 0 0 22px; text-align: center; font-size: 16px; }
-        .portal-nav-link:hover { background: rgba(255, 255, 255, .09); color: #fff; }
-        .portal-nav-link.is-active { background: rgba(255, 255, 255, .15); color: #fff; font-weight: 500; }
-        .portal-nav-link.is-active i { color: var(--yellow); }
+
+        .portal-nav-link i,
+        .portal-nav-disabled i {
+            width: 22px;
+            flex: 0 0 22px;
+            text-align: center;
+            font-size: 16px;
+        }
+
+        .portal-nav-link:hover {
+            background: rgba(255, 255, 255, .09);
+            color: #fff;
+        }
+
+        .portal-nav-link.is-active {
+            background: rgba(255, 255, 255, .15);
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .portal-nav-link.is-active i {
+            color: var(--yellow);
+        }
+
         .portal-nav-link.is-active::before {
             content: "";
-            position: absolute; left: 0; top: 11px; bottom: 11px;
-            width: 4px; border-radius: 0 4px 4px 0;
+            position: absolute;
+            left: 0;
+            top: 11px;
+            bottom: 11px;
+            width: 4px;
+            border-radius: 0 4px 4px 0;
             background: var(--yellow);
         }
-        .portal-nav-disabled { color: #B9B2DE; cursor: not-allowed; }
-        .portal-nav-label { flex: 1 1 auto; white-space: nowrap; }
+
+        .portal-nav-disabled {
+            color: #B9B2DE;
+            cursor: not-allowed;
+        }
+
+        .portal-nav-label {
+            flex: 1 1 auto;
+            white-space: nowrap;
+        }
+
         .portal-soon {
             padding: 2px 8px;
             border-radius: 20px;
@@ -155,45 +256,103 @@
             font-size: 10.5px;
             font-weight: 600;
         }
-        .portal-sidebar-bottom { flex: 0 0 auto; padding: 14px 14px 16px; border-top: 1px solid rgba(255, 255, 255, .12); }
+
+        .portal-sidebar-bottom {
+            flex: 0 0 auto;
+            padding: 14px 14px 16px;
+            border-top: 1px solid rgba(255, 255, 255, .12);
+        }
+
         .portal-profile {
-            display: flex; align-items: center; gap: 11px;
+            display: flex;
+            align-items: center;
+            gap: 11px;
             padding: 11px;
             border-radius: 14px;
             background: rgba(255, 255, 255, .09);
         }
-        .portal-profile-link { color: inherit; text-decoration: none; }
-        .portal-profile-link:hover, .portal-profile-link.is-active { background: rgba(255, 255, 255, .16); }
-        .portal-profile-link.is-active { box-shadow: inset 3px 0 var(--yellow); }
-        .portal-profile-copy { min-width: 0; }
+
+        .portal-profile-link {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .portal-profile-link:hover,
+        .portal-profile-link.is-active {
+            background: rgba(255, 255, 255, .16);
+        }
+
+        .portal-profile-link.is-active {
+            box-shadow: inset 3px 0 var(--yellow);
+        }
+
+        .portal-profile-copy {
+            min-width: 0;
+        }
+
         .portal-profile-name {
-            display: block; overflow: hidden;
-            font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap;
+            display: block;
+            overflow: hidden;
+            font-size: 13px;
+            font-weight: 600;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
+
         .portal-profile-id {
-            display: block; overflow: hidden;
-            color: #D4CEF3; font-size: 11.5px; text-overflow: ellipsis; white-space: nowrap;
+            display: block;
+            overflow: hidden;
+            color: #D4CEF3;
+            font-size: 11.5px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
+
         .portal-powered {
-            display: flex; align-items: center; gap: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
             margin: 12px 4px 0;
-            color: #CFC9F0; font-size: 11.5px;
+            color: #CFC9F0;
+            font-size: 11.5px;
         }
-        .portal-powered i { color: var(--yellow); }
+
+        .portal-powered i {
+            color: var(--yellow);
+        }
 
         /* ---------- Avatar ---------- */
         .portal-avatar {
             display: inline-flex;
-            width: 40px; height: 40px; flex: 0 0 40px;
-            align-items: center; justify-content: center;
+            width: 40px;
+            height: 40px;
+            flex: 0 0 40px;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
             border-radius: 50%;
-            background: #E9E5FF; color: var(--purple);
-            font-size: 13px; font-weight: 600;
+            background: #E9E5FF;
+            color: var(--purple);
+            font-size: 13px;
+            font-weight: 600;
         }
-        .portal-avatar img { width: 100%; height: 100%; object-fit: cover; }
-        .portal-avatar--lg { width: 46px; height: 46px; flex-basis: 46px; font-size: 15px; }
-        .portal-avatar--ring { box-shadow: 0 0 0 2px var(--purple), 0 0 0 4px var(--yellow); }
+
+        .portal-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .portal-avatar--lg {
+            width: 46px;
+            height: 46px;
+            flex-basis: 46px;
+            font-size: 15px;
+        }
+
+        .portal-avatar--ring {
+            box-shadow: 0 0 0 2px var(--purple), 0 0 0 4px var(--yellow);
+        }
 
         /* ---------- Main + topbar ---------- */
         .portal-main {
@@ -204,6 +363,7 @@
             margin-left: var(--sidebar-width);
             transition: margin-left .2s ease;
         }
+
         .portal-topbar {
             position: sticky;
             z-index: 30;
@@ -219,77 +379,195 @@
             border-bottom: 1px solid var(--line);
             background: rgba(255, 255, 255, .96);
         }
+
         @supports (backdrop-filter: blur(8px)) {
-            .portal-topbar { background: rgba(255, 255, 255, .88); backdrop-filter: blur(10px); }
+            .portal-topbar {
+                background: rgba(255, 255, 255, .88);
+                backdrop-filter: blur(10px);
+            }
         }
-        .portal-topbar-start, .portal-topbar-end { display: flex; min-width: 0; align-items: center; gap: 14px; }
-        .portal-topbar-start { flex: 1 1 0; }
-        .portal-topbar-end { flex: 0 0 auto; }
-        .portal-toggle, .portal-menu-button {
+
+        .portal-topbar-start,
+        .portal-topbar-end {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .portal-topbar-start {
+            flex: 1 1 0;
+        }
+
+        .portal-topbar-end {
+            flex: 0 0 auto;
+        }
+
+        .portal-toggle,
+        .portal-menu-button {
             display: inline-flex;
-            width: 42px; height: 42px; flex: 0 0 42px;
-            align-items: center; justify-content: center;
+            width: 42px;
+            height: 42px;
+            flex: 0 0 42px;
+            align-items: center;
+            justify-content: center;
             border: 1px solid var(--line);
             border-radius: 11px;
-            background: #fff; color: var(--purple);
+            background: #fff;
+            color: var(--purple);
             cursor: pointer;
             transition: background .15s ease, border-color .15s ease;
         }
-        .portal-toggle:hover, .portal-menu-button:hover { border-color: #C9C2F2; background: var(--surface); }
-        .portal-toggle i { transition: transform .2s ease; }
-        .sidebar-collapsed .portal-toggle i { transform: rotate(180deg); }
-        .portal-menu-button { display: none; }
-        .portal-school { display: flex; min-width: 0; flex: 1 1 auto; align-items: center; gap: 12px; overflow: hidden; }
+
+        .portal-toggle:hover,
+        .portal-menu-button:hover {
+            border-color: #C9C2F2;
+            background: var(--surface);
+        }
+
+        .portal-toggle i {
+            transition: transform .2s ease;
+        }
+
+        .sidebar-collapsed .portal-toggle i {
+            transform: rotate(180deg);
+        }
+
+        .portal-menu-button {
+            display: none;
+        }
+
+        .portal-school {
+            display: flex;
+            min-width: 0;
+            flex: 1 1 auto;
+            align-items: center;
+            gap: 12px;
+            overflow: hidden;
+        }
+
         .portal-school-icon {
             display: inline-flex;
-            width: 40px; height: 40px; flex: 0 0 40px;
-            align-items: center; justify-content: center;
+            width: 40px;
+            height: 40px;
+            flex: 0 0 40px;
+            align-items: center;
+            justify-content: center;
             border-radius: 11px;
-            background: var(--surface); color: var(--purple-bright);
+            background: var(--surface);
+            color: var(--purple-bright);
         }
-        .portal-school-copy { min-width: 0; flex: 1 1 auto; overflow: hidden; }
+
+        .portal-school-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: inherit;
+        }
+
+        .portal-school-copy {
+            min-width: 0;
+            flex: 1 1 auto;
+            overflow: hidden;
+        }
+
         .portal-school-name {
-            display: block; overflow: hidden;
-            font-size: 15px; font-weight: 600; line-height: 1.25;
-            text-overflow: ellipsis; white-space: nowrap;
+            display: block;
+            overflow: hidden;
+            font-size: 15px;
+            font-weight: 600;
+            line-height: 1.25;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
+
         .portal-page-name {
-            display: block; overflow: hidden;
-            color: var(--muted); font-size: 12px; line-height: 1.3;
-            text-overflow: ellipsis; white-space: nowrap;
+            display: block;
+            overflow: hidden;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.3;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
+
         .portal-year {
-            display: inline-flex; align-items: center; gap: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
             padding: 7px 13px;
             border: 1px solid var(--yellow-line);
             border-radius: 999px;
-            background: var(--yellow-soft); color: var(--yellow-ink);
-            font-size: 12.5px; font-weight: 500; white-space: nowrap;
+            background: var(--yellow-soft);
+            color: var(--yellow-ink);
+            font-size: 12.5px;
+            font-weight: 500;
+            white-space: nowrap;
         }
 
         /* ---------- User menu ---------- */
-        .portal-user-menu { position: relative; }
+        .portal-user-menu {
+            position: relative;
+        }
+
         .portal-user-menu summary {
-            display: flex; min-width: 0; align-items: center; gap: 11px;
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            gap: 11px;
             padding: 5px 8px 5px 5px;
             border: 1px solid var(--line);
             border-radius: 999px;
             background: #fff;
-            cursor: pointer; list-style: none;
+            cursor: pointer;
+            list-style: none;
         }
-        .portal-user-menu summary::-webkit-details-marker { display: none; }
-        .portal-user-menu summary:hover, .portal-user-menu[open] summary { border-color: #C9C2F2; background: var(--surface); }
-        .portal-user-copy { min-width: 0; line-height: 1.25; }
+
+        .portal-user-menu summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .portal-user-menu summary:hover,
+        .portal-user-menu[open] summary {
+            border-color: #C9C2F2;
+            background: var(--surface);
+        }
+
+        .portal-user-copy {
+            min-width: 0;
+            line-height: 1.25;
+        }
+
         .portal-user-name {
-            display: block; max-width: 170px; overflow: hidden;
-            font-size: 13px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap;
+            display: block;
+            max-width: 170px;
+            overflow: hidden;
+            font-size: 13px;
+            font-weight: 600;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
+
         .portal-user-id {
-            display: block; max-width: 170px; overflow: hidden;
-            color: var(--muted); font-size: 11.5px; text-overflow: ellipsis; white-space: nowrap;
+            display: block;
+            max-width: 170px;
+            overflow: hidden;
+            color: var(--muted);
+            font-size: 11.5px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
-        .portal-user-chevron { color: var(--muted); font-size: 11px; transition: transform .15s ease; }
-        .portal-user-menu[open] .portal-user-chevron { transform: rotate(180deg); }
+
+        .portal-user-chevron {
+            color: var(--muted);
+            font-size: 11px;
+            transition: transform .15s ease;
+        }
+
+        .portal-user-menu[open] .portal-user-chevron {
+            transform: rotate(180deg);
+        }
+
         .portal-user-popover {
             position: absolute;
             z-index: 60;
@@ -303,102 +581,300 @@
             background: #fff;
             box-shadow: 0 16px 40px rgba(34, 28, 83, .14);
         }
-        .portal-popover-head { display: flex; min-width: 0; align-items: center; gap: 12px; }
-        .portal-popover-head > div { min-width: 0; }
-        .portal-popover-head strong { display: block; font-size: 14px; line-height: 1.3; overflow-wrap: anywhere; }
-        .portal-popover-head span { display: block; color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+
+        .portal-popover-head {
+            display: flex;
+            min-width: 0;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .portal-popover-head>div {
+            min-width: 0;
+        }
+
+        .portal-popover-head strong {
+            display: block;
+            font-size: 14px;
+            line-height: 1.3;
+            overflow-wrap: anywhere;
+        }
+
+        .portal-popover-head span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            overflow-wrap: anywhere;
+        }
+
         .portal-popover-school {
-            display: flex; align-items: flex-start; gap: 10px;
-            margin-top: 14px; padding: 11px 12px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-top: 14px;
+            padding: 11px 12px;
             border-radius: 11px;
-            background: var(--surface); color: var(--purple);
-            font-size: 12.5px; line-height: 1.4;
+            background: var(--surface);
+            color: var(--purple);
+            font-size: 12.5px;
+            line-height: 1.4;
         }
-        .portal-popover-school i { margin-top: 2px; color: var(--purple-bright); }
+
+        .portal-popover-school i {
+            margin-top: 2px;
+            color: var(--purple-bright);
+        }
+
         .portal-logout {
-            display: flex; width: 100%; align-items: center; gap: 10px;
-            margin-top: 12px; padding: 11px 12px;
-            border: 0; border-radius: 11px;
-            background: transparent; color: #B42318;
-            cursor: pointer; text-align: left; font-weight: 500;
+            display: flex;
+            width: 100%;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+            padding: 11px 12px;
+            border: 0;
+            border-radius: 11px;
+            background: transparent;
+            color: #B42318;
+            cursor: pointer;
+            text-align: left;
+            font-weight: 500;
         }
-        .portal-logout:hover { background: #FEF3F2; }
+
+        .portal-logout:hover {
+            background: #FEF3F2;
+        }
+
         .portal-profile-action {
-            display: flex; width: 100%; align-items: center; gap: 10px;
-            margin-top: 12px; padding: 11px 12px;
-            border-radius: 11px; color: var(--purple);
-            text-decoration: none; font-weight: 500;
+            display: flex;
+            width: 100%;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+            padding: 11px 12px;
+            border-radius: 11px;
+            color: var(--purple);
+            text-decoration: none;
+            font-weight: 500;
         }
-        .portal-profile-action:hover { background: var(--surface); }
+
+        .portal-profile-action:hover {
+            background: var(--surface);
+        }
 
         /* ---------- Content + footer ---------- */
-        .portal-content { width: 100%; max-width: 1360px; min-width: 0; flex: 1 0 auto; margin: 0 auto; padding: 30px; }
+        .portal-content {
+            width: 100%;
+            max-width: 1360px;
+            min-width: 0;
+            flex: 1 0 auto;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
         .portal-footer {
-            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 18px;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px 18px;
             min-width: 0;
             padding: 18px 30px;
             border-top: 1px solid var(--line);
-            color: var(--muted); font-size: 12px;
+            color: var(--muted);
+            font-size: 12px;
         }
-        .portal-footer i { margin-right: 7px; color: var(--purple-bright); }
-        .portal-footer > span { min-width: 0; overflow-wrap: anywhere; }
+
+        .portal-footer i {
+            margin-right: 7px;
+            color: var(--purple-bright);
+        }
+
+        .portal-footer>span {
+            min-width: 0;
+            overflow-wrap: anywhere;
+        }
+
         .portal-overlay {
-            position: fixed; z-index: 35; inset: 0;
-            border: 0; background: rgba(22, 18, 54, .52);
+            position: fixed;
+            z-index: 35;
+            inset: 0;
+            border: 0;
+            background: rgba(22, 18, 54, .52);
         }
 
         /* ---------- Collapsed sidebar (desktop only) ---------- */
         @media (min-width: 961px) {
-            .sidebar-collapsed .portal-sidebar { width: var(--sidebar-collapsed); }
-            .sidebar-collapsed .portal-main { margin-left: var(--sidebar-collapsed); }
-            .sidebar-collapsed .portal-brand { justify-content: center; padding: 0 8px; }
-            .sidebar-collapsed .portal-brand-link { flex: 0 0 auto; }
+            .sidebar-collapsed .portal-sidebar {
+                width: var(--sidebar-collapsed);
+            }
+
+            .sidebar-collapsed .portal-main {
+                margin-left: var(--sidebar-collapsed);
+            }
+
+            .sidebar-collapsed .portal-brand {
+                justify-content: center;
+                padding: 0 8px;
+            }
+
+            .sidebar-collapsed .portal-brand-link {
+                flex: 0 0 auto;
+            }
+
             .sidebar-collapsed .portal-brand-copy,
             .sidebar-collapsed .portal-nav-label,
             .sidebar-collapsed .portal-soon,
             .sidebar-collapsed .portal-profile-copy,
-            .sidebar-collapsed .portal-powered span { display: none; }
-            .sidebar-collapsed .portal-nav { padding-inline: 10px; }
-            .sidebar-collapsed .portal-nav-link, .sidebar-collapsed .portal-nav-disabled { justify-content: center; padding: 0; }
-            .sidebar-collapsed .portal-nav-link i, .sidebar-collapsed .portal-nav-disabled i { font-size: 17px; }
-            .sidebar-collapsed .portal-sidebar-bottom { padding-inline: 10px; }
-            .sidebar-collapsed .portal-profile { justify-content: center; padding: 8px 0; background: transparent; }
-            .sidebar-collapsed .portal-powered { justify-content: center; margin-inline: 0; }
+            .sidebar-collapsed .portal-powered span {
+                display: none;
+            }
+
+            .sidebar-collapsed .portal-nav {
+                padding-inline: 10px;
+            }
+
+            .sidebar-collapsed .portal-nav-link,
+            .sidebar-collapsed .portal-nav-disabled {
+                justify-content: center;
+                padding: 0;
+            }
+
+            .sidebar-collapsed .portal-nav-link i,
+            .sidebar-collapsed .portal-nav-disabled i {
+                font-size: 17px;
+            }
+
+            .sidebar-collapsed .portal-sidebar-bottom {
+                padding-inline: 10px;
+            }
+
+            .sidebar-collapsed .portal-profile {
+                justify-content: center;
+                padding: 8px 0;
+                background: transparent;
+            }
+
+            .sidebar-collapsed .portal-powered {
+                justify-content: center;
+                margin-inline: 0;
+            }
         }
 
         /* ---------- Tablet and mobile ---------- */
         @media (max-width: 960px) {
-            .portal-sidebar { width: min(300px, calc(100vw - 52px)); transform: translateX(-105%); box-shadow: none; }
-            .portal-shell.sidebar-open .portal-sidebar { transform: translateX(0); box-shadow: 0 0 50px rgba(20, 14, 60, .4); }
-            .portal-main { margin-left: 0; }
-            .portal-menu-button { display: inline-flex; }
-            .portal-toggle { display: none; }
-            .portal-close { display: inline-flex; }
-            .portal-topbar { padding: 0 18px; }
-            .portal-content { padding: 24px 18px; }
-            .portal-footer { padding: 16px 18px; }
+            .portal-sidebar {
+                width: min(300px, calc(100vw - 52px));
+                transform: translateX(-105%);
+                box-shadow: none;
+            }
+
+            .portal-shell.sidebar-open .portal-sidebar {
+                transform: translateX(0);
+                box-shadow: 0 0 50px rgba(20, 14, 60, .4);
+            }
+
+            .portal-main {
+                margin-left: 0;
+            }
+
+            .portal-menu-button {
+                display: inline-flex;
+            }
+
+            .portal-toggle {
+                display: none;
+            }
+
+            .portal-close {
+                display: inline-flex;
+            }
+
+            .portal-topbar {
+                padding: 0 18px;
+            }
+
+            .portal-content {
+                padding: 24px 18px;
+            }
+
+            .portal-footer {
+                padding: 16px 18px;
+            }
         }
+
         @media (max-width: 700px) {
-            .portal-user-copy, .portal-user-chevron { display: none; }
-            .portal-user-menu summary { padding: 3px; }
-            .portal-user-popover { right: 0; width: min(290px, calc(100vw - 24px)); }
+
+            .portal-user-copy,
+            .portal-user-chevron {
+                display: none;
+            }
+
+            .portal-user-menu summary {
+                padding: 3px;
+            }
+
+            .portal-user-popover {
+                right: 0;
+                width: min(290px, calc(100vw - 24px));
+            }
         }
+
         @media (max-width: 359px) {
-            .portal-user-popover { width: min(290px, calc(100vw - 48px)); }
+            .portal-user-popover {
+                width: min(290px, calc(100vw - 48px));
+            }
         }
+
         @media (max-width: 560px) {
-            .portal-year { display: none; }
-            .portal-topbar { gap: 10px; }
-            .portal-topbar-start { gap: 10px; }
-            .portal-school-icon { display: none; }
-            .portal-school { flex: 1 1 0; }
-            .portal-school-name { max-width: 100%; }
-            .portal-topbar-end, .portal-user-menu, .portal-user-menu summary, .portal-avatar { flex-shrink: 0; }
-            .portal-content { padding: 20px 14px; }
-            .portal-footer { padding: 16px 14px; }
+            .portal-year {
+                display: none;
+            }
+
+            .portal-topbar {
+                gap: 10px;
+            }
+
+            .portal-topbar-start {
+                gap: 10px;
+            }
+
+            .portal-school-icon {
+                display: none;
+            }
+
+            .portal-school {
+                flex: 1 1 0;
+            }
+
+            .portal-school-name {
+                max-width: 100%;
+            }
+
+            .portal-topbar-end,
+            .portal-user-menu,
+            .portal-user-menu summary,
+            .portal-avatar {
+                flex-shrink: 0;
+            }
+
+            .portal-content {
+                padding: 20px 14px;
+            }
+
+            .portal-footer {
+                padding: 16px 14px;
+            }
         }
+
         @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+
+            *,
+            *::before,
+            *::after {
+                scroll-behavior: auto !important;
+                transition-duration: .01ms !important;
+            }
         }
     </style>
     @stack('styles')
@@ -406,102 +882,82 @@
 
 <body>
     @php
-        $brandSchool = ($school ?? null) ?: auth()->user()->school;
-        $brandLogoFallback = asset('logo/schoolgear-logo.png');
+        $brandSchool = $school ?? null ?: auth()->user()->school;
+        $brandLogoFallback = asset('logo/Schoolgear1.jpeg');
         $brandName = $brandSchool
-            ? ($brandSchool->display_short_name ?? $brandSchool->short_name ?? $brandSchool->school_name ?? 'SchoolGear Liberia')
+            ? $brandSchool->display_short_name ??
+                ($brandSchool->short_name ?? ($brandSchool->school_name ?? 'SchoolGear Liberia'))
             : 'SchoolGear Liberia';
-        $profileImage = $student->image ?? $user->image ?? null;
+        $profileImage = $student->image ?? ($user->image ?? null);
         $nameParts = array_slice(array_filter(explode(' ', trim($user->name))), 0, 2);
-        $userInitials = collect($nameParts)->map(fn ($part) => strtoupper(substr($part, 0, 1)))->implode('');
+        $userInitials = collect($nameParts)->map(fn($part) => strtoupper(substr($part, 0, 1)))->implode('');
     @endphp
-    <div
-        class="portal-shell"
-        x-data="{
-            sidebarCollapsed: false,
-            mobileOpen: false,
-            initSidebar() {
-                try {
-                    this.sidebarCollapsed = localStorage.getItem('schoolgearPortalSidebarCollapsed') === 'true';
-                } catch (error) {}
-            },
-            toggleSidebar() {
-                this.sidebarCollapsed = !this.sidebarCollapsed;
-                try {
-                    localStorage.setItem('schoolgearPortalSidebarCollapsed', this.sidebarCollapsed);
-                } catch (error) {}
-            }
-        }"
-        x-init="initSidebar()"
+    <div class="portal-shell" x-data="{
+        sidebarCollapsed: false,
+        mobileOpen: false,
+        initSidebar() {
+            try {
+                this.sidebarCollapsed = localStorage.getItem('schoolgearPortalSidebarCollapsed') === 'true';
+            } catch (error) {}
+        },
+        toggleSidebar() {
+            this.sidebarCollapsed = !this.sidebarCollapsed;
+            try {
+                localStorage.setItem('schoolgearPortalSidebarCollapsed', this.sidebarCollapsed);
+            } catch (error) {}
+        }
+    }" x-init="initSidebar()"
         x-effect="document.body.style.overflow = mobileOpen ? 'hidden' : ''"
         :class="{ 'sidebar-collapsed': sidebarCollapsed, 'sidebar-open': mobileOpen }"
-        @keydown.escape.window="mobileOpen = false"
-    >
-        <button
-            type="button"
-            class="portal-overlay"
-            x-cloak
-            x-show="mobileOpen"
-            @click="mobileOpen = false"
-            aria-label="Close navigation menu"
-        ></button>
+        @keydown.escape.window="mobileOpen = false">
+        <button type="button" class="portal-overlay" x-cloak x-show="mobileOpen" @click="mobileOpen = false"
+            aria-label="Close navigation menu"></button>
 
         {{-- ================= Sidebar ================= --}}
         <aside id="portal-navigation" class="portal-sidebar" aria-label="Main navigation">
             <div class="portal-brand">
                 <a class="portal-brand-link" href="{{ route('student.dashboard') }}" @click="mobileOpen = false">
-                    <img
-                        src="{{ $brandSchool && $brandSchool->logo ? asset('storage/'.$brandSchool->logo) : $brandLogoFallback }}"
+                    <img src="{{ $brandSchool && $brandSchool->logo ? asset('storage/' . $brandSchool->logo) : $brandLogoFallback }}"
                         alt="{{ $brandSchool->school_name ?? 'SchoolGear Liberia' }}"
                         title="{{ $brandSchool->school_name ?? 'SchoolGear Liberia' }}"
-                        onerror="this.onerror=null;this.src='{{ $brandLogoFallback }}'"
-                    >
+                        onerror="this.onerror=null;this.src='{{ $brandLogoFallback }}'">
                     <span class="portal-brand-copy">
-                        <span class="portal-brand-name" title="{{ $brandSchool->school_name ?? 'SchoolGear Liberia' }}">{{ $brandName }}</span>
+                        <span class="portal-brand-name"
+                            title="{{ $brandSchool->school_name ?? 'SchoolGear Liberia' }}">{{ $brandName }}</span>
                         <span class="portal-brand-caption">Learning portal</span>
                     </span>
                 </a>
-                <button type="button" class="portal-close" @click="mobileOpen = false" aria-label="Close navigation menu">
+                <button type="button" class="portal-close" @click="mobileOpen = false"
+                    aria-label="Close navigation menu">
                     <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                 </button>
             </div>
 
             <nav class="portal-nav" aria-label="Portal sections">
-                <a
-                    href="{{ route('student.dashboard') }}"
+                <a href="{{ route('student.dashboard') }}"
                     class="portal-nav-link {{ request()->routeIs('student.dashboard') ? 'is-active' : '' }}"
-                    @if(request()->routeIs('student.dashboard')) aria-current="page" @endif
-                    title="Dashboard"
-                    @click="mobileOpen = false"
-                >
+                    @if (request()->routeIs('student.dashboard')) aria-current="page" @endif title="Dashboard"
+                    @click="mobileOpen = false">
                     <i class="fa-solid fa-house" aria-hidden="true"></i>
                     <span class="portal-nav-label">Dashboard</span>
                 </a>
-                <a
-                    href="{{ route('student.grades') }}"
+                <a href="{{ route('student.grades') }}"
                     class="portal-nav-link {{ request()->routeIs('student.grades') ? 'is-active' : '' }}"
-                    @if(request()->routeIs('student.grades')) aria-current="page" @endif
-                    title="Grades"
-                    @click="mobileOpen = false"
-                >
+                    @if (request()->routeIs('student.grades')) aria-current="page" @endif title="Grades"
+                    @click="mobileOpen = false">
                     <i class="fa-solid fa-chart-column" aria-hidden="true"></i>
                     <span class="portal-nav-label">Grades</span>
                 </a>
-                <a
-                    href="{{ route('student.attendance') }}"
+                <a href="{{ route('student.attendance') }}"
                     class="portal-nav-link {{ request()->routeIs('student.attendance') ? 'is-active' : '' }}"
-                    @if(request()->routeIs('student.attendance')) aria-current="page" @endif
-                    title="Attendance"
-                    @click="mobileOpen = false"
-                >
+                    @if (request()->routeIs('student.attendance')) aria-current="page" @endif title="Attendance"
+                    @click="mobileOpen = false">
                     <i class="fa-solid fa-calendar-check" aria-hidden="true"></i>
                     <span class="portal-nav-label">Attendance</span>
                 </a>
-                @foreach([
-                    ['label' => 'Fees', 'icon' => 'fa-wallet'],
-                    ['label' => 'Announcements', 'icon' => 'fa-bullhorn'],
-                ] as $item)
-                    <button type="button" class="portal-nav-disabled" disabled aria-disabled="true" title="{{ $item['label'] }} coming soon">
+                @foreach ([['label' => 'Fees', 'icon' => 'fa-wallet'], ['label' => 'Announcements', 'icon' => 'fa-bullhorn']] as $item)
+                    <button type="button" class="portal-nav-disabled" disabled aria-disabled="true"
+                        title="{{ $item['label'] }} coming soon">
                         <i class="fa-solid {{ $item['icon'] }}" aria-hidden="true"></i>
                         <span class="portal-nav-label">{{ $item['label'] }}</span>
                         <span class="portal-soon">Soon</span>
@@ -512,13 +968,12 @@
             <div class="portal-sidebar-bottom">
                 <a href="{{ route('student.profile') }}"
                     class="portal-profile portal-profile-link {{ request()->routeIs('student.profile') ? 'is-active' : '' }}"
-                    @if(request()->routeIs('student.profile')) aria-current="page" @endif
-                    title="My profile"
-                    @click="mobileOpen = false"
-                >
+                    @if (request()->routeIs('student.profile')) aria-current="page" @endif title="My profile"
+                    @click="mobileOpen = false">
                     <span class="portal-avatar portal-avatar--ring" title="{{ $user->name }}">
-                        @if($profileImage)
-                            <img src="{{ asset('storage/'.$profileImage) }}" alt="" onerror="this.hidden=true; this.nextElementSibling.hidden=false">
+                        @if ($profileImage)
+                            <img src="{{ asset('storage/' . $profileImage) }}" alt=""
+                                onerror="this.hidden=true; this.nextElementSibling.hidden=false">
                             <span hidden>{{ $userInitials ?: '?' }}</span>
                         @else
                             {{ $userInitials ?: '?' }}
@@ -540,28 +995,22 @@
         <div class="portal-main">
             <header class="portal-topbar">
                 <div class="portal-topbar-start">
-                    <button
-                        type="button"
-                        class="portal-menu-button"
-                        @click="mobileOpen = true"
-                        aria-label="Open navigation menu"
-                        aria-controls="portal-navigation"
-                        :aria-expanded="mobileOpen.toString()"
-                    >
+                    <button type="button" class="portal-menu-button" @click="mobileOpen = true"
+                        aria-label="Open navigation menu" aria-controls="portal-navigation"
+                        :aria-expanded="mobileOpen.toString()">
                         <i class="fa-solid fa-bars" aria-hidden="true"></i>
                     </button>
-                    <button
-                        type="button"
-                        class="portal-toggle"
-                        @click="toggleSidebar()"
+                    <button type="button" class="portal-toggle" @click="toggleSidebar()"
                         :aria-expanded="(!sidebarCollapsed).toString()"
-                        :aria-label="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'"
-                        title="Toggle sidebar"
-                    >
+                        :aria-label="sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'" title="Toggle sidebar">
                         <i class="fa-solid fa-angles-left" aria-hidden="true"></i>
                     </button>
                     <div class="portal-school">
-                        <span class="portal-school-icon"><i class="fa-solid fa-school" aria-hidden="true"></i></span>
+                        <span class="portal-school-icon">
+                            <img src="{{ $brandSchool && $brandSchool->logo ? asset('storage/' . $brandSchool->logo) : $brandLogoFallback }}"
+                                alt="{{ $brandSchool->school_name ?? 'SchoolGear Liberia' }}"
+                                onerror="this.onerror=null;this.src='{{ $brandLogoFallback }}'">
+                        </span>
                         <div class="portal-school-copy">
                             <span class="portal-school-name">{{ $school->school_name ?? 'School' }}</span>
                             <span class="portal-page-name">@yield('title', 'Learning Portal')</span>
@@ -570,23 +1019,20 @@
                 </div>
 
                 <div class="portal-topbar-end">
-                    @if($academicYear ?? null)
+                    @if ($academicYear ?? null)
                         <span class="portal-year" title="Academic year">
                             <i class="fa-regular fa-calendar" aria-hidden="true"></i>
                             {{ $academicYear->name }}
                         </span>
                     @endif
 
-                    <details
-                        class="portal-user-menu"
-                        x-data
-                        @click.outside="$el.removeAttribute('open')"
-                        @keydown.escape="$el.removeAttribute('open')"
-                    >
+                    <details class="portal-user-menu" x-data @click.outside="$el.removeAttribute('open')"
+                        @keydown.escape="$el.removeAttribute('open')">
                         <summary aria-label="Open user menu">
                             <span class="portal-avatar">
-                                @if($profileImage)
-                                    <img src="{{ asset('storage/'.$profileImage) }}" alt="" onerror="this.hidden=true; this.nextElementSibling.hidden=false">
+                                @if ($profileImage)
+                                    <img src="{{ asset('storage/' . $profileImage) }}" alt=""
+                                        onerror="this.hidden=true; this.nextElementSibling.hidden=false">
                                     <span hidden>{{ $userInitials ?: '?' }}</span>
                                 @else
                                     {{ $userInitials ?: '?' }}
@@ -601,8 +1047,9 @@
                         <div class="portal-user-popover">
                             <div class="portal-popover-head">
                                 <span class="portal-avatar portal-avatar--lg">
-                                    @if($profileImage)
-                                        <img src="{{ asset('storage/'.$profileImage) }}" alt="" onerror="this.hidden=true; this.nextElementSibling.hidden=false">
+                                    @if ($profileImage)
+                                        <img src="{{ asset('storage/' . $profileImage) }}" alt=""
+                                            onerror="this.hidden=true; this.nextElementSibling.hidden=false">
                                         <span hidden>{{ $userInitials ?: '?' }}</span>
                                     @else
                                         {{ $userInitials ?: '?' }}
@@ -617,7 +1064,8 @@
                                 <i class="fa-solid fa-school" aria-hidden="true"></i>
                                 <span>{{ $school->school_name ?? 'School' }}</span>
                             </div>
-                            <a href="{{ route('student.profile') }}" class="portal-profile-action" @click="$el.closest('details').removeAttribute('open')">
+                            <a href="{{ route('student.profile') }}" class="portal-profile-action"
+                                @click="$el.closest('details').removeAttribute('open')">
                                 <i class="fa-regular fa-user" aria-hidden="true"></i>
                                 My profile
                             </a>

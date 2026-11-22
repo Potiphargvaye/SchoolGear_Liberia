@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Page is light-only: stops mobile browsers applying forced/auto dark mode that would alter the design -->
+    <meta name="color-scheme" content="light">
     <meta name="robots" content="noindex, nofollow">
     <title>Sign In · SchoolGear</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -33,15 +35,26 @@
         }
     </script>
     <style>
+        /* RESPONSIVE: stop iOS/Android from rescaling text on rotate/focus */
+        html {
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
+        /* RESPONSIVE: was height:100%, which capped the gradient at one screen height and
+           made it tile/seam when the page was taller than the viewport (small phones,
+           keyboard open, landscape). min-height lets the gradient cover the full page. */
         html,
         body {
-            height: 100%;
+            min-height: 100%;
             margin: 0;
             overflow-x: hidden;
         }
 
         body {
             background: linear-gradient(135deg, #A78BFF 0%, #5B3DE0 45%, #3A2A99 100%);
+            background-color: #5B3DE0;
+            max-width: 100%;
         }
 
         .glass-card {
@@ -172,6 +185,86 @@
             position: relative;
             z-index: 10;
         }
+
+        /* =====================================================================
+           RESPONSIVE ADDITIONS (no visual changes at desktop size)
+           ===================================================================== */
+
+        /* Use the *small* viewport height so the layout does not jump/re-centre when
+           the mobile address bar collapses or the on-screen keyboard opens.
+           100vh stays as the fallback for browsers without svh support. */
+        .login-shell.login-shell {
+            min-height: 100vh;
+            min-height: 100svh;
+        }
+
+        /* Grid children may shrink instead of forcing the card wider than the screen */
+        .login-shell .grid>* {
+            min-width: 0;
+        }
+
+        /* Long words / emails / translated text can never push the layout sideways */
+        .login-shell h1,
+        .login-shell h2,
+        .login-shell p {
+            overflow-wrap: anywhere;
+        }
+
+        /* Images and SVGs never exceed their container */
+        .login-shell img,
+        .login-shell svg {
+            max-width: 100%;
+        }
+
+        /* PREVENT AUTO-ZOOM ON FOCUS: iOS Safari zooms any field whose font-size is
+           below 16px. Applied on all phones/tablets (narrow or touch devices);
+           desktop keeps the original text-sm (14px). */
+        @media (max-width: 1023px),
+        (pointer: coarse) {
+
+            .login-shell #credential,
+            .login-shell #password {
+                font-size: 16px !important;
+                line-height: 1.5;
+            }
+
+            /* Comfortable tap targets */
+            .login-shell #submitBtn {
+                min-height: 48px;
+            }
+
+            .login-shell .account-tab {
+                min-height: 40px;
+            }
+
+            .login-shell #togglePassword {
+                min-width: 44px;
+                justify-content: center;
+            }
+        }
+
+        /* Smaller phones: keep the soft background blobs from dominating */
+        @media (max-width: 480px) {
+            .blob {
+                filter: blur(48px);
+                max-width: 70vw;
+                max-height: 70vw;
+            }
+        }
+
+        /* Very narrow phones (≤360px, e.g. small Android / iPhone SE) */
+        @media (max-width: 360px) {
+            .login-shell h1 {
+                font-size: 1.25rem;
+            }
+        }
+
+        /* Short landscape phones: trim vertical padding so the card is not needlessly tall */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .login-shell.login-shell {
+                align-items: flex-start;
+            }
+        }
     </style>
 </head>
 
@@ -187,13 +280,14 @@
     <!-- Floating education icons — sit on the page background, behind the card -->
     <div id="floatingIcons" class="fixed inset-0 overflow-hidden pointer-events-none"></div>
 
-    <div class="login-shell relative min-h-screen w-full flex items-center justify-center px-4 py-8 lg:py-0">
+    <div
+        class="login-shell relative min-h-screen w-full flex items-center justify-center px-3 py-4 sm:px-4 sm:py-8 lg:py-6">
 
         <div
             class="relative w-full max-w-5xl mx-auto rounded-3xl overflow-hidden shadow-2xl grid grid-cols-1 lg:grid-cols-2 bg-white/5">
 
             <!-- ============ LEFT PANEL — BRANDING ============ -->
-            <div class="left-panel relative flex flex-col px-8 py-10 lg:py-12 lg:px-10 auth-card"
+            <div class="left-panel relative flex flex-col px-5 py-8 sm:px-8 sm:py-10 lg:py-12 lg:px-10 auth-card"
                 style="background: linear-gradient(160deg, #3A2A99 0%, #5B3DE0 55%, #38BDF8 140%);">
 
                 <a href="{{ url('/') }}"
@@ -213,7 +307,7 @@
                         <img src="{{ asset('logo/Schoolgear1.jpeg') }}" alt="SchoolGear Logo"
                             class="h-full w-full object-contain">
 
-                    </div> 
+                    </div>
                     <h1 class="text-white text-2xl lg:text-[26px] font-bold tracking-tight">Welcome to SchoolGear
                         Liberia</h1>
                     <p class="text-white/70 text-sm mt-1 font-medium tracking-wide">School Management System</p>
@@ -279,7 +373,9 @@
             </div>
 
             <!-- ============ RIGHT PANEL — AUTH FORM ============ -->
-            <div class="relative bg-white px-8 py-10 lg:py-12 lg:px-10 flex flex-col justify-center auth-card">
+            <!-- pb-16 on small screens keeps the footer clear of the fixed WhatsApp button -->
+            <div
+                class="relative bg-white px-5 pt-8 pb-16 sm:px-8 sm:pt-10 sm:pb-16 lg:py-12 lg:px-10 flex flex-col justify-center auth-card">
 
                 <div class="w-full max-w-sm mx-auto">
                     <h2 class="text-2xl font-bold text-sg-primaryDark">Sign In</h2>
@@ -370,7 +466,7 @@
                         </div>
 
                         <!-- Remember + Forgot -->
-                        <div class="flex items-center justify-between text-sm">
+                        <div class="flex items-center justify-between flex-wrap gap-x-4 gap-y-2 text-sm">
                             <label class="flex items-center gap-2 text-slate-600 select-none cursor-pointer">
                                 <input type="checkbox" name="remember"
                                     class="rounded border-slate-300 text-sg-primary focus:ring-sg-sky">
@@ -384,7 +480,7 @@
                         <button type="submit" id="submitBtn"
                             class="btn-signin w-full rounded-lg text-white font-semibold py-3 text-sm flex items-center justify-center gap-2 shadow-lg shadow-sg-primary/20">
                             <span id="btnText" class="flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20"
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 20 20"
                                     fill="currentColor">
                                     <path fill-rule="evenodd"
                                         d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V7.414a1 1 0 00-.293-.707L10.293 2.293A1 1 0 009.586 2H3zm7 6a1 1 0 011 1v.01a1 1 0 11-2 0V10a1 1 0 011-1zm-4 4a1 1 0 100 2h8a1 1 0 100-2H6z"

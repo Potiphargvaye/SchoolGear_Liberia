@@ -55,6 +55,8 @@ class PermissionSeeder extends Seeder
             'enter student grades',
             'edit student grades',
             'lock & unlock grade submission',
+             'publish student grades',
+             'unpublish student grades',
 
             // Fees & Finance
             'view fees',

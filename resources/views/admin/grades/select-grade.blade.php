@@ -1,10 +1,10 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="min-w-0 max-w-7xl mx-auto w-full overflow-x-clip px-3 py-5 sm:px-6 sm:py-8 lg:px-8">
 
         <!-- Page Header -->
-        <div class="mb-8">
+        <div class="mb-6 sm:mb-8">
             <h1 class="text-3xl font-bold text-gray-800 flex items-center gap-3 ">
                 🎓 Student Grade Entry
             </h1>
@@ -17,15 +17,15 @@
         <!-- Security Notice -->
         <div class="mb-8">
 
-            <div class="flex items-start rounded-xl border-l-4 border-amber-500 bg-amber-50 p-5 shadow-sm">
+            <div class="flex min-w-0 items-start rounded-xl border-l-4 border-amber-500 bg-amber-50 p-4 shadow-sm sm:p-5">
 
-                <div class="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-amber-500 text-white text-xl">
+                <div class="mr-3 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-amber-500 text-white text-xl sm:mr-4 sm:h-12 sm:w-12">
 
                     ⚠️
 
                 </div>
 
-                <div>
+                <div class="min-w-0">
 
                     <h3 class="text-lg font-semibold text-amber-900">
                         Grade Entry Security Notice
@@ -48,11 +48,11 @@
 
         <!-- Main Card -->
 
-        <div class="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+        <div class="min-w-0 overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-lg">
 
             <!-- Card Header -->
 
-            <div class="border-b bg-gray-50 px-6 py-5">
+            <div class="border-b bg-gray-50 px-4 py-4 sm:px-6 sm:py-5">
 
                 <h2 class="text-xl font-semibold text-gray-800 flex items-center gap-2">
 
@@ -74,19 +74,19 @@
 
             <!-- Card Body -->
 
-            <div class="p-6">
+            <div class="min-w-0 p-4 sm:p-6">
 
                 <form id="gradeForm" action="{{ route('grades.load') }}" method="GET">
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="grid min-w-0 grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5 lg:gap-6">
 
                         <!-- Academic Year -->
-                        <div>
+                        <div class="min-w-0">
                             <label class="block text-sm font-semibold text-gray-700 mb-2">
                                 Academic Year
                             </label>
                             <select name="academic_year_id" required
-                                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition">
+                                class="min-h-11 w-full min-w-0 rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition">
                                 <option value="">Choose Academic Year</option>
                                 @foreach ($academicYears as $year)
                                     <option value="{{ $year->id }}">{{ $year->name }}</option>
@@ -95,12 +95,12 @@
                         </div>
 
                         <!-- Grade Level -->
-                        <div>
+                        <div class="min-w-0">
                             <label class="block text-sm font-semibold text-gray-700 mb-2">
                                 Grade Level
                             </label>
                             <select name="grade_id" required
-                                class="w-full rounded-xl border border-gray-300 bg-white px-4 py-3 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition">
+                                class="min-h-11 w-full min-w-0 rounded-xl border border-gray-300 bg-white px-3 py-2.5 text-base focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition">
                                 <option value="">Choose Grade Level</option>
                                 @foreach ($grades as $grade)
                                     <option value="{{ $grade->id }}">
@@ -120,7 +120,7 @@
                     <div class="flex flex-col sm:flex-row sm:justify-end">
 
                         <button id="loadBtn" type="submit"
-                            class="inline-flex items-center justify-center rounded-xl bg-blue-600 px-8 py-3 text-white font-semibold shadow-md transition duration-300 hover:bg-blue-700 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-200">
+                            class="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-blue-600 px-6 py-2.5 text-white font-semibold shadow-md transition duration-300 hover:bg-blue-700 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-blue-200 sm:w-auto sm:px-8">
 
                             <!-- Spinner (hidden by default) -->
                             <svg id="btnSpinner" class="hidden w-5 h-5 mr-2 animate-spin" fill="none"
