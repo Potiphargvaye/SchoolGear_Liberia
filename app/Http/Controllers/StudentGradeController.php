@@ -8,14 +8,28 @@ use App\Models\Enrollment;
 use App\Models\Grade;
 use App\Models\GradeAudit;
 use App\Models\GradeLock;
+use App\Models\GradePublication;
+use App\Models\GradePublicationAudit;
 use App\Models\StudentGrade;
 use Illuminate\Http\Request;
 use App\Exports\GradeSheetExport;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class StudentGradeController extends Controller
 {
+    private const GRADE_SLOT_COLUMNS = [
+        'p1' => 'period1',
+        'p2' => 'period2',
+        'p3' => 'period3',
+        'exam1' => 'exam1',
+        'p4' => 'period4',
+        'p5' => 'period5',
+        'p6' => 'period6',
+        'exam2' => 'exam2',
+    ];
+
     protected function currentSchoolId(): ?int
     {
         return auth()->user()->school_id;
@@ -114,6 +128,12 @@ class StudentGradeController extends Controller
                 return $grade->enrollment_id . '-' . $grade->academic_subject_id;
             });
 
+        $gradePublications = GradePublication::where([
+            'school_id' => $schoolId,
+            'grade_id' => $gradeId,
+            'academic_year_id' => $academicYearId,
+        ])->with(['publisher', 'unpublisher'])->get()->keyBy('slot');
+
         // Full academic-year list (not just active) so the in-page filter
         // can switch between any year without returning to the selection screen.
         $allAcademicYears = AcademicYear::where('school_id', $schoolId)
@@ -125,6 +145,8 @@ class StudentGradeController extends Controller
             ? $user->teacherGrades()->orderBy('grades.level')->get()
             : Grade::orderBy('level')->get();
 
+        $publicationSlots = GradePublication::SLOT_LABELS;
+
         return view('admin.grades.grade-entry', compact(
             'enrollments',
             'subjects',
@@ -134,8 +156,128 @@ class StudentGradeController extends Controller
             'allAcademicYears',
             'allGrades',
             'sem1Locked',
-            'sem2Locked'
+            'sem2Locked',
+            'gradePublications',
+            'publicationSlots'
         ));
+    }
+
+    public function publish(Request $request)
+    {
+        return $this->setPublicationState($request, true);
+    }
+
+    public function unpublish(Request $request)
+    {
+        return $this->setPublicationState($request, false);
+    }
+
+    protected function setPublicationState(Request $request, bool $publish)
+    {
+        $permission = $publish ? 'publish student grades' : 'unpublish student grades';
+        abort_unless(auth()->user()->can($permission), 403);
+
+        $user = auth()->user();
+        $schoolId = $user->school_id;
+        if ($schoolId === null) {
+            return back()->with('error', 'A school account is required to publish or unpublish grades.');
+        }
+
+        $validated = $request->validate([
+            'grade_id' => ['required', 'integer'],
+            'academic_year_id' => ['required', 'integer'],
+            'slot' => ['required', 'string', 'in:' . implode(',', GradePublication::SLOTS)],
+        ]);
+
+        $gradeId = (int) $validated['grade_id'];
+        $academicYearId = (int) $validated['academic_year_id'];
+        $slot = $validated['slot'];
+        $gradeColumn = self::GRADE_SLOT_COLUMNS[$slot];
+
+        $academicYear = AcademicYear::where('school_id', $schoolId)->findOrFail($academicYearId);
+        $grade = Grade::findOrFail($gradeId);
+
+        $enrollmentIds = Enrollment::where('school_id', $schoolId)
+            ->where('grade_id', $gradeId)
+            ->where('academic_year_id', $academicYearId)
+            ->where('status', 'active')
+            ->pluck('id');
+
+        abort_if($enrollmentIds->isEmpty(), 404, 'No enrollments were found for this school, grade, and academic year.');
+
+        if ($publish) {
+            $hasValues = StudentGrade::where('school_id', $schoolId)
+                ->whereIn('enrollment_id', $enrollmentIds)
+                ->whereNotNull($gradeColumn)
+                ->exists();
+
+            if (! $hasValues) {
+                return redirect()->route('grades.load', [
+                    'grade_id' => $gradeId,
+                    'academic_year_id' => $academicYearId,
+                ])->with('error', 'No grades have been entered for this slot, so it cannot be published.');
+            }
+        }
+
+        $publicationKey = [
+            'school_id' => $schoolId,
+            'grade_id' => $gradeId,
+            'academic_year_id' => $academicYearId,
+            'slot' => $slot,
+        ];
+
+        $changed = DB::transaction(function () use ($publish, $user, $schoolId, $slot, $enrollmentIds, $publicationKey) {
+            $publication = GradePublication::where($publicationKey)->lockForUpdate()->first();
+
+            if ($publish) {
+                if ($publication && $publication->isPublished()) {
+                    return false;
+                }
+
+                $publication ??= new GradePublication($publicationKey);
+                $publication->fill([
+                    'published_at' => now(),
+                    'published_by' => $user->id,
+                    'unpublished_at' => null,
+                    'unpublished_by' => null,
+                ])->save();
+
+                GradePublicationAudit::create([
+                    ...$publicationKey,
+                    'action' => 'published',
+                    'performed_by' => $user->id,
+                    'performed_at' => now(),
+                ]);
+
+                return true;
+            }
+
+            if (! $publication || ! $publication->isPublished()) {
+                return false;
+            }
+
+            $publication->update([
+                'unpublished_at' => now(),
+                'unpublished_by' => $user->id,
+            ]);
+
+            GradePublicationAudit::create([
+                ...$publicationKey,
+                'action' => 'unpublished',
+                'performed_by' => $user->id,
+                'performed_at' => now(),
+            ]);
+
+            return true;
+        });
+
+        $slotLabel = GradePublication::SLOT_LABELS[$slot];
+        $gradeLabel = $grade->level . ($grade->section ? ' - ' . $grade->section : '');
+        $message = $publish
+            ? ($changed ? "{$slotLabel} published for {$gradeLabel} ({$academicYear->name})." : "{$slotLabel} is already published for {$gradeLabel} ({$academicYear->name}).")
+            : ($changed ? "{$slotLabel} unpublished for {$gradeLabel} ({$academicYear->name})." : "{$slotLabel} is already unpublished for {$gradeLabel} ({$academicYear->name}).");
+
+        return back()->with($changed ? 'success' : 'error', $message);
     }
 
     public function store(Request $request)

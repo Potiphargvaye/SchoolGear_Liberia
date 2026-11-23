@@ -284,7 +284,7 @@
             'fair' => '70 to 79, fair',
             'good' => '80 to 89, good',
             'excellent' => '90 and above, excellent',
-            'none' => 'not recorded',
+            'none' => 'not published',
         ];
 
         // Summary is based on the last column shown (the period score, or the average for semester and yearly views).
@@ -347,8 +347,8 @@
             @if($grades->isEmpty())
                 <div class="grades-empty">
                     <span class="grades-empty-icon"><i class="fa-solid fa-book-open" aria-hidden="true"></i></span>
-                    <h2>No grades have been entered yet</h2>
-                    <p>Grades will appear here after they have been recorded for your current enrollment.</p>
+                    <h2>No grades have been published for you yet.</h2>
+                    <p>Published grades will appear here for your current enrollment.</p>
                 </div>
             @else
                 <div class="grades-summary">
@@ -373,7 +373,7 @@
                     <span class="legend-item" role="listitem"><span class="score score--fair">70-79</span>Fair</span>
                     <span class="legend-item" role="listitem"><span class="score score--good">80-89</span>Good</span>
                     <span class="legend-item" role="listitem"><span class="score score--excellent">90-100</span>Excellent</span>
-                    <span class="legend-item" role="listitem"><span class="score score--none">N/R</span>Not recorded</span>
+                    <span class="legend-item" role="listitem"><span class="score score--none">-</span>Not published</span>
                 </div>
 
                 <div class="grades-table-wrap">
@@ -395,7 +395,7 @@
                                         @php($score = data_get($grade, $column['field']))
                                         @php($band = $scoreBand($score))
                                         <td class="{{ !empty($column['average']) ? 'is-average' : '' }}">
-                                            <span class="score score--{{ $band }}">{{ $score === null ? 'N/R' : $score }}<span class="sr-only"> ({{ $bandHint[$band] }})</span></span>
+                                            <span class="score score--{{ $band }}">{{ $score === null ? '-' : $score }}<span class="sr-only"> ({{ $bandHint[$band] }})</span></span>
                                         </td>
                                     @endforeach
                                 </tr>
@@ -411,7 +411,7 @@
                         <article class="grade-card {{ $focusBand === 'poor' ? 'is-poor' : '' }}">
                             <div class="grade-card-head">
                                 <h3 class="grade-card-name">{{ $grade->subject->name ?? '—' }}</h3>
-                                <span class="score score--{{ $focusBand }}">{{ $focusScore === null ? 'N/R' : $focusScore }}<span class="sr-only"> ({{ $bandHint[$focusBand] }})</span></span>
+                                <span class="score score--{{ $focusBand }}">{{ $focusScore === null ? '-' : $focusScore }}<span class="sr-only"> ({{ $bandHint[$focusBand] }})</span></span>
                             </div>
                             <div class="grade-tiles">
                                 @foreach($scoreColumns as $column)
@@ -419,7 +419,7 @@
                                     @php($band = $scoreBand($score))
                                     <div class="grade-tile grade-tile--{{ $band }} {{ !empty($column['average']) ? 'is-average' : '' }}">
                                         <span class="grade-tile-label">{{ $column['label'] }}</span>
-                                        <span class="grade-tile-value">{{ $score === null ? 'N/R' : $score }}<span class="sr-only"> ({{ $bandHint[$band] }})</span></span>
+                                        <span class="grade-tile-value">{{ $score === null ? '-' : $score }}<span class="sr-only"> ({{ $bandHint[$band] }})</span></span>
                                     </div>
                                 @endforeach
                             </div>

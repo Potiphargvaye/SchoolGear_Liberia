@@ -3,21 +3,21 @@
 @section('content')
     @include('partials.notifications') {{-- ✅ CORRECT PLACE --}}
 
-    <div class="container-fluid px-2 sm:px-4 md:px-6 lg:px-8">
+    <div class="container-fluid min-w-0 max-w-full overflow-x-clip px-2 py-2 sm:px-4 md:px-6 lg:px-8">
 
-        <div class="card-header bg-transparent flex flex-wrap items-center justify-between gap-3">
-            <button class="bg-[#25D366] text-white px-3 py-2 hover:bg-[#1ebe5d] rounded text-xs font-bold cursor-default">
+        <div class="card-header flex min-w-0 flex-col gap-3 bg-transparent lg:flex-row lg:items-center lg:justify-between">
+            <button class="w-full rounded bg-[#25D366] px-3 py-2 text-left text-xs font-bold text-white hover:bg-[#1ebe5d] cursor-default sm:w-auto">
                 Grade Entry - {{ $grade->level }}{{ $grade->section ? ' - ' . $grade->section : '' }}
                 ({{ $academicYear->name }})
             </button>
 
-            <div class="flex flex-wrap items-center gap-3">
+            <div class="grid min-w-0 grid-cols-1 gap-3 sm:grid-cols-2 lg:flex lg:items-center">
 
                 <!-- Grade filter -->
-                <div class="flex items-center gap-2">
-                    <label class="text-xs font-semibold text-gray-600">Grade:</label>
+                <div class="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
+                    <label class="shrink-0 text-xs font-semibold text-gray-600">Grade:</label>
                     <select id="gradeFilter"
-                        class="border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+                        class="min-h-11 w-full min-w-0 rounded border px-3 py-2.5 text-base focus:outline-none focus:ring-1 focus:ring-gray-400 sm:flex-1"
                         onchange="window.location.href = '{{ route('grades.load') }}?grade_id=' + this.value + '&academic_year_id={{ $academicYear->id }}';">
                         @foreach ($allGrades as $g)
                             <option value="{{ $g->id }}" {{ $g->id === $grade->id ? 'selected' : '' }}>
@@ -28,10 +28,10 @@
                 </div>
 
                 <!-- Academic Year filter -->
-                <div class="flex items-center gap-2">
-                    <label class="text-xs font-semibold text-gray-600">Academic Year:</label>
+                <div class="flex min-w-0 flex-col gap-1 sm:flex-row sm:items-center sm:gap-2">
+                    <label class="shrink-0 text-xs font-semibold text-gray-600">Academic Year:</label>
                     <select id="academicYearFilter"
-                        class="border rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+                        class="min-h-11 w-full min-w-0 rounded border px-3 py-2.5 text-base focus:outline-none focus:ring-1 focus:ring-gray-400 sm:flex-1"
                         onchange="window.location.href = '{{ route('grades.load') }}?grade_id={{ $grade->id }}&academic_year_id=' + this.value;">
                         @foreach ($allAcademicYears as $year)
                             <option value="{{ $year->id }}" {{ $year->id === $academicYear->id ? 'selected' : '' }}>
@@ -43,6 +43,114 @@
 
             </div>
         </div>
+
+        <section class="mb-4 rounded-lg border border-indigo-100 bg-indigo-50 p-4" aria-labelledby="grade-publication-heading">
+            <div class="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <div>
+                    <h2 id="grade-publication-heading" class="text-sm font-bold text-indigo-900">Student visibility</h2>
+                    <p class="mt-1 text-xs text-indigo-700">Publish individual grade-entry slots for students. This does not change admin views, exports, locks, or report cards.</p>
+                </div>
+            </div>
+
+            <div class="grid min-w-0 grid-cols-2 gap-2 sm:gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                @foreach ($publicationSlots as $slot => $slotLabel)
+                    @php
+                        $publication = $gradePublications->get($slot);
+                    @endphp
+                    @php
+                        $isPublished = $publication?->isPublished() ?? false;
+                    @endphp
+                    <div class="flex min-w-0 min-h-[68px] flex-col gap-1 rounded-lg border border-indigo-100 bg-white p-2.5 sm:p-3">
+                        <div class="flex min-w-0 items-start justify-between gap-2">
+                            <span class="min-w-0 truncate text-sm font-medium text-gray-800">{{ $slotLabel }}</span>
+                            @if ($isPublished)
+                                <span class="min-w-0 flex-1 text-right text-[10px] font-semibold leading-4 text-green-700">
+                                    <span class="inline-block max-w-full truncate rounded-full bg-green-100 px-1.5 py-0.5 text-[11px]">Published</span>
+                                    <span class="block whitespace-normal break-words font-normal text-gray-500">
+                                        Published on {{ $publication->published_at->format('M j, Y') }}
+                                        @if ($publication->publisher)
+                                            by {{ $publication->publisher->name }}
+                                        @endif
+                                    </span>
+                                </span>
+                            @else
+                                <span class="shrink-0 rounded-full bg-gray-100 px-1.5 py-0.5 text-[11px] font-semibold text-gray-500">Unpublished</span>
+                            @endif
+                        </div>
+
+                        @if ($isPublished)
+                            @can('unpublish student grades')
+                                <button type="button"
+                                    class="publication-trigger relative z-0 mt-auto h-8 min-h-0 w-auto self-start rounded-md border border-gray-400 bg-transparent px-3 py-1 text-xs font-semibold text-gray-700 before:absolute before:-inset-2 before:-z-10 before:content-[''] hover:bg-gray-100 dark:border-gray-500 dark:text-gray-200 dark:hover:bg-gray-700"
+                                    data-publication-action="{{ route('grades.unpublish') }}"
+                                    data-publication-state="unpublish"
+                                    data-publication-slot="{{ $slot }}"
+                                    data-publication-slot-label="{{ $slotLabel }}"
+                                    data-publication-grade-id="{{ $grade->id }}"
+                                    data-publication-academic-year-id="{{ $academicYear->id }}"
+                                    data-publication-school="{{ auth()->user()->school?->school_name ?? 'this school' }}"
+                                    data-publication-grade="{{ $grade->level }}{{ $grade->section ? ' - '.$grade->section : '' }}"
+                                    data-publication-academic-year="{{ $academicYear->name }}">
+                                    Unpublish
+                                </button>
+                            @endcan
+                        @else
+                            @can('publish student grades')
+                                <button type="button"
+                                    class="publication-trigger relative z-0 mt-auto h-8 min-h-0 w-auto self-start rounded-md bg-indigo-600 px-3 py-1 text-xs font-semibold text-white before:absolute before:-inset-2 before:-z-10 before:content-[''] hover:bg-indigo-700"
+                                    data-publication-action="{{ route('grades.publish') }}"
+                                    data-publication-state="publish"
+                                    data-publication-slot="{{ $slot }}"
+                                    data-publication-slot-label="{{ $slotLabel }}"
+                                    data-publication-grade-id="{{ $grade->id }}"
+                                    data-publication-academic-year-id="{{ $academicYear->id }}"
+                                    data-publication-school="{{ auth()->user()->school?->school_name ?? 'this school' }}"
+                                    data-publication-grade="{{ $grade->level }}{{ $grade->section ? ' - '.$grade->section : '' }}"
+                                    data-publication-academic-year="{{ $academicYear->name }}">
+                                    Publish
+                                </button>
+                            @endcan
+                        @endif
+                    </div>
+                @endforeach
+            </div>
+        </section>
+
+        <div id="gradePublicationModal" class="fixed inset-0 z-[60] hidden bg-black/50 p-3" role="dialog"
+            aria-modal="true" aria-labelledby="gradePublicationModalTitle">
+            <div class="flex min-h-full items-center justify-center">
+                <div id="gradePublicationModalContent"
+                    class="max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-lg border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-gray-800">
+                    <div class="flex items-center justify-between rounded-t-lg bg-indigo-700 px-4 py-3 text-white">
+                        <h2 id="gradePublicationModalTitle" class="text-base font-semibold">Confirm publication change</h2>
+                        <button type="button" id="closeGradePublicationModal"
+                            class="min-h-[44px] min-w-[44px] rounded text-2xl leading-none hover:bg-indigo-600"
+                            aria-label="Close confirmation">&times;</button>
+                    </div>
+                    <div class="space-y-3 p-4 text-sm text-gray-700 dark:text-gray-200">
+                        <p id="gradePublicationModalMessage"></p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">This changes student visibility only. Admin grades, exports, locks, audits, and report cards are not changed.</p>
+                    </div>
+                    <div class="flex flex-col-reverse gap-2 rounded-b-lg bg-gray-50 p-3 sm:flex-row sm:justify-end dark:bg-gray-900">
+                        <button type="button" id="cancelGradePublicationModal"
+                            class="min-h-[44px] rounded border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700">
+                            Cancel
+                        </button>
+                        <form id="gradePublicationConfirmForm" method="POST">
+                            @csrf
+                            <input type="hidden" name="grade_id" id="publicationConfirmGradeId">
+                            <input type="hidden" name="academic_year_id" id="publicationConfirmAcademicYearId">
+                            <input type="hidden" name="slot" id="publicationConfirmSlot">
+                            <button type="submit" id="confirmGradePublicationModal"
+                                class="min-h-[44px] w-full rounded bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-700 sm:w-auto">
+                                Confirm
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <form method="POST" action="{{ route('grades.store') }}" id="gradesForm">
             @csrf
             <input type="hidden" name="grades_json" id="grades_json">
@@ -55,10 +163,10 @@
 
                 <!-- Sticky Control Bar -->
                 <div
-                    class="sticky top-0 z-50 bg-white border-b shadow-sm px-3 py-2 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                    class="sticky top-0 z-50 flex min-w-0 flex-col gap-3 border-b bg-white px-3 py-3 shadow-sm lg:flex-row lg:items-center lg:justify-between">
 
                     <!-- LEFT SIDE: Semester Status -->
-                    <div class="text-sm font-semibold flex flex-wrap gap-3">
+                    <div class="flex min-w-0 flex-wrap gap-3 text-sm font-semibold">
                         <div>Semester 1:
                             @if ($sem1Locked)
                                 <span class="text-red-600">🔒 LOCKED</span>
@@ -76,16 +184,16 @@
                     </div>
 
                     <!-- RIGHT SIDE: Search + Buttons -->
-                    <div class="flex flex-wrap items-center gap-2">
+                    <div class="grid min-w-0 grid-cols-1 gap-2 sm:grid-cols-2 lg:flex lg:items-center">
 
                         <!-- Search Input -->
                         <input type="text" id="studentSearch" placeholder="Search student..."
-                            class="border rounded px-3 py-1 text-sm w-48 focus:outline-none focus:ring-1 focus:ring-gray-400">
+                            class="min-h-11 w-full min-w-0 rounded border px-3 py-2.5 text-base focus:outline-none focus:ring-1 focus:ring-gray-400 sm:col-span-2 lg:w-48">
 
                         <!-- Lock/Unlock Button. -->
                         @can('lock & unlock grade submission')
                             <button type="button"
-                                class="bg-red-600 text-white px-3 py-1 rounded shadow hover:bg-red-700 text-sm"
+                                class="min-h-11 w-full rounded bg-red-600 px-3 py-2 text-sm text-white shadow hover:bg-red-700 lg:w-auto"
                                 onclick="document.getElementById('gradeLockModal').classList.remove('hidden')">
                                 🔒 Lock / Unlock Semester
                             </button>
@@ -93,12 +201,21 @@
 
                         <!-- Export Button -->
                         <button type="button" id="exportBtn" onclick="exportGradeSheet(this)"
-                            class="bg-[#155E8A] text-white px-3 py-2 hover:bg-[#0F4A6E] rounded text-xs inline-flex items-center gap-1.5">
+                            class="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded bg-[#155E8A] px-3 py-2 text-xs text-white hover:bg-[#0F4A6E] lg:w-auto">
                             <i class="fas fa-file-excel"></i> Export to Excel
                         </button>
+
+                        @canany(['publish student grades', 'unpublish student grades'])
+                            <a href="{{ route('grades.publication-history', ['grade_id' => $grade->id, 'academic_year_id' => $academicYear->id]) }}"
+                                class="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded border border-indigo-300 px-3 py-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-50 dark:border-indigo-500 dark:text-indigo-300 dark:hover:bg-indigo-950/40 lg:w-auto"
+                                title="Publication History">
+                                <i class="fas fa-clock-rotate-left"></i> Publication History
+                            </a>
+                        @endcanany
+
                         <!-- Save Changes Button -->
                         <button type="button" onclick="submitGrades(this)"
-                            class="bg-[#25D366] text-white px-3 py-2 hover:bg-[#1ebe5d] rounded text-xs inline-flex items-center gap-1.5">
+                            class="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded bg-[#25D366] px-3 py-2 text-xs text-white hover:bg-[#1ebe5d] lg:w-auto">
                             Save Changes
                         </button>
 
@@ -106,7 +223,11 @@
                 </div>
 
                 <!-- CHANGE #1: responsive scrolling -->
-                <div class="overflow-auto max-h-[70vh]">
+                <div class="min-w-0 max-w-full overflow-x-auto overflow-y-auto max-h-[70vh]">
+
+                    <p class="mb-2 rounded bg-gray-100 px-3 py-2 text-center text-xs text-gray-600 dark:bg-gray-800 dark:text-gray-300 sm:hidden">
+                        Swipe horizontally to view all grade columns.
+                    </p>
 
                     <div id="noStudentMessage"
                         class="hidden bg-yellow-100 border border-yellow-400 text-yellow-800 px-4 py-3 rounded mb-3 text-center font-semibold">
@@ -116,7 +237,7 @@
                         </a>
                     </div>
                     <!-- CHANGE #2: thicker black borders for entire table -->
-                    <table class="min-w-full bg-white border-2 border-black text-center">
+                    <table class="min-w-max bg-white border-2 border-black text-center">
 
                         <thead class="bg-gray-800 text-white sticky top-0 z-40">
                             <tr>
@@ -205,7 +326,7 @@
                                                 <input type="number"
                                                     name="grades[{{ $enrollment->id }}][{{ $subject->id }}][{{ $period }}]"
                                                     value="{{ $studentGrade->$period ?? '' }}"
-                                                    class="form-control form-control-sm text-center w-16 score-input
+                                                     class="form-control form-control-sm min-h-11 w-20 text-center text-base score-input
            {{ isset($studentGrade->$period) ? ($studentGrade->$period < 70 ? 'text-red-600 font-semibold' : 'text-black') : 'text-black' }}
            @if ($sem1Locked || (isset($studentGrade->$period) && !auth()->user()->can('edit student grades'))) bg-red-100 cursor-not-allowed @endif"
                                                     @if ($sem1Locked || (isset($studentGrade->$period) && !auth()->user()->can('edit student grades'))) readonly
@@ -216,7 +337,7 @@
                                         <!-- 1st Semester Avg -->
                                         <td class="p-1 border-2 border-black bg-blue-100">
                                             <input type="text" readonly
-                                                class="form-control form-control-sm text-center w-16 sem1">
+                                                class="form-control form-control-sm min-h-11 w-20 text-center text-base sem1">
                                         </td>
 
                                         <!-- PERIODS 4–6 and EXAM 2 -->
@@ -225,7 +346,7 @@
                                                 <input type="number"
                                                     name="grades[{{ $enrollment->id }}][{{ $subject->id }}][{{ $period }}]"
                                                     value="{{ $studentGrade->$period ?? '' }}"
-                                                    class="form-control form-control-sm text-center w-16 score-input
+                                                     class="form-control form-control-sm min-h-11 w-20 text-center text-base score-input
            {{ isset($studentGrade->$period) ? ($studentGrade->$period < 70 ? 'text-red-600 font-semibold' : 'text-black') : 'text-black' }}
            @if ($sem2Locked || (isset($studentGrade->$period) && !auth()->user()->can('edit student grades'))) bg-red-100 cursor-not-allowed @endif"
                                                     @if ($sem2Locked || (isset($studentGrade->$period) && !auth()->user()->can('edit student grades'))) readonly
@@ -236,13 +357,13 @@
                                         <!-- 2nd Semester Avg -->
                                         <td class="p-1 border-2 border-black bg-blue-100">
                                             <input type="text" readonly
-                                                class="form-control form-control-sm text-center w-16 sem2">
+                                                class="form-control form-control-sm min-h-11 w-20 text-center text-base sem2">
                                         </td>
 
                                         <!-- Year Avg -->
                                         <td class="p-1 border-2 border-black bg-green-200 font-semibold">
                                             <input type="text" readonly
-                                                class="form-control form-control-sm text-center w-16 yearly">
+                                                class="form-control form-control-sm min-h-11 w-20 text-center text-base yearly">
                                         </td>
                                     @endforeach
                                 </tr>
@@ -279,12 +400,19 @@
 
     <!-- Grade Lock Modal -->
     <div id="gradeLockModal"
-        class="fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-40 overflow-auto p-4">
+        class="fixed inset-0 z-50 hidden items-center justify-center overflow-y-auto bg-black bg-opacity-40 p-3 sm:p-4 flex">
 
         <!-- Modal Container -->
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-auto p-6">
+        <div class="my-auto max-h-[92dvh] w-full max-w-md overflow-y-auto rounded-lg bg-white p-4 shadow-lg dark:bg-gray-800 sm:p-6">
 
-            <h2 class="text-lg font-bold mb-4">Grade Lock Control</h2>
+            <div class="mb-4 flex items-center justify-between gap-3">
+                <h2 class="text-lg font-bold text-gray-900 dark:text-white">Grade Lock Control</h2>
+                <button type="button" aria-label="Close grade lock modal"
+                    onclick="document.getElementById('gradeLockModal').classList.add('hidden')"
+                    class="min-h-11 min-w-11 rounded text-2xl leading-none text-gray-500 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700">
+                    &times;
+                </button>
+            </div>
 
             <form method="POST" action="{{ route('grades.lock') }}">
                 @csrf
@@ -293,24 +421,24 @@
                 <input type="hidden" name="academic_year_id" value="{{ $academicYear->id }}">
 
                 <div class="mb-4">
-                    <label class="block font-semibold mb-2">Select Semester</label>
-                    <select name="semester" class="w-full border rounded p-2">
+                    <label class="mb-2 block font-semibold text-gray-800 dark:text-gray-100">Select Semester</label>
+                    <select name="semester" class="min-h-11 w-full rounded border p-2.5 text-base dark:border-gray-600 dark:bg-gray-700 dark:text-white">
                         <option value="sem1">Semester 1 (P1–Exam1)</option>
                         <option value="sem2">Semester 2 (P4–Exam2)</option>
                     </select>
                 </div>
 
-                <div class="flex flex-wrap justify-between gap-2">
+                <div class="flex flex-col gap-2 sm:flex-row sm:justify-between">
                     <button type="submit" name="action" value="lock"
-                        class="bg-red-600 text-white px-4 py-2 rounded">
+                        class="min-h-11 flex-1 rounded bg-red-600 px-4 py-2 text-white">
                         Lock
                     </button>
                     <button type="submit" name="action" value="unlock"
-                        class="bg-green-600 text-white px-4 py-2 rounded">
+                        class="min-h-11 flex-1 rounded bg-green-600 px-4 py-2 text-white">
                         Unlock
                     </button>
                     <button type="button" onclick="document.getElementById('gradeLockModal').classList.add('hidden')"
-                        class="bg-gray-400 text-white px-4 py-2 rounded">
+                        class="min-h-11 flex-1 rounded bg-gray-400 px-4 py-2 text-white">
                         Cancel
                     </button>
                 </div>
@@ -642,6 +770,69 @@
                     inline: 'nearest'
                 });
             }
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('gradePublicationModal');
+            const modalMessage = document.getElementById('gradePublicationModalMessage');
+            const closeButton = document.getElementById('closeGradePublicationModal');
+            const cancelButton = document.getElementById('cancelGradePublicationModal');
+            const confirmForm = document.getElementById('gradePublicationConfirmForm');
+            const confirmButton = document.getElementById('confirmGradePublicationModal');
+            const triggerButtons = document.querySelectorAll('.publication-trigger');
+            const gradeIdInput = document.getElementById('publicationConfirmGradeId');
+            const academicYearIdInput = document.getElementById('publicationConfirmAcademicYearId');
+            const slotInput = document.getElementById('publicationConfirmSlot');
+
+            if (!modal || !confirmForm) return;
+
+            let activeTrigger = null;
+
+            function closePublicationModal() {
+                modal.classList.add('hidden');
+                activeTrigger?.focus();
+                activeTrigger = null;
+            }
+
+            triggerButtons.forEach(function(button) {
+                button.addEventListener('click', function() {
+                    activeTrigger = button;
+                    const isPublishing = button.dataset.publicationState === 'publish';
+                    confirmForm.action = button.dataset.publicationAction;
+                    gradeIdInput.value = button.dataset.publicationGradeId;
+                    academicYearIdInput.value = button.dataset.publicationAcademicYearId;
+                    slotInput.value = button.dataset.publicationSlot;
+                    modalMessage.textContent = `${isPublishing ? 'Publish' : 'Unpublish'} ${button.dataset.publicationSlotLabel} for ${button.dataset.publicationSchool}, ${button.dataset.publicationGrade}, ${button.dataset.publicationAcademicYear}?`;
+                    confirmButton.textContent = isPublishing ? 'Confirm Publish' : 'Confirm Unpublish';
+                    modal.classList.remove('hidden');
+                    confirmButton.focus();
+                });
+            });
+
+            closeButton.addEventListener('click', closePublicationModal);
+            cancelButton.addEventListener('click', closePublicationModal);
+            modal.addEventListener('click', function(event) {
+                if (event.target === modal) closePublicationModal();
+            });
+
+            document.addEventListener('keydown', function(event) {
+                if (event.key === 'Escape' && !modal.classList.contains('hidden')) {
+                    event.preventDefault();
+                    closePublicationModal();
+                }
+            });
+
+            confirmForm.addEventListener('submit', function() {
+                const isPublishing = activeTrigger?.dataset.publicationState === 'publish';
+                triggerButtons.forEach(function(button) {
+                    button.disabled = true;
+                    button.classList.add('cursor-not-allowed', 'opacity-70');
+                });
+                confirmButton.disabled = true;
+                confirmButton.innerHTML = `<i class="fas fa-spinner fa-spin mr-1"></i>${isPublishing ? 'Publishing...' : 'Unpublishing...'}`;
+            });
         });
     </script>
 @endsection
