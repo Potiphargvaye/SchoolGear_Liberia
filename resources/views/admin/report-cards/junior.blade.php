@@ -576,13 +576,14 @@
                     @endif
                 </div>
                 <!-- RIGHT: STUDENT IMAGE -->
-                <div class="header-right">
-                    <img src="{{ $student->image
-                        ? asset('storage/' . $student->image)
-                        : asset('kiddos-school-master/images/user-default-avatar.jpg') }}"
-                        avatardefault_92824 alt="Student Photo" class="school-logo"
-                        onerror="this.onerror=null;this.src='{{ asset('kiddos-school-master/images/user-default-avatar.jpg') }}';">
-                </div>
+               <!-- RIGHT: STUDENT IMAGE -->
+<div class="header-right">
+    <img src="{{ $student->image
+        ? asset('storage/' . $student->image)
+        : asset('logo/default-avatar.png') }}"
+        alt="Student Photo" class="school-logo"
+        onerror="this.onerror=null;this.src='{{ asset('logo/default-avatar.png') }}';">
+</div>
             </div>
 
             <!-- REPORT TITLE -->
