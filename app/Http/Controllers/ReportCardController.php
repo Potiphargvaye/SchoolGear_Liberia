@@ -321,7 +321,7 @@ class ReportCardController extends Controller
 
                 /*
             |--------------------------------------------------------------------------
-            | School's Official Formula
+            | School's Official Formula.
             |--------------------------------------------------------------------------
             */
 
