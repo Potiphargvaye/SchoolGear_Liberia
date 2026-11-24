@@ -646,11 +646,6 @@
             </thead>
             <tbody>
                 @php
-                    // Initialize totals and subject count
-                    $firstSemTotal = 0;
-                    $secondSemTotal = 0;
-                    $subjectCount = $grades->count();
-
                     // Grade color logic: red if score <= 69
                     $color = function ($val) {
                         if ($val === null || $val === '') {
@@ -677,52 +672,6 @@
 
                         $yearAvg = round(($firstSemAvg + $secondSemAvg) / 2, 2);
 
-                        // ---------------- PERIOD AVERAGE CALCULATION ----------------
-
-                        // If the report is P1 → add Period1 score
-                        if ($period === 'p1') {
-                            $firstSemTotal += $grade->period1; // P1 average = sum(period1 scores) / subject count
-                        }
-
-                        // If the report is P2 → add Period2 score
-                        elseif ($period === 'p2') {
-                            $firstSemTotal += $grade->period2; // P2 average = sum(period2 scores) / subject count
-                        }
-
-                        // If the report is P3 → add Period3 score
-                        elseif ($period === 'p3') {
-                            $firstSemTotal += $grade->period3; // P3 average = sum(period3 scores) / subject count
-                        }
-
-                        // Semester 1 → use calculated semester average
-                        elseif ($period === 'semester1') {
-                            $firstSemTotal += $firstSemAvg; // Semester1 average = ((P1+P2+P3)/3 + Exam1)/2
-                        }
-
-                        // If the report is P4
-                        elseif ($period === 'p4') {
-                            $firstSemTotal += $grade->period4;
-                        }
-
-                        // If the report is P5
-                        elseif ($period === 'p5') {
-                            $firstSemTotal += $grade->period5;
-                        }
-
-                        // If the report is P6
-                        elseif ($period === 'p6') {
-                            $firstSemTotal += $grade->period6;
-                        }
-
-                        // Semester 2
-                        elseif ($period === 'semester2') {
-                            $firstSemTotal += $secondSemAvg; // Semester2 average = ((P4+P5+P6)/3 + Exam2)/2
-                        }
-
-                        // Yearly report
-                        elseif ($period === 'yearly') {
-                            $firstSemTotal += $yearAvg; // Yearly average = (Semester1 + Semester2) / 2
-                        }
                     @endphp
 
                     <tr>
@@ -771,11 +720,7 @@
                 @endforeach
 
                 @php
-                    // 1. Calculate the values you want to show
-                    $firstSemTotal = $firstSemTotal ?? 0;
-                    $subjectCount = $subjectCount ?? 1; // Division by zero check
-                    $overallAverage = round($firstSemTotal / $subjectCount, 2);
-
+                    // 1. Calculate the values  you want to show
                     // 2. Calculate how many columns are actually displayed in the current view
                     $totalCols = 1; // The "Subject" column
 
@@ -948,11 +893,11 @@
                     <span class="grade-label label-vgood">V. Good</span>
                 </div>
                 <div class="grade-scale-row">
-                    <span class="grade-range">69 - 79%:</span>
+                    <span class="grade-range">70 - 79%:</span>
                     <span class="grade-label label-good">Good</span>
                 </div>
                 <div class="grade-scale-row">
-                    <span class="grade-range">67 - 69%:</span>
+                    <span class="grade-range">0 - 69%:</span>
                     <span class="grade-label label-fail">Fail</span>
                 </div>
             </div>

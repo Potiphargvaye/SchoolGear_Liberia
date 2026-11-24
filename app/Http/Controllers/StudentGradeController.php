@@ -11,11 +11,15 @@ use App\Models\GradeLock;
 use App\Models\GradePublication;
 use App\Models\GradePublicationAudit;
 use App\Models\StudentGrade;
+use App\Mail\StudentGradePublished;
 use Illuminate\Http\Request;
 use App\Exports\GradeSheetExport;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
+use Throwable;
 
 class StudentGradeController extends Controller
 {
@@ -277,7 +281,80 @@ class StudentGradeController extends Controller
             ? ($changed ? "{$slotLabel} published for {$gradeLabel} ({$academicYear->name})." : "{$slotLabel} is already published for {$gradeLabel} ({$academicYear->name}).")
             : ($changed ? "{$slotLabel} unpublished for {$gradeLabel} ({$academicYear->name})." : "{$slotLabel} is already unpublished for {$gradeLabel} ({$academicYear->name}).");
 
+        if ($publish && $changed) {
+            $publishedAt = GradePublication::where($publicationKey)->first()?->published_at ?? now();
+
+            $this->emailStudentsAfterPublication(
+                $enrollmentIds,
+                $schoolId,
+                $gradeId,
+                $academicYearId,
+                $slotLabel,
+                $gradeLabel,
+                $academicYear->name,
+                $user->name,
+                $publishedAt,
+            );
+        }
+
         return back()->with($changed ? 'success' : 'error', $message);
+    }
+
+    protected function emailStudentsAfterPublication(
+        $enrollmentIds,
+        int $schoolId,
+        int $gradeId,
+        int $academicYearId,
+        string $slotLabel,
+        string $gradeLabel,
+        string $academicYearName,
+        string $publishedByName,
+        $publishedAt,
+    ): void {
+        try {
+            $schoolName = auth()->user()->school?->school_name ?? 'SchoolGear Liberia';
+            $students = Enrollment::where('school_id', $schoolId)
+                ->where('grade_id', $gradeId)
+                ->where('academic_year_id', $academicYearId)
+                ->whereIn('id', $enrollmentIds)
+                ->with('student.user')
+                ->get()
+                ->map(fn (Enrollment $enrollment) => $enrollment->student?->user)
+                ->filter(fn ($student) => $student && filled($student->email))
+                ->unique(fn ($student) => strtolower(trim($student->email)));
+
+            foreach ($students as $student) {
+                try {
+                    Mail::to($student->email)->send(new StudentGradePublished(
+                        student: $student,
+                        schoolName: $schoolName,
+                        slotLabel: $slotLabel,
+                        gradeName: $gradeLabel,
+                        academicYearName: $academicYearName,
+                        publishedByName: $publishedByName,
+                        publishedAt: $publishedAt,
+                    ));
+                } catch (Throwable $exception) {
+                    Log::error('Student grade publication email failed.', [
+                        'school_id' => $schoolId,
+                        'grade_id' => $gradeId,
+                        'academic_year_id' => $academicYearId,
+                        'slot' => $slotLabel,
+                        'student_user_id' => $student->id,
+                        'email' => $student->email,
+                        'exception' => $exception,
+                    ]);
+                }
+            }
+        } catch (Throwable $exception) {
+            Log::error('Student grade publication recipient lookup failed.', [
+                'school_id' => $schoolId,
+                'grade_id' => $gradeId,
+                'academic_year_id' => $academicYearId,
+                'slot' => $slotLabel,
+                'exception' => $exception,
+            ]);
+        }
     }
 
     public function store(Request $request)

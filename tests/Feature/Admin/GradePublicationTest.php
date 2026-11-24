@@ -12,8 +12,10 @@ use App\Models\StudentGrade;
 use App\Models\User;
 use App\Http\Controllers\ReportCardController;
 use App\Http\Controllers\StudentGradeController;
+use App\Mail\StudentGradePublished;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Mail;
 
 function publicationPermission(string $name): Permission
 {
@@ -198,4 +200,60 @@ it('denies missing permissions and schoolless accounts', function () {
         'academic_year_id' => $fixture['year']->id,
         'slot' => 'p1',
     ])->assertForbidden();
+});
+
+it('emails each enrolled student once on publish, never on unpublish, and isolates other classes and schools', function () {
+    Mail::fake();
+
+    $school = publicationSchool('EMAIL-A');
+    $admin = publicationUser($school, 'EMAIL-A');
+    $admin->givePermissionTo(publicationPermission('publish student grades'));
+    $admin->givePermissionTo(publicationPermission('unpublish student grades'));
+    $fixture = publicationFixture($school, 'EMAIL-A');
+
+    $secondUser = User::create([
+        'school_id' => $school->id,
+        'registration_id' => 'STU-EMAIL-A-2',
+        'name' => 'Second Email Student',
+        'email' => 'second.email.student@example.test',
+        'password' => 'password',
+    ]);
+    $secondStudent = Student::create([
+        'school_id' => $school->id,
+        'user_id' => $secondUser->id,
+        'name' => 'Second Email Student',
+        'age' => 10,
+        'gender' => 'Other',
+        'parent_phone' => '0000000000',
+    ]);
+    Enrollment::create([
+        'school_id' => $school->id,
+        'student_id' => $secondStudent->id,
+        'grade_id' => $fixture['grade']->id,
+        'academic_year_id' => $fixture['year']->id,
+        'status' => 'active',
+    ]);
+
+    $otherClass = publicationFixture($school, 'EMAIL-B');
+    $otherSchool = publicationSchool('EMAIL-B-SCHOOL');
+    $otherSchoolFixture = publicationFixture($otherSchool, 'EMAIL-C');
+
+    $payload = [
+        'grade_id' => $fixture['grade']->id,
+        'academic_year_id' => $fixture['year']->id,
+        'slot' => 'p1',
+    ];
+
+    $this->actingAs($admin)->post(route('grades.publish'), $payload)->assertRedirect();
+    Mail::assertSent(StudentGradePublished::class, 2);
+    Mail::assertSent(StudentGradePublished::class, fn (StudentGradePublished $mail) => $mail->student->email === 'email-a.student@example.test');
+    Mail::assertSent(StudentGradePublished::class, fn (StudentGradePublished $mail) => $mail->student->email === 'second.email.student@example.test');
+    Mail::assertNotSent(StudentGradePublished::class, fn (StudentGradePublished $mail) => $mail->student->email === $otherClass['enrollment']->student->user->email);
+    Mail::assertNotSent(StudentGradePublished::class, fn (StudentGradePublished $mail) => $mail->student->email === $otherSchoolFixture['enrollment']->student->user->email);
+
+    $this->actingAs($admin)->post(route('grades.unpublish'), $payload)->assertRedirect();
+    Mail::assertSent(StudentGradePublished::class, 2);
+
+    $this->actingAs($admin)->post(route('grades.publish'), $payload)->assertRedirect();
+    Mail::assertSent(StudentGradePublished::class, 4);
 });
