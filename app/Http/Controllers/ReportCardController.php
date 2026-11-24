@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\AcademicSubject;
 use App\Models\Enrollment;
 use App\Models\Grade;
 use App\Models\StudentGrade;
@@ -76,36 +75,6 @@ class ReportCardController extends Controller
         return view('admin.report-cards.index', compact('enrollments', 'level', 'academicYears', 'academicYearId'));
     }
 
-    /// verify it later on may be remove or keep it
-
-    public function getTableColumnsForPeriod($period)
-    {
-        $columns = ['subject'];
-
-        if (in_array($period, ['p1', 'semester1', 'yearly'])) $columns[] = 'period1';
-        if (in_array($period, ['p2', 'semester1', 'yearly'])) $columns[] = 'period2';
-        if (in_array($period, ['p3', 'semester1', 'yearly'])) $columns[] = 'period3';
-
-        if (in_array($period, ['semester1', 'yearly'])) {
-            $columns[] = 'exam1';
-            $columns[] = 'firstSemAvg';
-        }
-
-        if (in_array($period, ['p4', 'semester2', 'yearly'])) $columns[] = 'period4';
-        if (in_array($period, ['p5', 'semester2', 'yearly'])) $columns[] = 'period5';
-        if (in_array($period, ['p6', 'semester2', 'yearly'])) $columns[] = 'period6';
-
-        if (in_array($period, ['semester2', 'yearly'])) {
-            $columns[] = 'exam2';
-            $columns[] = 'secondSemAvg';
-        }
-
-        if ($period === 'yearly') $columns[] = 'yearAvg';
-
-        return $columns;
-    }
-
-    // for printing multiples reports card
     // for printing multiples reports card
     /**
      * Print multiple report cards in one document, one per enrollment.
@@ -292,6 +261,7 @@ class ReportCardController extends Controller
     |--------------------------------------------------------------------------
     */
         $averages = [];
+        $gradeCounts = [];
 
         // ✅ NEW: Multi-period tracking
         $periodAverages = [
@@ -313,6 +283,8 @@ class ReportCardController extends Controller
             $sGrades = StudentGrade::where('school_id', $schoolId)
                 ->where('enrollment_id', $classEnrollmentId)
                 ->get();
+
+            $gradeCounts[$classEnrollmentId] = $sGrades->count();
 
             $totalYearAverage = 0;
             $subjectCount = 0;
@@ -356,35 +328,6 @@ class ReportCardController extends Controller
                 $periodAverages['semester2'][$classEnrollmentId] = ($periodAverages['semester2'][$classEnrollmentId] ?? 0) + $secondSemAvg;
                 $periodAverages['yearly'][$classEnrollmentId] = ($periodAverages['yearly'][$classEnrollmentId] ?? 0) + $yearAvg;
 
-                // Keep your switch (unchanged)
-                switch ($period) {
-                    case 'p1':
-                        $score = $g->period1;
-                        break;
-                    case 'p2':
-                        $score = $g->period2;
-                        break;
-                    case 'p3':
-                        $score = $g->period3;
-                        break;
-                    case 'p4':
-                        $score = $g->period4;
-                        break;
-                    case 'p5':
-                        $score = $g->period5;
-                        break;
-                    case 'p6':
-                        $score = $g->period6;
-                        break;
-                    case 'semester1':
-                        $score = $firstSemAvg;
-                        break;
-                    case 'semester2':
-                        $score = $secondSemAvg;
-                        break;
-                    default:
-                        $score = $yearAvg;
-                }
             }
 
             if ($subjectCount > 0) {
@@ -395,9 +338,7 @@ class ReportCardController extends Controller
         // ✅ FINALIZE averages AFTER loop (FIXED).
         foreach ($periodAverages as $key => $enrollmentsArr) {
             foreach ($enrollmentsArr as $eid => $total) {
-                $count = StudentGrade::where('school_id', $schoolId)
-                    ->where('enrollment_id', $eid)
-                    ->count();
+                $count = $gradeCounts[$eid];
                 if ($count > 0) {
                     $periodAverages[$key][$eid] = $total / $count;
                 }
