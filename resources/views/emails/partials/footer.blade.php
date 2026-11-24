@@ -7,7 +7,7 @@
     </tr>
     <tr>
         <td style="padding:0 0 3px; color:#667085;">
-            Location: Airfield, Sinkor, Lakpazee
+            Location: New Matadi, Opposite Don Bosco Youth Center, Monrovia, Liberia, West Africa
         </td>
     </tr>
     <tr>
