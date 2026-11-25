@@ -105,34 +105,32 @@ class RegistrationIdService
     public function generateForSchool(): string
     {
         $year = now()->year;
+        $prefix = "SGL/{$year}/";
 
-        $lastSchool = \App\Models\School::orderByDesc('id')->first();
+        // withoutGlobalScopes() includes soft-deleted rows, which still
+        // occupy the unique index on registration_id.
+        $lastId = \App\Models\School::withoutGlobalScopes()
+            ->where('registration_id', 'like', $prefix . '%')
+            ->orderByDesc('registration_id')
+            ->value('registration_id');
 
         $nextNumber = 1;
 
-        if (
-            $lastSchool &&
-            preg_match('/(\d+)$/', $lastSchool->registration_id, $matches)
-        ) {
+        if ($lastId && preg_match('/(\d+)$/', $lastId, $matches)) {
             $nextNumber = (int) $matches[1] + 1;
         }
 
         do {
-            $registrationId =
-                'SGL/' .
-                $year .
-                '/' .
-                str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
-
+            $registrationId = $prefix . str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
             $nextNumber++;
         } while (
-            \App\Models\School::where('registration_id', $registrationId)->exists()
+            \App\Models\School::withoutGlobalScopes()
+            ->where('registration_id', $registrationId)
+            ->exists()
         );
 
         return $registrationId;
     }
-
-
 
     /**
      * Generate the next unique Admission Number.

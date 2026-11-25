@@ -734,19 +734,19 @@
                         <!-- Dynamic period columns -->
                         @if (in_array($period, ['p1', 'semester1', 'yearly']))
                             <td> <span class="{{ gradeColor($grade->period1) }}">
-                                    {{ gradeLetter($grade->period1) }}</span></td>
+                                    {{ $grade->period1 === null || $grade->period1 === '' ? gradeLetter($grade->period1) : (is_numeric($grade->period1) && (float) $grade->period1 == 0 ? 'I' : gradeLetter($grade->period1)) }}</span></td>
                         @endif
                         @if (in_array($period, ['p2', 'semester1', 'yearly']))
                             <td> <span class="{{ gradeColor($grade->period2) }}">
-                                    {{ gradeLetter($grade->period2) }}</span></td>
+                                    {{ $grade->period2 === null || $grade->period2 === '' ? gradeLetter($grade->period2) : (is_numeric($grade->period2) && (float) $grade->period2 == 0 ? 'I' : gradeLetter($grade->period2)) }}</span></td>
                         @endif
                         @if (in_array($period, ['p3', 'semester1', 'yearly']))
                             <td> <span class="{{ gradeColor($grade->period3) }}">
-                                    {{ gradeLetter($grade->period3) }}</span></td>
+                                    {{ $grade->period3 === null || $grade->period3 === '' ? gradeLetter($grade->period3) : (is_numeric($grade->period3) && (float) $grade->period3 == 0 ? 'I' : gradeLetter($grade->period3)) }}</span></td>
                         @endif
                         @if (in_array($period, ['semester1', 'yearly']))
                             <td> <span
-                                    class="{{ gradeColor($grade->exam1) }}"><strong>{{ gradeLetter($grade->exam1) }}</strong></span>
+                                    class="{{ gradeColor($grade->exam1) }}"><strong>{{ $grade->exam1 === null || $grade->exam1 === '' ? gradeLetter($grade->exam1) : (is_numeric($grade->exam1) && (float) $grade->exam1 == 0 ? 'I' : gradeLetter($grade->exam1)) }}</strong></span>
                             </td>
                             <td><span
                                     class="{{ gradeColor($firstSemAvg) }}"><strong>{{ gradeLetter($firstSemAvg) }}</strong></span>
@@ -754,19 +754,19 @@
                         @endif
                         @if (in_array($period, ['p4', 'semester2', 'yearly']))
                             <td> <span class="{{ gradeColor($grade->period4) }}">
-                                    {{ gradeLetter($grade->period4) }}</span></td>
+                                    {{ $grade->period4 === null || $grade->period4 === '' ? gradeLetter($grade->period4) : (is_numeric($grade->period4) && (float) $grade->period4 == 0 ? 'I' : gradeLetter($grade->period4)) }}</span></td>
                         @endif
                         @if (in_array($period, ['p5', 'semester2', 'yearly']))
                             <td> <span class="{{ gradeColor($grade->period5) }}">
-                                    {{ gradeLetter($grade->period5) }}</span></td>
+                                    {{ $grade->period5 === null || $grade->period5 === '' ? gradeLetter($grade->period5) : (is_numeric($grade->period5) && (float) $grade->period5 == 0 ? 'I' : gradeLetter($grade->period5)) }}</span></td>
                         @endif
                         @if (in_array($period, ['p6', 'semester2', 'yearly']))
                             <td> <span class="{{ gradeColor($grade->period6) }}">
-                                    {{ gradeLetter($grade->period6) }}</span></td>
+                                    {{ $grade->period6 === null || $grade->period6 === '' ? gradeLetter($grade->period6) : (is_numeric($grade->period6) && (float) $grade->period6 == 0 ? 'I' : gradeLetter($grade->period6)) }}</span></td>
                         @endif
                         @if (in_array($period, ['semester2', 'yearly']))
                             <td> <span
-                                    class="{{ gradeColor($grade->exam2) }}"><strong>{{ gradeLetter($grade->exam2) }}</strong></span>
+                                    class="{{ gradeColor($grade->exam2) }}"><strong>{{ $grade->exam2 === null || $grade->exam2 === '' ? gradeLetter($grade->exam2) : (is_numeric($grade->exam2) && (float) $grade->exam2 == 0 ? 'I' : gradeLetter($grade->exam2)) }}</strong></span>
                             </td>
                             <td><span
                                     class="{{ gradeColor($secondSemAvg) }}"><strong>{{ gradeLetter($secondSemAvg) }}</strong></span>

@@ -395,7 +395,7 @@
                                         @php($score = data_get($grade, $column['field']))
                                         @php($band = $scoreBand($score))
                                         <td class="{{ !empty($column['average']) ? 'is-average' : '' }}">
-                                            <span class="score score--{{ $band }}">{{ $score === null ? '-' : $score }}<span class="sr-only"> ({{ $bandHint[$band] }})</span></span>
+                                            <span class="score score--{{ $band }}">{{ $score === null ? '-' : (((!isset($column['average']) || $column['average'] !== true) && is_numeric($score) && (float) $score == 0) ? 'I' : $score) }}<span class="sr-only"> ({{ $bandHint[$band] }})</span></span>
                                         </td>
                                     @endforeach
                                 </tr>
@@ -411,7 +411,7 @@
                         <article class="grade-card {{ $focusBand === 'poor' ? 'is-poor' : '' }}">
                             <div class="grade-card-head">
                                 <h3 class="grade-card-name">{{ $grade->subject->name ?? '—' }}</h3>
-                                <span class="score score--{{ $focusBand }}">{{ $focusScore === null ? '-' : $focusScore }}<span class="sr-only"> ({{ $bandHint[$focusBand] }})</span></span>
+                                <span class="score score--{{ $focusBand }}">{{ $focusScore === null ? '-' : ((!isset($focusColumn['average']) || $focusColumn['average'] !== true) && is_numeric($focusScore) && (float) $focusScore == 0 ? 'I' : $focusScore) }}<span class="sr-only"> ({{ $bandHint[$focusBand] }})</span></span>
                             </div>
                             <div class="grade-tiles">
                                 @foreach($scoreColumns as $column)
@@ -419,7 +419,7 @@
                                     @php($band = $scoreBand($score))
                                     <div class="grade-tile grade-tile--{{ $band }} {{ !empty($column['average']) ? 'is-average' : '' }}">
                                         <span class="grade-tile-label">{{ $column['label'] }}</span>
-                                        <span class="grade-tile-value">{{ $score === null ? '-' : $score }}<span class="sr-only"> ({{ $bandHint[$band] }})</span></span>
+                                        <span class="grade-tile-value">{{ $score === null ? '-' : (((!isset($column['average']) || $column['average'] !== true) && is_numeric($score) && (float) $score == 0) ? 'I' : $score) }}<span class="sr-only"> ({{ $bandHint[$band] }})</span></span>
                                     </div>
                                 @endforeach
                             </div>

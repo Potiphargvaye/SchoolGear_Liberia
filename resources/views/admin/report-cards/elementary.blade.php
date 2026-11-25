@@ -657,7 +657,9 @@
 
                     // Display value
                     $display = function ($val) {
-                        return $val === null || $val === '' ? 'NG' : $val;
+                        if ($val === null || $val === '') return 'NG';
+                        if (is_numeric($val) && (float) $val == 0) return 'I';
+                        return $val;
                     };
                 @endphp
 
