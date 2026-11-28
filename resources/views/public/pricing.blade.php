@@ -2,7 +2,7 @@
 
 @section('title', 'Pricing for School Software in Liberia | SchoolGear Liberia')
 
-@section('description', 'SchoolGear Liberia pricing: $1.50 per junior and senior high student, $1.50 per elementary student, $1.50 per staff user. All features and a 31-day free trial.')
+@section('description', 'SchoolGear Liberia pricing: $1.50 per junior and senior high student, $1.00 per elementary student, $1.50 per staff user. All features and a 31-day free trial.')
 
 @php
     $pricingPlans = [
@@ -42,7 +42,7 @@
         ],
         [
             'name' => 'Elementary & Kindergarten',
-            'price' => '$1.50 per student / year',
+            'price' => '$1.00 per student / year',
             'staff' => '$1.50 per active staff user / year',
             'unit' => 'For students enrolled in the current academic year.',
             'features' => [
@@ -193,7 +193,7 @@
             const read = field => Math.max(0, Number.isFinite(Number(field.value)) ? Math.floor(Number(field.value)) : 0);
             const update = () => {
                 const jhs = read(fields.jhs), elementary = read(fields.elementary), staff = read(fields.staff);
-                const students = (jhs * 1.5) + (elementary * 1.5), staffTotal = staff * 1.5, subtotal = students + staffTotal, total = Math.max(100, subtotal);
+                const students = (jhs * 1.5) + (elementary * 1), staffTotal = staff * 1.5, subtotal = students + staffTotal, total = Math.max(100, subtotal);
                 root.querySelector('[data-result="students"]').textContent = money(students);
                 root.querySelector('[data-result="staff"]').textContent = money(staffTotal);
                 root.querySelector('[data-result="total"]').textContent = money(total);
