@@ -8,6 +8,7 @@ use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithCustomValueBinder;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 use Maatwebsite\Excel\Concerns\WithStyles;
 use PhpOffice\PhpSpreadsheet\Cell\Cell;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
@@ -20,7 +21,8 @@ class GradeSheetExport extends DefaultValueBinder implements
     WithMapping,
     ShouldAutoSize,
     WithStyles,
-    WithCustomValueBinder
+    WithCustomValueBinder,
+    WithStrictNullComparison
 {
     private int $rowNumber = 0;
 
@@ -65,6 +67,9 @@ class GradeSheetExport extends DefaultValueBinder implements
             $this->academicYearName,
         ];
 
+        // A raw cell typed as 0 is "Incomplete (I)". NULL or '' (NG) is not.
+        $isIncomplete = fn ($v) => $v !== null && $v !== '' && is_numeric($v) && (float) $v == 0;
+
         foreach ($this->subjects as $subject) {
             $g = $this->grades->get($enrollment->id . '-' . $subject->id);
 
@@ -74,10 +79,21 @@ class GradeSheetExport extends DefaultValueBinder implements
                 continue;
             }
 
-            // Same formulas as the sheet's live calculation (blank counts as 0).
-            $sem1 = round(((($g->period1 + $g->period2 + $g->period3) / 3) + $g->exam1) / 2);
-            $sem2 = round(((($g->period4 + $g->period5 + $g->period6) / 3) + $g->exam2) / 2);
-            $year = round(($sem1 + $sem2) / 2, 2);
+            $sem1Incomplete = $isIncomplete($g->period1) || $isIncomplete($g->period2)
+                || $isIncomplete($g->period3) || $isIncomplete($g->exam1);
+            $sem2Incomplete = $isIncomplete($g->period4) || $isIncomplete($g->period5)
+                || $isIncomplete($g->period6) || $isIncomplete($g->exam2);
+
+            // Same formulas as before (blank counts as 0). An incomplete semester shows "Incomplete".
+            $sem1 = $sem1Incomplete
+                ? 'Incomplete'
+                : round(((($g->period1 + $g->period2 + $g->period3) / 3) + $g->exam1) / 2);
+            $sem2 = $sem2Incomplete
+                ? 'Incomplete'
+                : round(((($g->period4 + $g->period5 + $g->period6) / 3) + $g->exam2) / 2);
+            $year = ($sem1Incomplete || $sem2Incomplete)
+                ? 'Incomplete'
+                : round(($sem1 + $sem2) / 2, 2);
 
             array_push(
                 $row,
