@@ -661,6 +661,10 @@
                         if (is_numeric($val) && (float) $val == 0) return 'I';
                         return $val;
                     };
+
+                    $isIncomplete = function ($v) {
+                        return $v !== null && $v !== '' && is_numeric($v) && (float) $v == 0;
+                    };
                 @endphp
 
                 @foreach ($grades as $grade)
@@ -673,6 +677,11 @@
                         $secondSemAvg = round(($periodAvg2 + $grade->exam2) / 2);
 
                         $yearAvg = round(($firstSemAvg + $secondSemAvg) / 2, 2);
+
+                        // Incomplete flags from raw cells only
+                        $sem1Inc = $isIncomplete($grade->period1) || $isIncomplete($grade->period2) || $isIncomplete($grade->period3) || $isIncomplete($grade->exam1);
+                        $sem2Inc = $isIncomplete($grade->period4) || $isIncomplete($grade->period5) || $isIncomplete($grade->period6) || $isIncomplete($grade->exam2);
+                        $yearlyInc = $sem1Inc || $sem2Inc;
 
                     @endphp
 
@@ -696,7 +705,7 @@
                         @if (in_array($period, ['semester1', 'yearly']))
                             <td class="{{ $color($grade->exam1) }}"><strong>{{ $display($grade->exam1) }}</strong>
                             </td>
-                            <td class="{{ $color($firstSemAvg) }}"><strong>{{ $firstSemAvg }}</strong></td>
+                            <td class="{{ $sem1Inc ? 'red-grade' : $color($firstSemAvg) }}"><strong>{{ $sem1Inc ? 'I' : $firstSemAvg }}</strong></td>
                         @endif
                         @if (in_array($period, ['p4', 'semester2', 'yearly']))
                             <td class="{{ $color($grade->period4) }}"><strong>{{ $display($grade->period4) }}</strong>
@@ -713,10 +722,10 @@
                         @if (in_array($period, ['semester2', 'yearly']))
                             <td class="{{ $color($grade->exam2) }}"><strong>{{ $display($grade->exam2) }}</strong>
                             </td>
-                            <td class="{{ $color($secondSemAvg) }}"><strong>{{ $secondSemAvg }}</strong></td>
+                            <td class="{{ $sem2Inc ? 'red-grade' : $color($secondSemAvg) }}"><strong>{{ $sem2Inc ? 'I' : $secondSemAvg }}</strong></td>
                         @endif
                         @if ($period === 'yearly')
-                            <td class="{{ $color($yearAvg) }}"><strong>{{ $yearAvg }}</strong></td>
+                            <td class="{{ $yearlyInc ? 'red-grade' : $color($yearAvg) }}"><strong>{{ $yearlyInc ? 'I' : $yearAvg }}</strong></td>
                         @endif
                     </tr>
                 @endforeach
@@ -738,66 +747,77 @@
                     <td>Average</td>
 
                     @if (in_array($period, ['p1', 'semester1', 'yearly']))
-                        <td class="{{ $color($periodAverages['p1'][$enrollment->id] ?? null) }}">
-                            <strong>{{ round($periodAverages['p1'][$enrollment->id] ?? 0, 2) }}</strong>
+                        @php $avgVal = $periodAverages['p1'][$enrollment->id] ?? null; @endphp
+                        <td class="{{ $avgVal === null ? 'red-grade' : $color($avgVal) }}">
+                            <strong>{{ $avgVal === null ? 'I' : round($avgVal, 2) }}</strong>
                         </td>
                     @endif
 
                     @if (in_array($period, ['p2', 'semester1', 'yearly']))
-                        <td class="{{ $color($periodAverages['p2'][$enrollment->id] ?? null) }}">
-                            <strong>{{ round($periodAverages['p2'][$enrollment->id] ?? 0, 2) }}</strong>
+                        @php $avgVal = $periodAverages['p2'][$enrollment->id] ?? null; @endphp
+                        <td class="{{ $avgVal === null ? 'red-grade' : $color($avgVal) }}">
+                            <strong>{{ $avgVal === null ? 'I' : round($avgVal, 2) }}</strong>
                         </td>
                     @endif
 
                     @if (in_array($period, ['p3', 'semester1', 'yearly']))
-                        <td class="{{ $color($periodAverages['p3'][$enrollment->id] ?? null) }}">
-                            <strong>{{ round($periodAverages['p3'][$enrollment->id] ?? 0, 2) }}</strong>
+                        @php $avgVal = $periodAverages['p3'][$enrollment->id] ?? null; @endphp
+                        <td class="{{ $avgVal === null ? 'red-grade' : $color($avgVal) }}">
+                            <strong>{{ $avgVal === null ? 'I' : round($avgVal, 2) }}</strong>
                         </td>
                     @endif
 
                     @if (in_array($period, ['semester1', 'yearly']))
                         {{-- ✅ FIXED: exam1 average --}}
-                        <td class="{{ $color($periodAverages['exam1'][$enrollment->id] ?? null) }}">
-                            <strong>{{ round($periodAverages['exam1'][$enrollment->id] ?? 0, 2) }}</strong>
+                        @php $avgVal = $periodAverages['exam1'][$enrollment->id] ?? null; @endphp
+                        <td class="{{ $avgVal === null ? 'red-grade' : $color($avgVal) }}">
+                            <strong>{{ $avgVal === null ? 'I' : round($avgVal, 2) }}</strong>
                         </td>
 
-                        <td class="{{ $color($periodAverages['semester1'][$enrollment->id] ?? null) }}">
-                            <strong>{{ round($periodAverages['semester1'][$enrollment->id] ?? 0, 2) }}</strong>
+                        @php $avgVal = $periodAverages['semester1'][$enrollment->id] ?? null; @endphp
+                        <td class="{{ $avgVal === null ? 'red-grade' : $color($avgVal) }}">
+                            <strong>{{ $avgVal === null ? 'I' : round($avgVal, 2) }}</strong>
                         </td>
                     @endif
 
                     @if (in_array($period, ['p4', 'semester2', 'yearly']))
-                        <td class="{{ $color($periodAverages['p4'][$enrollment->id] ?? null) }}">
-                            <strong>{{ round($periodAverages['p4'][$enrollment->id] ?? 0, 2) }}</strong>
+                        @php $avgVal = $periodAverages['p4'][$enrollment->id] ?? null; @endphp
+                        <td class="{{ $avgVal === null ? 'red-grade' : $color($avgVal) }}">
+                            <strong>{{ $avgVal === null ? 'I' : round($avgVal, 2) }}</strong>
                         </td>
                     @endif
 
                     @if (in_array($period, ['p5', 'semester2', 'yearly']))
-                        <td class="{{ $color($periodAverages['p5'][$enrollment->id] ?? null) }}">
-                            <strong>{{ round($periodAverages['p5'][$enrollment->id] ?? 0, 2) }}</strong>
+                        @php $avgVal = $periodAverages['p5'][$enrollment->id] ?? null; @endphp
+                        <td class="{{ $avgVal === null ? 'red-grade' : $color($avgVal) }}">
+                            <strong>{{ $avgVal === null ? 'I' : round($avgVal, 2) }}</strong>
                         </td>
                     @endif
 
                     @if (in_array($period, ['p6', 'semester2', 'yearly']))
-                        <td class="{{ $color($periodAverages['p6'][$enrollment->id] ?? null) }}">
-                            <strong>{{ round($periodAverages['p6'][$enrollment->id] ?? 0, 2) }}</strong>
+                        @php $avgVal = $periodAverages['p6'][$enrollment->id] ?? null; @endphp
+                        <td class="{{ $avgVal === null ? 'red-grade' : $color($avgVal) }}">
+                            <strong>{{ $avgVal === null ? 'I' : round($avgVal, 2) }}</strong>
                         </td>
                     @endif
 
                     @if (in_array($period, ['semester2', 'yearly']))
                         {{-- ✅ FIXED: exam2 average --}}
-                        <td class="{{ $color($periodAverages['exam2'][$enrollment->id] ?? null) }}">
-                            <strong>{{ round($periodAverages['exam2'][$enrollment->id] ?? 0, 2) }}</strong>
+                        @php $avgVal = $periodAverages['exam2'][$enrollment->id] ?? null; @endphp
+                        <td class="{{ $avgVal === null ? 'red-grade' : $color($avgVal) }}">
+                            <strong>{{ $avgVal === null ? 'I' : round($avgVal, 2) }}</strong>
                         </td>
 
-                        <td class="{{ $color($periodAverages['semester2'][$enrollment->id] ?? null) }}">
-                            <strong>{{ round($periodAverages['semester2'][$enrollment->id] ?? 0, 2) }}</strong>
+                        @php $avgVal = $periodAverages['semester2'][$enrollment->id] ?? null; @endphp
+                        <td class="{{ $avgVal === null ? 'red-grade' : $color($avgVal) }}">
+                            <strong>{{ $avgVal === null ? 'I' : round($avgVal, 2) }}</strong>
                         </td>
                     @endif
 
                     @if ($period === 'yearly')
-                        <td class="{{ $color($periodAverages['yearly'][$enrollment->id] ?? null) }}">
-                            <strong>{{ round($periodAverages['yearly'][$enrollment->id] ?? 0, 2) }}</strong>
+                        @php $avgVal = $periodAverages['yearly'][$enrollment->id] ?? null; @endphp
+                        <td class="{{ $avgVal === null ? 'red-grade' : $color($avgVal) }}">
+                            <strong>{{ $avgVal === null ? 'I' : round($avgVal, 2) }}</strong>
                         </td>
                     @endif
                 </tr>

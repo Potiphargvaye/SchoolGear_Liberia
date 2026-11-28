@@ -712,6 +712,10 @@
                         return 'grade-F';
                     }
 
+                    $isIncomplete = function ($v) {
+                        return $v !== null && $v !== '' && is_numeric($v) && (float) $v == 0;
+                    };
+
                 @endphp
 
                 @foreach ($grades as $grade)
@@ -724,6 +728,11 @@
                         $secondSemAvg = round(($periodAvg2 + $grade->exam2) / 2);
 
                         $yearAvg = round(($firstSemAvg + $secondSemAvg) / 2, 2);
+
+                        // Incomplete flags from raw cells only
+                        $sem1Inc = $isIncomplete($grade->period1) || $isIncomplete($grade->period2) || $isIncomplete($grade->period3) || $isIncomplete($grade->exam1);
+                        $sem2Inc = $isIncomplete($grade->period4) || $isIncomplete($grade->period5) || $isIncomplete($grade->period6) || $isIncomplete($grade->exam2);
+                        $yearlyInc = $sem1Inc || $sem2Inc;
 
 
                     @endphp
@@ -749,7 +758,7 @@
                                     class="{{ gradeColor($grade->exam1) }}"><strong>{{ $grade->exam1 === null || $grade->exam1 === '' ? gradeLetter($grade->exam1) : (is_numeric($grade->exam1) && (float) $grade->exam1 == 0 ? 'I' : gradeLetter($grade->exam1)) }}</strong></span>
                             </td>
                             <td><span
-                                    class="{{ gradeColor($firstSemAvg) }}"><strong>{{ gradeLetter($firstSemAvg) }}</strong></span>
+                                    class="{{ $sem1Inc ? 'grade-F' : gradeColor($firstSemAvg) }}"><strong>{{ $sem1Inc ? 'I' : gradeLetter($firstSemAvg) }}</strong></span>
                             </td>
                         @endif
                         @if (in_array($period, ['p4', 'semester2', 'yearly']))
@@ -769,12 +778,12 @@
                                     class="{{ gradeColor($grade->exam2) }}"><strong>{{ $grade->exam2 === null || $grade->exam2 === '' ? gradeLetter($grade->exam2) : (is_numeric($grade->exam2) && (float) $grade->exam2 == 0 ? 'I' : gradeLetter($grade->exam2)) }}</strong></span>
                             </td>
                             <td><span
-                                    class="{{ gradeColor($secondSemAvg) }}"><strong>{{ gradeLetter($secondSemAvg) }}</strong></span>
+                                    class="{{ $sem2Inc ? 'grade-F' : gradeColor($secondSemAvg) }}"><strong>{{ $sem2Inc ? 'I' : gradeLetter($secondSemAvg) }}</strong></span>
                             </td>
                         @endif
                         @if ($period === 'yearly')
                             <td><span
-                                    class="{{ gradeColor($yearAvg) }}"><strong>{{ gradeLetter($yearAvg) }}</strong></span>
+                                    class="{{ $yearlyInc ? 'grade-F' : gradeColor($yearAvg) }}"><strong>{{ $yearlyInc ? 'I' : gradeLetter($yearAvg) }}</strong></span>
                             </td>
                         @endif
                     </tr>
@@ -797,67 +806,67 @@
                     <td>Average</td>
 
                     @if (in_array($period, ['p1', 'semester1', 'yearly']))
-                        @php $score = $periodAverages['p1'][$enrollment->id] ?? 0; @endphp
-                        <td><span class="{{ gradeColor($score) }}"><strong>{{ gradeLetter($score) }}</strong></span>
+                        @php $avgVal = $periodAverages['p1'][$enrollment->id] ?? null; @endphp
+                        <td><span class="{{ $avgVal === null ? 'grade-F' : gradeColor($avgVal) }}"><strong>{{ $avgVal === null ? 'I' : gradeLetter($avgVal) }}</strong></span>
                         </td>
                     @endif
 
                     @if (in_array($period, ['p2', 'semester1', 'yearly']))
-                        @php $score = $periodAverages['p2'][$enrollment->id] ?? 0; @endphp
-                        <td><span class="{{ gradeColor($score) }}"><strong>{{ gradeLetter($score) }}</strong></span>
+                        @php $avgVal = $periodAverages['p2'][$enrollment->id] ?? null; @endphp
+                        <td><span class="{{ $avgVal === null ? 'grade-F' : gradeColor($avgVal) }}"><strong>{{ $avgVal === null ? 'I' : gradeLetter($avgVal) }}</strong></span>
                         </td>
                     @endif
 
                     @if (in_array($period, ['p3', 'semester1', 'yearly']))
-                        @php $score = $periodAverages['p3'][$enrollment->id] ?? 0; @endphp
-                        <td><span class="{{ gradeColor($score) }}"><strong>{{ gradeLetter($score) }}</strong></span>
+                        @php $avgVal = $periodAverages['p3'][$enrollment->id] ?? null; @endphp
+                        <td><span class="{{ $avgVal === null ? 'grade-F' : gradeColor($avgVal) }}"><strong>{{ $avgVal === null ? 'I' : gradeLetter($avgVal) }}</strong></span>
                         </td>
                     @endif
 
                     @if (in_array($period, ['semester1', 'yearly']))
-                        @php $exam1Score = $periodAverages['exam1'][$enrollment->id] ?? 0; @endphp
-                        @php $sem1Score = $periodAverages['semester1'][$enrollment->id] ?? 0; @endphp
+                        @php $avgVal = $periodAverages['exam1'][$enrollment->id] ?? null; @endphp
                         <td><span
-                                class="{{ gradeColor($exam1Score) }}"><strong>{{ gradeLetter($exam1Score) }}</strong></span>
+                                class="{{ $avgVal === null ? 'grade-F' : gradeColor($avgVal) }}"><strong>{{ $avgVal === null ? 'I' : gradeLetter($avgVal) }}</strong></span>
                         </td>
+                        @php $avgVal = $periodAverages['semester1'][$enrollment->id] ?? null; @endphp
                         <td><span
-                                class="{{ gradeColor($sem1Score) }}"><strong>{{ gradeLetter($sem1Score) }}</strong></span>
+                                class="{{ $avgVal === null ? 'grade-F' : gradeColor($avgVal) }}"><strong>{{ $avgVal === null ? 'I' : gradeLetter($avgVal) }}</strong></span>
                         </td>
                     @endif
 
                     @if (in_array($period, ['p4', 'semester2', 'yearly']))
-                        @php $score = $periodAverages['p4'][$enrollment->id] ?? 0; @endphp
-                        <td><span class="{{ gradeColor($score) }}"><strong>{{ gradeLetter($score) }}</strong></span>
+                        @php $avgVal = $periodAverages['p4'][$enrollment->id] ?? null; @endphp
+                        <td><span class="{{ $avgVal === null ? 'grade-F' : gradeColor($avgVal) }}"><strong>{{ $avgVal === null ? 'I' : gradeLetter($avgVal) }}</strong></span>
                         </td>
                     @endif
 
                     @if (in_array($period, ['p5', 'semester2', 'yearly']))
-                        @php $score = $periodAverages['p5'][$enrollment->id] ?? 0; @endphp
-                        <td><span class="{{ gradeColor($score) }}"><strong>{{ gradeLetter($score) }}</strong></span>
+                        @php $avgVal = $periodAverages['p5'][$enrollment->id] ?? null; @endphp
+                        <td><span class="{{ $avgVal === null ? 'grade-F' : gradeColor($avgVal) }}"><strong>{{ $avgVal === null ? 'I' : gradeLetter($avgVal) }}</strong></span>
                         </td>
                     @endif
 
                     @if (in_array($period, ['p6', 'semester2', 'yearly']))
-                        @php $score = $periodAverages['p6'][$enrollment->id] ?? 0; @endphp
-                        <td><span class="{{ gradeColor($score) }}"><strong>{{ gradeLetter($score) }}</strong></span>
+                        @php $avgVal = $periodAverages['p6'][$enrollment->id] ?? null; @endphp
+                        <td><span class="{{ $avgVal === null ? 'grade-F' : gradeColor($avgVal) }}"><strong>{{ $avgVal === null ? 'I' : gradeLetter($avgVal) }}</strong></span>
                         </td>
                     @endif
 
                     @if (in_array($period, ['semester2', 'yearly']))
-                        @php $exam2Score = $periodAverages['exam2'][$enrollment->id] ?? 0; @endphp
-                        @php $sem2Score = $periodAverages['semester2'][$enrollment->id] ?? 0; @endphp
+                        @php $avgVal = $periodAverages['exam2'][$enrollment->id] ?? null; @endphp
                         <td><span
-                                class="{{ gradeColor($exam2Score) }}"><strong>{{ gradeLetter($exam2Score) }}</strong></span>
+                                class="{{ $avgVal === null ? 'grade-F' : gradeColor($avgVal) }}"><strong>{{ $avgVal === null ? 'I' : gradeLetter($avgVal) }}</strong></span>
                         </td>
+                        @php $avgVal = $periodAverages['semester2'][$enrollment->id] ?? null; @endphp
                         <td><span
-                                class="{{ gradeColor($sem2Score) }}"><strong>{{ gradeLetter($sem2Score) }}</strong></span>
+                                class="{{ $avgVal === null ? 'grade-F' : gradeColor($avgVal) }}"><strong>{{ $avgVal === null ? 'I' : gradeLetter($avgVal) }}</strong></span>
                         </td>
                     @endif
 
                     @if ($period === 'yearly')
-                        @php $yearlyScore = $periodAverages['yearly'][$enrollment->id] ?? 0; @endphp
+                        @php $avgVal = $periodAverages['yearly'][$enrollment->id] ?? null; @endphp
                         <td><span
-                                class="{{ gradeColor($yearlyScore) }}"><strong>{{ gradeLetter($yearlyScore) }}</strong></span>
+                                class="{{ $avgVal === null ? 'grade-F' : gradeColor($avgVal) }}"><strong>{{ $avgVal === null ? 'I' : gradeLetter($avgVal) }}</strong></span>
                         </td>
                     @endif
                 </tr>

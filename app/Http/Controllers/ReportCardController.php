@@ -98,6 +98,11 @@ class ReportCardController extends Controller
 
         // ✅ NEW: store per-column totals
         $periodAverages = [];
+        $periodCounts = [];
+
+        $isIncomplete = function ($v) {
+            return $v !== null && $v !== '' && is_numeric($v) && (float) $v == 0;
+        };
 
         foreach ($enrollments as $enrollment) {
 
@@ -127,21 +132,59 @@ class ReportCardController extends Controller
                 $totalYearAverage += $yearAvg;
                 $subjectCount++;
 
-                // ✅ SAME AS SINGLE REPORT (IMPORTANT)
-                $periodAverages['p1'][$enrollment->id] = ($periodAverages['p1'][$enrollment->id] ?? 0) + $g->period1;
-                $periodAverages['p2'][$enrollment->id] = ($periodAverages['p2'][$enrollment->id] ?? 0) + $g->period2;
-                $periodAverages['p3'][$enrollment->id] = ($periodAverages['p3'][$enrollment->id] ?? 0) + $g->period3;
+                // Semester/yearly incomplete flags from raw cells only
+                $sem1Incomplete = $isIncomplete($g->period1) || $isIncomplete($g->period2) || $isIncomplete($g->period3) || $isIncomplete($g->exam1);
+                $sem2Incomplete = $isIncomplete($g->period4) || $isIncomplete($g->period5) || $isIncomplete($g->period6) || $isIncomplete($g->exam2);
+                $yearlyIncomplete = $sem1Incomplete || $sem2Incomplete;
 
-                $periodAverages['p4'][$enrollment->id] = ($periodAverages['p4'][$enrollment->id] ?? 0) + $g->period4;
-                $periodAverages['p5'][$enrollment->id] = ($periodAverages['p5'][$enrollment->id] ?? 0) + $g->period5;
-                $periodAverages['p6'][$enrollment->id] = ($periodAverages['p6'][$enrollment->id] ?? 0) + $g->period6;
+                // ✅ accumulate per column — skip I (incomplete) raw cells
+                if (!$isIncomplete($g->period1)) {
+                    $periodAverages['p1'][$enrollment->id] = ($periodAverages['p1'][$enrollment->id] ?? 0) + $g->period1;
+                    $periodCounts['p1'][$enrollment->id] = ($periodCounts['p1'][$enrollment->id] ?? 0) + 1;
+                }
+                if (!$isIncomplete($g->period2)) {
+                    $periodAverages['p2'][$enrollment->id] = ($periodAverages['p2'][$enrollment->id] ?? 0) + $g->period2;
+                    $periodCounts['p2'][$enrollment->id] = ($periodCounts['p2'][$enrollment->id] ?? 0) + 1;
+                }
+                if (!$isIncomplete($g->period3)) {
+                    $periodAverages['p3'][$enrollment->id] = ($periodAverages['p3'][$enrollment->id] ?? 0) + $g->period3;
+                    $periodCounts['p3'][$enrollment->id] = ($periodCounts['p3'][$enrollment->id] ?? 0) + 1;
+                }
 
-                $periodAverages['exam1'][$enrollment->id] = ($periodAverages['exam1'][$enrollment->id] ?? 0) + $g->exam1;
-                $periodAverages['exam2'][$enrollment->id] = ($periodAverages['exam2'][$enrollment->id] ?? 0) + $g->exam2;
+                if (!$isIncomplete($g->period4)) {
+                    $periodAverages['p4'][$enrollment->id] = ($periodAverages['p4'][$enrollment->id] ?? 0) + $g->period4;
+                    $periodCounts['p4'][$enrollment->id] = ($periodCounts['p4'][$enrollment->id] ?? 0) + 1;
+                }
+                if (!$isIncomplete($g->period5)) {
+                    $periodAverages['p5'][$enrollment->id] = ($periodAverages['p5'][$enrollment->id] ?? 0) + $g->period5;
+                    $periodCounts['p5'][$enrollment->id] = ($periodCounts['p5'][$enrollment->id] ?? 0) + 1;
+                }
+                if (!$isIncomplete($g->period6)) {
+                    $periodAverages['p6'][$enrollment->id] = ($periodAverages['p6'][$enrollment->id] ?? 0) + $g->period6;
+                    $periodCounts['p6'][$enrollment->id] = ($periodCounts['p6'][$enrollment->id] ?? 0) + 1;
+                }
 
-                $periodAverages['semester1'][$enrollment->id] = ($periodAverages['semester1'][$enrollment->id] ?? 0) + $firstSemAvg;
-                $periodAverages['semester2'][$enrollment->id] = ($periodAverages['semester2'][$enrollment->id] ?? 0) + $secondSemAvg;
-                $periodAverages['yearly'][$enrollment->id] = ($periodAverages['yearly'][$enrollment->id] ?? 0) + $yearAvg;
+                if (!$isIncomplete($g->exam1)) {
+                    $periodAverages['exam1'][$enrollment->id] = ($periodAverages['exam1'][$enrollment->id] ?? 0) + $g->exam1;
+                    $periodCounts['exam1'][$enrollment->id] = ($periodCounts['exam1'][$enrollment->id] ?? 0) + 1;
+                }
+                if (!$isIncomplete($g->exam2)) {
+                    $periodAverages['exam2'][$enrollment->id] = ($periodAverages['exam2'][$enrollment->id] ?? 0) + $g->exam2;
+                    $periodCounts['exam2'][$enrollment->id] = ($periodCounts['exam2'][$enrollment->id] ?? 0) + 1;
+                }
+
+                if (!$sem1Incomplete) {
+                    $periodAverages['semester1'][$enrollment->id] = ($periodAverages['semester1'][$enrollment->id] ?? 0) + $firstSemAvg;
+                    $periodCounts['semester1'][$enrollment->id] = ($periodCounts['semester1'][$enrollment->id] ?? 0) + 1;
+                }
+                if (!$sem2Incomplete) {
+                    $periodAverages['semester2'][$enrollment->id] = ($periodAverages['semester2'][$enrollment->id] ?? 0) + $secondSemAvg;
+                    $periodCounts['semester2'][$enrollment->id] = ($periodCounts['semester2'][$enrollment->id] ?? 0) + 1;
+                }
+                if (!$yearlyIncomplete) {
+                    $periodAverages['yearly'][$enrollment->id] = ($periodAverages['yearly'][$enrollment->id] ?? 0) + $yearAvg;
+                    $periodCounts['yearly'][$enrollment->id] = ($periodCounts['yearly'][$enrollment->id] ?? 0) + 1;
+                }
             }
 
             // overall yearly average
@@ -157,7 +200,7 @@ class ReportCardController extends Controller
     */
         foreach ($periodAverages as $key => $enrollmentsArr) {
             foreach ($enrollmentsArr as $eid => $total) {
-                $count = count($gradesData[$eid]);
+                $count = $periodCounts[$key][$eid] ?? 0;
                 if ($count > 0) {
                     $periodAverages[$key][$eid] = $total / $count;
                 }
@@ -261,7 +304,6 @@ class ReportCardController extends Controller
     |--------------------------------------------------------------------------
     */
         $averages = [];
-        $gradeCounts = [];
 
         // ✅ NEW: Multi-period tracking
         $periodAverages = [
@@ -277,14 +319,17 @@ class ReportCardController extends Controller
             'semester2' => [],
             'yearly' => [],
         ];
+        $periodCounts = [];
+
+        $isIncomplete = function ($v) {
+            return $v !== null && $v !== '' && is_numeric($v) && (float) $v == 0;
+        };
 
         foreach ($classEnrollmentIds as $classEnrollmentId) {
 
             $sGrades = StudentGrade::where('school_id', $schoolId)
                 ->where('enrollment_id', $classEnrollmentId)
                 ->get();
-
-            $gradeCounts[$classEnrollmentId] = $sGrades->count();
 
             $totalYearAverage = 0;
             $subjectCount = 0;
@@ -311,22 +356,59 @@ class ReportCardController extends Controller
                 $totalYearAverage += $yearAvg;
                 $subjectCount++;
 
-                // ✅ accumulate per column
-                $periodAverages['p1'][$classEnrollmentId] = ($periodAverages['p1'][$classEnrollmentId] ?? 0) + $g->period1;
-                $periodAverages['p2'][$classEnrollmentId] = ($periodAverages['p2'][$classEnrollmentId] ?? 0) + $g->period2;
-                $periodAverages['p3'][$classEnrollmentId] = ($periodAverages['p3'][$classEnrollmentId] ?? 0) + $g->period3;
+                // Semester/yearly incomplete flags from raw cells only
+                $sem1Incomplete = $isIncomplete($g->period1) || $isIncomplete($g->period2) || $isIncomplete($g->period3) || $isIncomplete($g->exam1);
+                $sem2Incomplete = $isIncomplete($g->period4) || $isIncomplete($g->period5) || $isIncomplete($g->period6) || $isIncomplete($g->exam2);
+                $yearlyIncomplete = $sem1Incomplete || $sem2Incomplete;
 
-                $periodAverages['p4'][$classEnrollmentId] = ($periodAverages['p4'][$classEnrollmentId] ?? 0) + $g->period4;
-                $periodAverages['p5'][$classEnrollmentId] = ($periodAverages['p5'][$classEnrollmentId] ?? 0) + $g->period5;
-                $periodAverages['p6'][$classEnrollmentId] = ($periodAverages['p6'][$classEnrollmentId] ?? 0) + $g->period6;
+                // ✅ accumulate per column — skip I (incomplete) raw cells
+                if (!$isIncomplete($g->period1)) {
+                    $periodAverages['p1'][$classEnrollmentId] = ($periodAverages['p1'][$classEnrollmentId] ?? 0) + $g->period1;
+                    $periodCounts['p1'][$classEnrollmentId] = ($periodCounts['p1'][$classEnrollmentId] ?? 0) + 1;
+                }
+                if (!$isIncomplete($g->period2)) {
+                    $periodAverages['p2'][$classEnrollmentId] = ($periodAverages['p2'][$classEnrollmentId] ?? 0) + $g->period2;
+                    $periodCounts['p2'][$classEnrollmentId] = ($periodCounts['p2'][$classEnrollmentId] ?? 0) + 1;
+                }
+                if (!$isIncomplete($g->period3)) {
+                    $periodAverages['p3'][$classEnrollmentId] = ($periodAverages['p3'][$classEnrollmentId] ?? 0) + $g->period3;
+                    $periodCounts['p3'][$classEnrollmentId] = ($periodCounts['p3'][$classEnrollmentId] ?? 0) + 1;
+                }
 
-                // ✅ NEW: include exam averages
-                $periodAverages['exam1'][$classEnrollmentId] = ($periodAverages['exam1'][$classEnrollmentId] ?? 0) + $g->exam1;
-                $periodAverages['exam2'][$classEnrollmentId] = ($periodAverages['exam2'][$classEnrollmentId] ?? 0) + $g->exam2;
+                if (!$isIncomplete($g->period4)) {
+                    $periodAverages['p4'][$classEnrollmentId] = ($periodAverages['p4'][$classEnrollmentId] ?? 0) + $g->period4;
+                    $periodCounts['p4'][$classEnrollmentId] = ($periodCounts['p4'][$classEnrollmentId] ?? 0) + 1;
+                }
+                if (!$isIncomplete($g->period5)) {
+                    $periodAverages['p5'][$classEnrollmentId] = ($periodAverages['p5'][$classEnrollmentId] ?? 0) + $g->period5;
+                    $periodCounts['p5'][$classEnrollmentId] = ($periodCounts['p5'][$classEnrollmentId] ?? 0) + 1;
+                }
+                if (!$isIncomplete($g->period6)) {
+                    $periodAverages['p6'][$classEnrollmentId] = ($periodAverages['p6'][$classEnrollmentId] ?? 0) + $g->period6;
+                    $periodCounts['p6'][$classEnrollmentId] = ($periodCounts['p6'][$classEnrollmentId] ?? 0) + 1;
+                }
 
-                $periodAverages['semester1'][$classEnrollmentId] = ($periodAverages['semester1'][$classEnrollmentId] ?? 0) + $firstSemAvg;
-                $periodAverages['semester2'][$classEnrollmentId] = ($periodAverages['semester2'][$classEnrollmentId] ?? 0) + $secondSemAvg;
-                $periodAverages['yearly'][$classEnrollmentId] = ($periodAverages['yearly'][$classEnrollmentId] ?? 0) + $yearAvg;
+                if (!$isIncomplete($g->exam1)) {
+                    $periodAverages['exam1'][$classEnrollmentId] = ($periodAverages['exam1'][$classEnrollmentId] ?? 0) + $g->exam1;
+                    $periodCounts['exam1'][$classEnrollmentId] = ($periodCounts['exam1'][$classEnrollmentId] ?? 0) + 1;
+                }
+                if (!$isIncomplete($g->exam2)) {
+                    $periodAverages['exam2'][$classEnrollmentId] = ($periodAverages['exam2'][$classEnrollmentId] ?? 0) + $g->exam2;
+                    $periodCounts['exam2'][$classEnrollmentId] = ($periodCounts['exam2'][$classEnrollmentId] ?? 0) + 1;
+                }
+
+                if (!$sem1Incomplete) {
+                    $periodAverages['semester1'][$classEnrollmentId] = ($periodAverages['semester1'][$classEnrollmentId] ?? 0) + $firstSemAvg;
+                    $periodCounts['semester1'][$classEnrollmentId] = ($periodCounts['semester1'][$classEnrollmentId] ?? 0) + 1;
+                }
+                if (!$sem2Incomplete) {
+                    $periodAverages['semester2'][$classEnrollmentId] = ($periodAverages['semester2'][$classEnrollmentId] ?? 0) + $secondSemAvg;
+                    $periodCounts['semester2'][$classEnrollmentId] = ($periodCounts['semester2'][$classEnrollmentId] ?? 0) + 1;
+                }
+                if (!$yearlyIncomplete) {
+                    $periodAverages['yearly'][$classEnrollmentId] = ($periodAverages['yearly'][$classEnrollmentId] ?? 0) + $yearAvg;
+                    $periodCounts['yearly'][$classEnrollmentId] = ($periodCounts['yearly'][$classEnrollmentId] ?? 0) + 1;
+                }
 
             }
 
@@ -338,7 +420,7 @@ class ReportCardController extends Controller
         // ✅ FINALIZE averages AFTER loop (FIXED).
         foreach ($periodAverages as $key => $enrollmentsArr) {
             foreach ($enrollmentsArr as $eid => $total) {
-                $count = $gradeCounts[$eid];
+                $count = $periodCounts[$key][$eid] ?? 0;
                 if ($count > 0) {
                     $periodAverages[$key][$eid] = $total / $count;
                 }

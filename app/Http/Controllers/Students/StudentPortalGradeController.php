@@ -65,7 +65,11 @@ class StudentPortalGradeController extends Controller
                     ->orderBy('academic_subject_id')
                     ->get();
 
-                $grades->transform(function ($grade) use ($publishedSlotKeys) {
+                $isIncomplete = function ($v) {
+                    return $v !== null && $v !== '' && is_numeric($v) && (float) $v == 0;
+                };
+
+                $grades->transform(function ($grade) use ($publishedSlotKeys, $isIncomplete) {
                     foreach (GradePublication::SLOT_COLUMNS as $slot => $column) {
                         if (! in_array($slot, $publishedSlotKeys, true)) {
                             $grade->{$column} = null;
@@ -77,32 +81,53 @@ class StudentPortalGradeController extends Controller
                     $semester2Published = collect(['p4', 'p5', 'p6', 'exam2'])
                         ->every(fn ($slot) => in_array($slot, $publishedSlotKeys, true));
 
-                    if ($semester1Published) {
-                        $periodAvg1 = (
-                            ($grade->period1 ?? 0) +
-                            ($grade->period2 ?? 0) +
-                            ($grade->period3 ?? 0)
-                        ) / 3;
+                    $sem1Incomplete = $semester1Published && (
+                        $isIncomplete($grade->period1) ||
+                        $isIncomplete($grade->period2) ||
+                        $isIncomplete($grade->period3) ||
+                        $isIncomplete($grade->exam1)
+                    );
+                    $sem2Incomplete = $semester2Published && (
+                        $isIncomplete($grade->period4) ||
+                        $isIncomplete($grade->period5) ||
+                        $isIncomplete($grade->period6) ||
+                        $isIncomplete($grade->exam2)
+                    );
 
-                        $grade->firstSemAvg = round(($periodAvg1 + ($grade->exam1 ?? 0)) / 2);
+                    if ($semester1Published) {
+                        if ($sem1Incomplete) {
+                            $grade->firstSemAvg = 'I';
+                        } else {
+                            $periodAvg1 = (
+                                ($grade->period1 ?? 0) +
+                                ($grade->period2 ?? 0) +
+                                ($grade->period3 ?? 0)
+                            ) / 3;
+
+                            $grade->firstSemAvg = round(($periodAvg1 + ($grade->exam1 ?? 0)) / 2);
+                        }
                     } else {
                         $grade->firstSemAvg = null;
                     }
 
                     if ($semester2Published) {
-                        $periodAvg2 = (
-                            ($grade->period4 ?? 0) +
-                            ($grade->period5 ?? 0) +
-                            ($grade->period6 ?? 0)
-                        ) / 3;
+                        if ($sem2Incomplete) {
+                            $grade->secondSemAvg = 'I';
+                        } else {
+                            $periodAvg2 = (
+                                ($grade->period4 ?? 0) +
+                                ($grade->period5 ?? 0) +
+                                ($grade->period6 ?? 0)
+                            ) / 3;
 
-                        $grade->secondSemAvg = round(($periodAvg2 + ($grade->exam2 ?? 0)) / 2);
+                            $grade->secondSemAvg = round(($periodAvg2 + ($grade->exam2 ?? 0)) / 2);
+                        }
                     } else {
                         $grade->secondSemAvg = null;
                     }
 
                     $grade->yearlyAvg = $semester1Published && $semester2Published
-                        ? round(($grade->firstSemAvg + $grade->secondSemAvg) / 2, 2)
+                        ? ($sem1Incomplete || $sem2Incomplete ? 'I' : round(($grade->firstSemAvg + $grade->secondSemAvg) / 2, 2))
                         : null;
 
                     return $grade;
